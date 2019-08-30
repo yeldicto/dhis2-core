@@ -45,6 +45,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hisp.dhis.setting.SettingKey.*;
 import static org.junit.Assert.*;
 
@@ -166,33 +167,11 @@ public class SystemSettingManagerTest
 
         long start = System.nanoTime();
 
-//        sessionFactory.getCurrentSession().createNativeQuery(
-//                "INSERT INTO systemsetting (systemsettingid, name, value) VALUES " +
-//                        "(10001, 'keyEmailHostName', '"+ serialize("myValue1") + "')").executeUpdate();
-//        sessionFactory.getCurrentSession().createNativeQuery(
-//                "INSERT INTO systemsetting (systemsettingid, name, value) VALUES " +
-//                        "(10002, 'keyEmailUsername', '"+ serialize("myValue2") + "')").executeUpdate();
-//        sessionFactory.getCurrentSession().createNativeQuery(
-//                "INSERT INTO systemsetting (systemsettingid, name, value) VALUES " +
-//                        "(10003, '" + EMAIL_PASSWORD.getName() + "', '"+ serialize(pbeStringEncryptor.encrypt("myValue3")) + "')").executeUpdate();
-//
-//        jdbcTemplate.execute( "INSERT INTO systemsetting (systemsettingid, name, value) VALUES "
-//                + "(10001, 'keyEmailHostName', '" + serialize( "myValue1" ) + "')" );
-//        jdbcTemplate.execute( "INSERT INTO systemsetting (systemsettingid, name, value) VALUES "
-//                + "(10002, 'keyEmailUsername', '" + serialize( "myValue2" ) + "')" );
-//        jdbcTemplate.execute( "INSERT INTO systemsetting (systemsettingid, name, value) VALUES " + "(10003, '"
-//                + EMAIL_PASSWORD.getName() + "', '" + serialize( pbeStringEncryptor.encrypt( "myValue3" ) ) + "')" );
-//
         int threads = 10;
 
         ExecutorService service = Executors.newFixedThreadPool( threads );
-//        ExecutorService service = Executors.newSingleThreadExecutor(  );
 
         Collection<Future<Map<String, Serializable>>> futures = new ArrayList<>( threads );
-//        // warm hibernate
-//        assertThat( systemSettingManager.getSystemSetting( EMAIL_HOST_NAME ), CoreMatchers.is("myValue1") );
-//        assertThat( systemSettingManager.getSystemSetting( EMAIL_USERNAME ), CoreMatchers.is("myValue2") );
-//        assertThat( systemSettingManager.getSystemSetting( EMAIL_PASSWORD ), CoreMatchers.is("myValue3") );
 
         for ( int x = 0; x < 100; x++ )
         {
@@ -208,16 +187,25 @@ public class SystemSettingManagerTest
 
         for ( Future<Map<String, Serializable>> f : futures )
         {
-            vals.add( f.get().get(EMAIL_HOST_NAME) );
-            vals.add( f.get().get(EMAIL_USERNAME) );
-            vals.add( f.get().get(EMAIL_PASSWORD) );
-            //System.out.println(f.get());
-        }
-        System.out.println(vals.size());
-        System.out.println(System.nanoTime() - start);
-        service.shutdown();
-        //assertThat( vals.size(), equalTo( threads * 300000) );
+            // blocking //
+            Map<String, Serializable> result = f.get();
 
+            Serializable ehn = result.get(EMAIL_HOST_NAME.getName());
+            Serializable eus = result.get(EMAIL_USERNAME.getName());
+            Serializable epa = result.get(EMAIL_PASSWORD.getName());
+
+            assertThat(((SystemSetting) ehn).getValue(), equalTo("alfa"));
+            assertThat(((SystemSetting) eus).getValue(), equalTo("beta"));
+            assertThat(((SystemSetting) epa).getValue(), equalTo("gamma"));
+
+            vals.addAll( Lists.newArrayList( ehn, eus, epa ) );
+
+        }
+
+        System.out.println( System.nanoTime() - start );
+        service.shutdown();
+
+        assertThat( vals.size(), equalTo( threads * 100 * 3 ) );
 
     }
 }
