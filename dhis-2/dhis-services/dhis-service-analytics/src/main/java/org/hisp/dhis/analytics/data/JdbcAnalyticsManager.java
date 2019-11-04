@@ -697,12 +697,6 @@ public class JdbcAnalyticsManager
         return map;
     }
 
-    public static void main (String[] args) {
-        Object o ="";
-        Long l = null;
-        System.out.println((double) o);
-    }
-
     /**
      * Generates a comma-delimited string based on the dimension names of the
      * given dimensions where each dimension name is quoted.
