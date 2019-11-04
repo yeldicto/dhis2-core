@@ -687,13 +687,20 @@ public class JdbcAnalyticsManager
             }
             else // NUMERIC
             {
-                Double value = (Double) element.get( VALUE_ID );
+                // Some queries are returning Long instead of Double
+                Double value = Double.valueOf( String.valueOf( element.get( VALUE_ID ) ) );
 
                 map.put( key.toString(), value );
             }
         }
 
         return map;
+    }
+
+    public static void main (String[] args) {
+        Object o ="";
+        Long l = null;
+        System.out.println((double) o);
     }
 
     /**
