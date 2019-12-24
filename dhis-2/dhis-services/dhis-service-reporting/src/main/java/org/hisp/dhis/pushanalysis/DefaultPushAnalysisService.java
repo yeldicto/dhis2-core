@@ -77,7 +77,7 @@ import org.hisp.dhis.system.velocity.VelocityManager;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserGroup;
-import org.hisp.dhis.visualization.ChartImageGenerator;
+import org.hisp.dhis.visualization.ChartService;
 import org.hisp.dhis.visualization.Visualization;
 import org.hisp.dhis.visualization.VisualizationService;
 import org.jfree.chart.JFreeChart;
@@ -119,7 +119,7 @@ public class DefaultPushAnalysisService
 
     private final VisualizationService visualizationService;
 
-    private final ChartImageGenerator chartImageGenerator;
+    private final ChartService defaultChartService;
 
     private final I18nManager i18nManager;
 
@@ -127,13 +127,13 @@ public class DefaultPushAnalysisService
     
     private final IdentifiableObjectStore<PushAnalysis> pushAnalysisStore;
 
-    public DefaultPushAnalysisService( Notifier notifier, SystemSettingManager systemSettingManager,
-        DhisConfigurationProvider dhisConfigurationProvider, ExternalFileResourceService externalFileResourceService,
-        FileResourceService fileResourceService, CurrentUserService currentUserService,
-        MapGenerationService mapGenerationService, VisualizationService visualizationService,
-        ChartImageGenerator chartImageGenerator, I18nManager i18nManager,
-        @Qualifier( "emailMessageSender" ) MessageSender messageSender,
-        @Qualifier( "org.hisp.dhis.pushanalysis.PushAnalysisStore" ) IdentifiableObjectStore<PushAnalysis> pushAnalysisStore )
+    public DefaultPushAnalysisService(Notifier notifier, SystemSettingManager systemSettingManager,
+                                      DhisConfigurationProvider dhisConfigurationProvider, ExternalFileResourceService externalFileResourceService,
+                                      FileResourceService fileResourceService, CurrentUserService currentUserService,
+                                      MapGenerationService mapGenerationService, VisualizationService visualizationService,
+                                      ChartService defaultChartService, I18nManager i18nManager,
+                                      @Qualifier( "emailMessageSender" ) MessageSender messageSender,
+                                      @Qualifier( "org.hisp.dhis.pushanalysis.PushAnalysisStore" ) IdentifiableObjectStore<PushAnalysis> pushAnalysisStore )
     {
         checkNotNull( notifier );
         checkNotNull( systemSettingManager );
@@ -142,8 +142,8 @@ public class DefaultPushAnalysisService
         checkNotNull( fileResourceService );
         checkNotNull( currentUserService );
         checkNotNull( mapGenerationService );
-        checkNotNull(visualizationService);
-        checkNotNull( chartImageGenerator );
+        checkNotNull( visualizationService);
+        checkNotNull( defaultChartService );
         checkNotNull( i18nManager );
         checkNotNull( messageSender );
         checkNotNull( pushAnalysisStore );
@@ -156,7 +156,7 @@ public class DefaultPushAnalysisService
         this.currentUserService = currentUserService;
         this.mapGenerationService = mapGenerationService;
         this.visualizationService = visualizationService;
-        this.chartImageGenerator = chartImageGenerator;
+        this.defaultChartService = defaultChartService;
         this.i18nManager = i18nManager;
         this.messageSender = messageSender;
         this.pushAnalysisStore = pushAnalysisStore;
@@ -445,8 +445,8 @@ public class DefaultPushAnalysisService
     private String generateChartHtml( final Visualization visualization, User user )
         throws IOException
     {
-        JFreeChart jFreechart = chartImageGenerator
-            .getJFreeChart( visualization, new Date(), null, i18nManager.getI18nFormat(), user );
+        JFreeChart jFreechart = defaultChartService
+            .generateChart( visualization, new Date(), null, i18nManager.getI18nFormat(), user );
 
         return uploadImage( visualization.getUid(), ChartUtils.getChartAsPngByteArray( jFreechart, 578, 440 ) );
     }
