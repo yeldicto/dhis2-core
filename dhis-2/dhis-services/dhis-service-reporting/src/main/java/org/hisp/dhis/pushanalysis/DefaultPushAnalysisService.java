@@ -29,6 +29,12 @@ package org.hisp.dhis.pushanalysis;
  */
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.hisp.dhis.scheduling.JobType.PUSH_ANALYSIS;
+import static org.hisp.dhis.system.notification.NotificationLevel.ERROR;
+import static org.hisp.dhis.system.notification.NotificationLevel.INFO;
+import static org.hisp.dhis.system.notification.NotificationLevel.WARN;
+import static org.hisp.dhis.system.util.ChartUtils.getChartAsPngByteArray;
+import static org.springframework.util.MimeTypeUtils.IMAGE_PNG;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -66,13 +72,11 @@ import org.hisp.dhis.mapping.Map;
 import org.hisp.dhis.message.MessageSender;
 import org.hisp.dhis.outboundmessage.OutboundMessageResponse;
 import org.hisp.dhis.scheduling.JobConfiguration;
-import org.hisp.dhis.scheduling.JobType;
 import org.hisp.dhis.setting.SettingKey;
 import org.hisp.dhis.setting.SystemSettingManager;
 import org.hisp.dhis.system.grid.GridUtils;
 import org.hisp.dhis.system.notification.NotificationLevel;
 import org.hisp.dhis.system.notification.Notifier;
-import org.hisp.dhis.system.util.ChartUtils;
 import org.hisp.dhis.system.velocity.VelocityManager;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
@@ -84,7 +88,6 @@ import org.jfree.chart.JFreeChart;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.MimeTypeUtils;
 
 import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
@@ -193,44 +196,44 @@ public class DefaultPushAnalysisService
         // Pre-check
         //----------------------------------------------------------------------
 
-        log( jobId, NotificationLevel.INFO, "Starting pre-check on PushAnalysis", false, null );
+        log( jobId, INFO, "Starting pre-check on PushAnalysis", false, null );
 
         if ( pushAnalysis == null )
         {
-            log( jobId, NotificationLevel.ERROR,
+            log( jobId, ERROR,
                 "PushAnalysis with uid '" + uid + "' was not found. Terminating PushAnalysis", true, null );
             return;
         }
 
         if ( pushAnalysis.getRecipientUserGroups().size() == 0 )
         {
-            log( jobId, NotificationLevel.ERROR,
+            log( jobId, ERROR,
                 "PushAnalysis with uid '" + uid + "' has no userGroups assigned. Terminating PushAnalysis.", true, null );
             return;
         }
 
         if ( pushAnalysis.getDashboard() == null )
         {
-            log( jobId, NotificationLevel.ERROR,
+            log( jobId, ERROR,
                 "PushAnalysis with uid '" + uid + "' has no dashboard assigned. Terminating PushAnalysis.", true, null );
             return;
         }
 
         if ( dhisConfigurationProvider.getServerBaseUrl() == null )
         {
-            log( jobId, NotificationLevel.ERROR,
+            log( jobId, ERROR,
                 "Missing configuration '" + ConfigurationKey.SERVER_BASE_URL.getKey() + "'. Terminating PushAnalysis.",
                 true, null );
             return;
         }
 
-        log( jobId, NotificationLevel.INFO, "pre-check completed successfully", false, null );
+        log( jobId, INFO, "pre-check completed successfully", false, null );
 
         //----------------------------------------------------------------------
         // Compose list of users that can receive PushAnalysis
         //----------------------------------------------------------------------
 
-        log( jobId, NotificationLevel.INFO, "Composing list of receiving users", false, null );
+        log( jobId, INFO, "Composing list of receiving users", false, null );
 
         for ( UserGroup userGroup : pushAnalysis.getRecipientUserGroups() )
         {
@@ -238,7 +241,7 @@ public class DefaultPushAnalysisService
             {
                 if ( !user.hasEmail() )
                 {
-                    log( jobId, NotificationLevel.WARN,
+                    log( jobId, WARN,
                         "Skipping user: User '" + user.getUsername() + "' is missing a valid email.", false, null );
                     continue;
                 }
@@ -247,14 +250,14 @@ public class DefaultPushAnalysisService
             }
         }
 
-        log( jobId, NotificationLevel.INFO, "List composed. " + receivingUsers.size() + " eligible users found.",
+        log( jobId, INFO, "List composed. " + receivingUsers.size() + " eligible users found.",
             false, null );
 
         //----------------------------------------------------------------------
         // Generating reports
         //----------------------------------------------------------------------
 
-        log( jobId, NotificationLevel.INFO, "Generating and sending reports", false, null );
+        log( jobId, INFO, "Generating and sending reports", false, null );
 
         for ( User user : receivingUsers )
         {
@@ -271,7 +274,7 @@ public class DefaultPushAnalysisService
             }
             catch ( Exception e )
             {
-                log( jobId, NotificationLevel.ERROR,
+                log( jobId, ERROR,
                     "Could not create or send report for PushAnalysis '" + pushAnalysis.getName() + "' and User '" +
                         user.getUsername() + "': " + e.getMessage(), false, e );
             }
@@ -289,12 +292,12 @@ public class DefaultPushAnalysisService
         throws IOException {
         if ( jobId == null )
         {
-            jobId = new JobConfiguration( "inMemoryGenerateHtmlReport", JobType.PUSH_ANALYSIS, currentUserService.getCurrentUser().getUid(), true );
+            jobId = new JobConfiguration( "inMemoryGenerateHtmlReport", PUSH_ANALYSIS, currentUserService.getCurrentUser().getUid(), true );
             notifier.clear( jobId );
         }
 
         user = user == null ? currentUserService.getCurrentUser() : user;
-        log( jobId, NotificationLevel.INFO, "Generating PushAnalysis for user '" + user.getUsername() + "'.", false,
+        log( jobId, INFO, "Generating PushAnalysis for user '" + user.getUsername() + "'.", false,
             null );
 
         //----------------------------------------------------------------------
@@ -334,7 +337,7 @@ public class DefaultPushAnalysisService
 
         new VelocityManager().getEngine().getTemplate( "push-analysis-main-html.vm" ).merge( context, stringWriter );
 
-        log( jobId, NotificationLevel.INFO, "Finished generating PushAnalysis for user '" + user.getUsername() + "'.",
+        log( jobId, INFO, "Finished generating PushAnalysis for user '" + user.getUsername() + "'.",
             false, null );
 
         return stringWriter.toString().replaceAll( "\\R", "" );
@@ -367,7 +370,7 @@ public class DefaultPushAnalysisService
                 // TODO: Add support for EventReports
                 return "";
             default:
-                log( jobId, NotificationLevel.WARN,
+                log( jobId, WARN,
                     "Dashboard item of type '" + item.getType() + "' not supported. Skipping.", false, null );
                 return "";
         }
@@ -448,7 +451,7 @@ public class DefaultPushAnalysisService
         JFreeChart jFreechart = defaultChartService
             .generateChart( visualization, new Date(), null, i18nManager.getI18nFormat(), user );
 
-        return uploadImage( visualization.getUid(), ChartUtils.getChartAsPngByteArray( jFreechart, 578, 440 ) );
+        return uploadImage( visualization.getUid(), getChartAsPngByteArray( jFreechart, 578, 440 ) );
     }
 
     /**
@@ -480,7 +483,7 @@ public class DefaultPushAnalysisService
     {
         FileResource fileResource = new FileResource(
             name,
-            MimeTypeUtils.IMAGE_PNG.toString(), // All files uploaded from PushAnalysis is PNG.
+            IMAGE_PNG.toString(), // All files uploaded from PushAnalysis is PNG.
             bytes.length,
             ByteSource.wrap( bytes ).hash( Hashing.md5() ).toString(),
             FileResourceDomain.PUSH_ANALYSIS
