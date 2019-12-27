@@ -45,12 +45,13 @@ import org.hisp.dhis.user.User;
 import org.hisp.dhis.visualization.ChartService;
 import org.hisp.dhis.visualization.Visualization;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
-import org.jfree.data.category.CategoryDataset;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service responsible for encapsulating the chart generation making usage of
+ * the underline services and components required.
+ */
 @Service
 public class DefaultChartService
     implements
@@ -89,6 +90,7 @@ public class DefaultChartService
      *        override the current user org unit if set, can be null.
      * @param format the i18n format.
      * @param currentUser the current logged-in user.
+     * 
      * @return a JFreeChart object.
      */
     @Override
@@ -129,38 +131,37 @@ public class DefaultChartService
 
     /**
      * Returns a JFreeChart of type defined in the chart argument.
+     * 
+     * @param visualization
+     * 
+     * @return the JFreeChart graphic object.
      */
     private JFreeChart createChartFrom( final Visualization visualization )
     {
         notNull( visualization.getType(), "Visualization type cannot be null." );
 
-        Map<String, Object> valueMap = analyticsService.getAggregatedDataValueMapping( visualization );
-
-        final CategoryDataset[] dataSets = chartProvider.getCategoryDataSet( visualization, valueMap );
-        final CategoryDataset dataSet = dataSets[0];
-        final BarRenderer barRenderer = chartProvider.getBarRenderer();
-        final LineAndShapeRenderer lineRenderer = chartProvider.getLineRenderer();
+        final Map<String, Object> valueMap = analyticsService.getAggregatedDataValueMapping( visualization );
 
         switch ( visualization.getType() )
         {
         case AREA:
-            return chartProvider.area( visualization, dataSet );
+            return chartProvider.area( visualization, valueMap );
         case BAR:
-            return chartProvider.bar( visualization, dataSets, dataSet, barRenderer, lineRenderer );
+            return chartProvider.bar( visualization, valueMap );
         case COLUMN:
-            return chartProvider.column( visualization, dataSets, dataSet, barRenderer, lineRenderer );
+            return chartProvider.column( visualization, valueMap );
         case GAUGE:
-            return chartProvider.gauge( visualization, dataSet );
+            return chartProvider.gauge( visualization, valueMap );
         case LINE:
-            return chartProvider.line( visualization, dataSets, dataSet, lineRenderer );
+            return chartProvider.line( visualization, valueMap );
         case PIE:
-            return chartProvider.pie( visualization, dataSets );
+            return chartProvider.pie( visualization, valueMap );
         case RADAR:
-            return chartProvider.radar( visualization, dataSet );
+            return chartProvider.radar( visualization, valueMap );
         case STACKED_BAR:
-            return chartProvider.stackedBar( visualization, dataSet );
+            return chartProvider.stackedBar( visualization, valueMap );
         case STACKED_COLUMN:
-            return chartProvider.stackedColumn( visualization, dataSet );
+            return chartProvider.stackedColumn( visualization, valueMap );
         default:
             throw new IllegalArgumentException( "Invalid chart type: " + visualization.getType() );
         }

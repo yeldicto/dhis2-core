@@ -87,6 +87,11 @@ import org.jfree.data.general.DefaultValueDataset;
 import org.jfree.data.general.ValueDataset;
 import org.springframework.stereotype.Component;
 
+/**
+ * This component is responsible for providing methods related to chart
+ * manipulation and generation. The implementation is coupled to the
+ * Visualization object, which is used as the base for the chart generation.
+ */
 @Component
 class ChartProvider
 {
@@ -109,8 +114,17 @@ class ChartProvider
 
     private static final Color DEFAULT_BACKGROUND_COLOR = WHITE;
 
-    JFreeChart area( final Visualization visualization, CategoryDataset dataSet )
+    /**
+     * Generates a area chart.
+     *
+     * @param visualization
+     * @param valueMap
+     * 
+     * @return the respective JFreeChart object.
+     */
+    JFreeChart area( final Visualization visualization, final Map<String, Object> valueMap )
     {
+        final CategoryDataset dataSet = getCategoryDataSet( visualization, valueMap )[0];
         JFreeChart stackedAreaChart = ChartFactory.createStackedAreaChart( visualization.getName(),
             visualization.getDomainAxisLabel(), visualization.getRangeAxisLabel(), dataSet, VERTICAL,
             !visualization.isHideLegend(), false, false );
@@ -128,8 +142,18 @@ class ChartProvider
         return stackedAreaChart;
     }
 
-    JFreeChart radar( final Visualization visualization, CategoryDataset dataSet )
+    /**
+     * Generates a radar chart.
+     *
+     * @param visualization
+     * @param valueMap
+     * 
+     * @return the respective JFreeChart object.
+     */
+    JFreeChart radar( final Visualization visualization, final Map<String, Object> valueMap )
     {
+        final CategoryDataset dataSet = getCategoryDataSet( visualization, valueMap )[0];
+
         SpiderWebPlot plot = new SpiderWebPlot( dataSet, BY_ROW );
         plot.setLabelFont( LABEL_FONT );
 
@@ -141,17 +165,44 @@ class ChartProvider
         return radarChart;
     }
 
-    JFreeChart stackedBar( final Visualization visualization, CategoryDataset dataSet )
+    /**
+     * Generates a stacked bar chart.
+     *
+     * @param visualization
+     * @param valueMap
+     * 
+     * @return the respective JFreeChart object.
+     */
+    JFreeChart stackedBar( final Visualization visualization, final Map<String, Object> valueMap )
     {
+        final CategoryDataset dataSet = getCategoryDataSet( visualization, valueMap )[0];
         return getStackedBarOrColumnChart( visualization, dataSet, true );
     }
 
-    JFreeChart stackedColumn( final Visualization visualization, CategoryDataset dataSet )
+    /**
+     * Generates a staked column chart.
+     *
+     * @param visualization
+     * @param valueMap
+     * 
+     * @return the respective JFreeChart object.
+     */
+    JFreeChart stackedColumn( final Visualization visualization, final Map<String, Object> valueMap )
     {
+        final CategoryDataset dataSet = getCategoryDataSet( visualization, valueMap )[0];
         return getStackedBarOrColumnChart( visualization, dataSet, false );
     }
 
-    private JFreeChart getStackedBarOrColumnChart( final Visualization visualization, CategoryDataset dataSet,
+    /**
+     * An auxiliary method that generates a stacked bar or column chart.
+     * 
+     * @param visualization
+     * @param dataSet
+     * @param horizontal
+     * 
+     * @return the respective JFreeChart object.
+     */
+    private JFreeChart getStackedBarOrColumnChart( final Visualization visualization, final CategoryDataset dataSet,
         boolean horizontal )
     {
         JFreeChart stackedBarChart = ChartFactory.createStackedBarChart( visualization.getName(),
@@ -170,8 +221,18 @@ class ChartProvider
         return stackedBarChart;
     }
 
-    JFreeChart pie( final Visualization visualization, CategoryDataset[] dataSets )
+    /**
+     * Generates a pie chart.
+     * 
+     * @param visualization
+     * @param valueMap
+     *
+     * @return the respective JFreeChart object.
+     */
+    JFreeChart pie( final Visualization visualization, final Map<String, Object> valueMap )
     {
+        final CategoryDataset[] dataSets = getCategoryDataSet( visualization, valueMap );
+
         JFreeChart multiplePieChart = ChartFactory.createMultiplePieChart( visualization.getName(), dataSets[0], BY_ROW,
             !visualization.isHideLegend(), false, false );
 
@@ -206,8 +267,18 @@ class ChartProvider
         return multiplePieChart;
     }
 
-    JFreeChart gauge( final Visualization visualization, CategoryDataset dataSet )
+    /**
+     * Generates a gauge chart.
+     * 
+     * @param visualization
+     * @param valueMap
+     * 
+     * @return the respective JFreeChart object.
+     */
+    JFreeChart gauge( final Visualization visualization, final Map<String, Object> valueMap )
     {
+        final CategoryDataset dataSet = getCategoryDataSet( visualization, valueMap )[0];
+
         Number number = dataSet.getValue( 0, 0 );
         ValueDataset valueDataSet = new DefaultValueDataset( number );
 
@@ -244,66 +315,67 @@ class ChartProvider
         return meterChart;
     }
 
-    JFreeChart bar( Visualization visualization, CategoryDataset[] dataSets, CategoryDataset dataSet,
-        BarRenderer barRenderer, LineAndShapeRenderer lineRenderer )
+    /**
+     * Generates a bar chart.
+     * 
+     * @param visualization
+     * @param valueMap
+     *
+     * @return the respective JFreeChart object.
+     */
+    JFreeChart bar( final Visualization visualization, final Map<String, Object> valueMap )
     {
-        CategoryPlot plot;
-        plot = new CategoryPlot( dataSet, new CategoryAxis(), new NumberAxis(), barRenderer );
+        final CategoryDataset[] dataSets = getCategoryDataSet( visualization, valueMap );
+        final CategoryPlot plot = new CategoryPlot( dataSets[0], new CategoryAxis(), new NumberAxis(), getBarRenderer() );
         plot.setOrientation( HORIZONTAL );
-        return applyCommonDefinitions( visualization, dataSets, lineRenderer, plot );
-    }
-
-    JFreeChart column( Visualization visualization, CategoryDataset[] dataSets, CategoryDataset dataSet,
-        BarRenderer barRenderer, LineAndShapeRenderer lineRenderer )
-    {
-        CategoryPlot plot;
-        plot = new CategoryPlot( dataSet, new CategoryAxis(), new NumberAxis(), barRenderer );
-        plot.setOrientation( VERTICAL );
-        return applyCommonDefinitions( visualization, dataSets, lineRenderer, plot );
-    }
-
-    JFreeChart line( Visualization visualization, CategoryDataset[] dataSets, CategoryDataset dataSet,
-        LineAndShapeRenderer lineRenderer )
-    {
-        CategoryPlot plot;
-        plot = new CategoryPlot( dataSet, new CategoryAxis(), new NumberAxis(), lineRenderer );
-        plot.setOrientation( VERTICAL );
-        return applyCommonDefinitions( visualization, dataSets, lineRenderer, plot );
+        return applyCommonDefinitions( visualization, dataSets, getLineRenderer(), plot );
     }
 
     /**
-     * Returns a stacked bar renderer.
+     * Generates a column chart.
+     * 
+     * @param visualization
+     * @param valueMap
+     *
+     * @return the respective JFreeChart object.
      */
-    StackedBarRenderer getStackedBarRenderer()
+    JFreeChart column( final Visualization visualization, final Map<String, Object> valueMap )
     {
-        StackedBarRenderer renderer = new StackedBarRenderer();
-
-        for ( int i = 0; i < COLORS.length; i++ )
-        {
-            renderer.setSeriesPaint( i, COLORS[i] );
-            renderer.setShadowVisible( false );
-        }
-
-        return renderer;
+        final CategoryDataset[] dataSets = getCategoryDataSet( visualization, valueMap );
+        CategoryPlot plot = new CategoryPlot( dataSets[0], new CategoryAxis(), new NumberAxis(), getBarRenderer() );
+        plot.setOrientation( VERTICAL );
+        return applyCommonDefinitions( visualization, dataSets, getLineRenderer(), plot );
     }
 
     /**
-     * Returns a stacked area renderer.
+     * Generates a radar chart.
+     * 
+     * @param visualization
+     * @param valueMap
+     *
+     * @return the respective JFreeChart object.
      */
-    AreaRenderer getStackedAreaRenderer()
+    JFreeChart line( final Visualization visualization, final Map<String, Object> valueMap )
     {
-        StackedAreaRenderer renderer = new StackedAreaRenderer();
-
-        for ( int i = 0; i < COLORS.length; i++ )
-        {
-            renderer.setSeriesPaint( i, COLORS[i] );
-        }
-
-        return renderer;
+        final CategoryDataset[] dataSets = getCategoryDataSet( visualization, valueMap );
+        CategoryPlot plot = new CategoryPlot( dataSets[0], new CategoryAxis(), new NumberAxis(), getLineRenderer() );
+        plot.setOrientation( VERTICAL );
+        return applyCommonDefinitions( visualization, dataSets, getLineRenderer(), plot );
     }
 
-    JFreeChart applyCommonDefinitions( Visualization visualization, CategoryDataset[] dataSets,
-        LineAndShapeRenderer lineRenderer, CategoryPlot plot )
+    /**
+     * Creates a base JFreeChart instance using common definitions required
+     * for bar, column and line charts.
+     * 
+     * @param visualization
+     * @param dataSets
+     * @param lineRenderer
+     * @param plot
+     * 
+     * @return a base JFreeChart object for bar, column and line charts.
+     */
+    private JFreeChart applyCommonDefinitions( final Visualization visualization, final CategoryDataset[] dataSets,
+        final LineAndShapeRenderer lineRenderer, final CategoryPlot plot )
     {
         if ( visualization.isRegression() )
         {
@@ -346,22 +418,31 @@ class ChartProvider
         return jFreeChart;
     }
 
-    CategoryDataset[] getCategoryDataSet( final Visualization visualization,
-        Map<String, Object> aggregateVvalueMap )
+    /**
+     * Returns a CategoryDataset[] containing a regular Dataset and a regression Dataset
+     * based on the given aggregateValueMap.
+     * 
+     * @param visualization
+     * @param aggregateValueMap
+     * 
+     * @return a CategoryDataset[] object
+     */
+    private CategoryDataset[] getCategoryDataSet( final Visualization visualization,
+        Map<String, Object> aggregateValueMap )
     {
         DefaultCategoryDataset regularDataSet = new DefaultCategoryDataset();
         DefaultCategoryDataset regressionDataSet = new DefaultCategoryDataset();
 
         SimpleRegression regression = new SimpleRegression();
 
-        aggregateVvalueMap = DimensionalObjectUtils.getSortedKeysMap( aggregateVvalueMap );
+        aggregateValueMap = DimensionalObjectUtils.getSortedKeysMap( aggregateValueMap );
 
         java.util.List<NameableObject> seriez = new ArrayList<>( visualization.getColumns() );
         List<NameableObject> categories = new ArrayList<>( visualization.getRows() );
 
         if ( visualization.hasSortOrder() )
         {
-            categories = getSortedCategories( categories, visualization, aggregateVvalueMap );
+            categories = getSortedCategories( categories, visualization, aggregateValueMap );
         }
 
         for ( NameableObject series : seriez )
@@ -374,7 +455,7 @@ class ChartProvider
 
                 String key = getKey( series, category, AGGREGATE );
 
-                Object object = aggregateVvalueMap.get( key );
+                Object object = aggregateValueMap.get( key );
 
                 Number value = object != null && object instanceof Number ? (Number) object : null;
 
@@ -413,9 +494,46 @@ class ChartProvider
     }
 
     /**
-     * Returns a bar renderer.
+     * Returns a default stacked bar renderer.
+     * 
+     * @return a pre-defined StackedBarRenderer object.
      */
-    BarRenderer getBarRenderer()
+    private StackedBarRenderer getStackedBarRenderer()
+    {
+        StackedBarRenderer renderer = new StackedBarRenderer();
+
+        for ( int i = 0; i < COLORS.length; i++ )
+        {
+            renderer.setSeriesPaint( i, COLORS[i] );
+            renderer.setShadowVisible( false );
+        }
+
+        return renderer;
+    }
+
+    /**
+     * Returns a default stacked area renderer.
+     * 
+     * @return a pre-defined AreaRenderer object.
+     */
+    private AreaRenderer getStackedAreaRenderer()
+    {
+        StackedAreaRenderer renderer = new StackedAreaRenderer();
+
+        for ( int i = 0; i < COLORS.length; i++ )
+        {
+            renderer.setSeriesPaint( i, COLORS[i] );
+        }
+
+        return renderer;
+    }
+
+    /**
+     * Returns a default bar renderer.
+     * 
+     * @return a pre-defined BarRenderer object.
+     */
+    private BarRenderer getBarRenderer()
     {
         BarRenderer renderer = new BarRenderer();
 
@@ -431,9 +549,11 @@ class ChartProvider
     }
 
     /**
-     * Returns a line and shape renderer.
+     * Returns a default line renderer.
+     * 
+     * @return a pre-defined LineAndShapeRenderer object.
      */
-    LineAndShapeRenderer getLineRenderer()
+    private LineAndShapeRenderer getLineRenderer()
     {
         LineAndShapeRenderer renderer = new LineAndShapeRenderer();
 
@@ -448,8 +568,15 @@ class ChartProvider
     /**
      * Creates a key based on the given input. Sorts the key on its components to
      * remove significance of column order.
+     * 
+     * @param series
+     * @param category
+     * @param analyticsType
+     * 
+     * @return the created key.
      */
-    private String getKey( NameableObject series, NameableObject category, AnalyticsType analyticsType )
+    private String getKey( final NameableObject series, final NameableObject category,
+        final AnalyticsType analyticsType )
     {
         String key = series.getUid() + DIMENSION_SEP + category.getUid();
 
@@ -465,9 +592,15 @@ class ChartProvider
     /**
      * Returns a list of sorted nameable objects. Sorting is defined per the
      * corresponding value in the given value map.
+     * 
+     * @param categories
+     * @param visualization
+     * @param valueMap
+     * 
+     * @return a List<NameableObject> of sorted categories.
      */
-    private List<NameableObject> getSortedCategories( List<NameableObject> categories,
-        final Visualization visualization, Map<String, Object> valueMap )
+    private List<NameableObject> getSortedCategories( final List<NameableObject> categories,
+        final Visualization visualization, final Map<String, Object> valueMap )
     {
         NameableObject series = visualization.getColumns().get( 0 );
 
@@ -495,8 +628,11 @@ class ChartProvider
     /**
      * Sets basic configuration including title font, subtitle, background paint and
      * anti-alias on the given JFreeChart.
+     * 
+     * @param jFreeChart
+     * @param visualization
      */
-    private void setBasicConfig( JFreeChart jFreeChart, final Visualization visualization )
+    private void setBasicConfig( final JFreeChart jFreeChart, final Visualization visualization )
     {
         jFreeChart.getTitle().setFont( TITLE_FONT );
 
@@ -527,8 +663,13 @@ class ChartProvider
 
     /**
      * Returns a horizontal line marker for the given x value and label.
+     *
+     * @param value
+     * @param label
+     *
+     * @return a Marker containing the given value and label.
      */
-    private Marker getMarker( Double value, String label )
+    private Marker getMarker( final Double value, final String label )
     {
         Marker marker = new ValueMarker( value );
         marker.setPaint( BLACK );
