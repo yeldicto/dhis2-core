@@ -1,7 +1,7 @@
 package org.hisp.dhis.sms.listener;
 
 /*
- * Copyright (c) 2004-2018, University of Oslo
+ * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,8 @@ import java.util.Set;
  */
 @Transactional
 public class SingleEventListener
-    extends BaseSMSListener
+    extends
+    CommandSMSListener
 {
     // -------------------------------------------------------------------------
     // Dependencies
@@ -85,7 +86,8 @@ public class SingleEventListener
     // Supportive Methods
     // -------------------------------------------------------------------------
 
-    private void registerEvent( Map<String, String> commandValuePairs, SMSCommand smsCommand, IncomingSms sms, Set<OrganisationUnit> ous )
+    private void registerEvent( Map<String, String> commandValuePairs, SMSCommand smsCommand, IncomingSms sms,
+        Set<OrganisationUnit> ous )
     {
         List<ProgramInstance> programInstances = new ArrayList<>(
             programInstanceService.getProgramInstances( smsCommand.getProgram(), ProgramStatus.ACTIVE ) );

@@ -49,7 +49,7 @@ public interface TrackedEntityInstanceStore
 
     List<Map<String, String>> getTrackedEntityInstancesGrid( TrackedEntityInstanceQueryParams params );
 
-    int getTrackedEntityInstanceCount( TrackedEntityInstanceQueryParams params );
+    int getTrackedEntityInstanceCountForGrid( TrackedEntityInstanceQueryParams params );
 
     /**
      * Checks for the existence of a TEI by UID. Deleted TEIs are not taken into account.
@@ -66,6 +66,8 @@ public interface TrackedEntityInstanceStore
      * @return true/false depending on result.
      */
     boolean existsIncludingDeleted( String uid );
+
+    List<String> getUidsIncludingDeleted( List<String> uids );
 
     /**
      * Set lastSynchronized timestamp to provided timestamp for provided TEIs

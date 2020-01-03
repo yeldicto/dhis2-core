@@ -51,6 +51,7 @@ public enum ErrorCode
     E3009( "User `{0}` is not allowed to make private objects of type `{1}`." ),
     E3010( "Invalid access string `{0}`." ),
     E3011( "Data sharing is not enabled for type `{0}`, but one or more access strings contains data sharing read or write." ),
+    E3012( "User `{0}` does not have read access for object {1}."),
 
     /* Metadata Validation Errors */
     E4000( "Missing required property `{0}`." ),
@@ -73,7 +74,6 @@ public enum ErrorCode
     E4017( "RenderingType `{0}` is not supported for ValueType `{1}`"),
     E4018( "Property `{0}` must be set when property `{1}` is `{2}`"),
 
-
     /* TextPattern Errors */
     E4019( "Failed to parse pattern `{0}`. {1}"),
     E4020( "The value `{0}` does not conform to the attribute pattern `{1}`"),
@@ -89,6 +89,8 @@ public enum ErrorCode
     E4026( "One of the properties `{0}` and `{1}` is required when property `{2}` is `{3}`."),
 
     E4027( "Value `{0}` is not a valid for property `{1}`"),
+    E4028( "OptionSet `{0}` already contains Option `{1}`"),
+
 
     /* Program Errors */
     E6000( "Program `{0}` has more than one Program Instances"),

@@ -1,7 +1,7 @@
 package org.hisp.dhis.sms.listener;
 
 /*
- * Copyright (c) 2004-2018, University of Oslo
+ * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,10 +61,13 @@ import java.util.stream.Collectors;
  */
 @Transactional
 public class ProgramStageDataEntrySMSListener
-    extends BaseSMSListener
+    extends
+    CommandSMSListener
 {
     private static final String MORE_THAN_ONE_TEI = "More than one tracked entity found for given phone number";
+
     private static final String NO_OU_FOUND = "No organisation unit found";
+
     private static final String NO_TEI_EXIST = "No tracked entity exists with given phone number";
 
     // -------------------------------------------------------------------------
@@ -109,7 +112,8 @@ public class ProgramStageDataEntrySMSListener
             ParserType.PROGRAM_STAGE_DATAENTRY_PARSER );
     }
 
-    private void registerProgramStage( TrackedEntityInstance tei, IncomingSms sms, SMSCommand smsCommand, Map<String, String> keyValue, Set<OrganisationUnit> ous )
+    private void registerProgramStage( TrackedEntityInstance tei, IncomingSms sms, SMSCommand smsCommand,
+        Map<String, String> keyValue, Set<OrganisationUnit> ous )
     {
         List<ProgramInstance> programInstances = new ArrayList<>(
             programInstanceService.getProgramInstances( tei, smsCommand.getProgram(), ProgramStatus.ACTIVE ) );
@@ -117,16 +121,15 @@ public class ProgramStageDataEntrySMSListener
         register( programInstances, keyValue, smsCommand, sms, ous );
     }
 
-    private List<TrackedEntityInstance> getTrackedEntityInstanceByPhoneNumber( IncomingSms sms, SMSCommand command, Set<OrganisationUnit> ous )
+    private List<TrackedEntityInstance> getTrackedEntityInstanceByPhoneNumber( IncomingSms sms, SMSCommand command,
+        Set<OrganisationUnit> ous )
     {
         List<TrackedEntityAttribute> attributes = trackedEntityAttributeService.getAllTrackedEntityAttributes().stream()
-            .filter( attr -> attr.getValueType().equals( ValueType.PHONE_NUMBER ) )
-            .collect( Collectors.toList() );
+            .filter( attr -> attr.getValueType().equals( ValueType.PHONE_NUMBER ) ).collect( Collectors.toList() );
 
         List<TrackedEntityInstance> teis = new ArrayList<>();
 
-        attributes.parallelStream()
-            .map( attr -> getParams( attr, sms, command.getProgram(), ous ) )
+        attributes.parallelStream().map( attr -> getParams( attr, sms, command.getProgram(), ous ) )
             .forEach( param -> teis.addAll( trackedEntityInstanceService.getTrackedEntityInstances( param, false ) ) );
 
         return teis;
@@ -137,7 +140,8 @@ public class ProgramStageDataEntrySMSListener
         return trackedEntityInstances.size() > 1;
     }
 
-    private TrackedEntityInstanceQueryParams getParams( TrackedEntityAttribute attribute, IncomingSms sms, Program program, Set<OrganisationUnit> ous )
+    private TrackedEntityInstanceQueryParams getParams( TrackedEntityAttribute attribute, IncomingSms sms,
+        Program program, Set<OrganisationUnit> ous )
     {
         TrackedEntityInstanceQueryParams params = new TrackedEntityInstanceQueryParams();
 

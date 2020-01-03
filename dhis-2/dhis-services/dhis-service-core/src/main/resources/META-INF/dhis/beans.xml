@@ -928,6 +928,7 @@
     <property name="configurationService" ref="org.hisp.dhis.configuration.ConfigurationService" />
     <property name="env" ref="environment" />
     <property name="userSettingService" ref="org.hisp.dhis.user.UserSettingService" />
+    <property name="cacheProvider" ref="cacheProvider" />
   </bean>
 
   <bean id="org.hisp.dhis.organisationunit.OrganisationUnitGroupService"
@@ -1352,7 +1353,10 @@
     <property name="smsCommandStore" ref="org.hisp.dhis.sms.command.hibernate.SMSCommandStore" />
   </bean>
 
-  <bean id="org.hisp.dhis.sms.listener.DataValueSMSListener" class="org.hisp.dhis.sms.listener.DataValueSMSListener" />
+  <!-- Old SMS listener services -->
+
+  <bean id="org.hisp.dhis.sms.listener.DataValueSMSListener"
+   class="org.hisp.dhis.sms.listener.DataValueSMSListener" />
 
   <bean id="org.hisp.dhis.sms.listener.J2MEDataValueSMSListener"
     class="org.hisp.dhis.sms.listener.J2MEDataValueSMSListener" />
@@ -1366,11 +1370,32 @@
   <bean id="org.hisp.dhis.sms.listener.TrackedEntityRegistrationSMSListener"
     class="org.hisp.dhis.sms.listener.TrackedEntityRegistrationSMSListener" />
 
-
   <bean id="org.hisp.dhis.sms.listener.ProgramStageDataEntrySMSListener"
     class="org.hisp.dhis.sms.listener.ProgramStageDataEntrySMSListener" />
 
-  <bean id="org.hisp.dhis.sms.listener.SingleEventListener" class="org.hisp.dhis.sms.listener.SingleEventListener" />
+  <bean id="org.hisp.dhis.sms.listener.SingleEventListener" 
+  	class="org.hisp.dhis.sms.listener.SingleEventListener" />
+
+  <!-- New SMS listener services -->
+  
+  <bean id="org.hisp.dhis.sms.listener.EnrollmentSMSListener"
+   class="org.hisp.dhis.sms.listener.EnrollmentSMSListener" />
+
+  <bean id="org.hisp.dhis.sms.listener.TrackerEventSMSListener" 
+  	class="org.hisp.dhis.sms.listener.TrackerEventSMSListener" />
+  	
+  <bean id="org.hisp.dhis.sms.listener.SimpleEventSMSListener" 
+  	class="org.hisp.dhis.sms.listener.SimpleEventSMSListener" />  	
+
+  <bean id="org.hisp.dhis.sms.listener.AggregateDataSetSMSListener" 
+  	class="org.hisp.dhis.sms.listener.AggregateDataSetSMSListener" />
+
+  <bean id="org.hisp.dhis.sms.listener.DeleteEventSMSListener" 
+  	class="org.hisp.dhis.sms.listener.DeleteEventSMSListener" />
+
+  <bean id="org.hisp.dhis.sms.listener.RelationshipSMSListener" 
+  	class="org.hisp.dhis.sms.listener.RelationshipSMSListener" />
+
 
   <!-- Notification renderer -->
 

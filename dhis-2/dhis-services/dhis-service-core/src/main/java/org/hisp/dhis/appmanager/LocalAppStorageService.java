@@ -34,6 +34,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hisp.dhis.cache.Cache;
 import org.hisp.dhis.external.location.LocationManager;
 import org.hisp.dhis.external.location.LocationManagerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -166,7 +167,7 @@ public class LocalAppStorageService
 
         if ( appList.isEmpty() )
         {
-            log.info(" No apps found during local discovery.");
+            log.info( "No apps found during local discovery.");
         }
 
         return appMap;
@@ -179,7 +180,7 @@ public class LocalAppStorageService
     }
 
     @Override
-    public App installApp( File file, String fileName )
+    public App installApp( File file, String fileName, Cache<App> appCache )
     {
         throw new UnsupportedOperationException( "LocalAppStorageService.installApp is deprecated and should no longer be used." );
     }

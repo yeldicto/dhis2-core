@@ -28,19 +28,8 @@ package org.hisp.dhis.program.hibernate;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.common.IdentifiableObjectUtils.getUids;
-import static org.hisp.dhis.commons.util.TextUtils.getQuotedCommaDelimitedString;
-import static org.hisp.dhis.util.DateUtils.getMediumDateString;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Function;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.time.DateUtils;
 import org.hibernate.query.Query;
 import org.hisp.dhis.common.OrganisationUnitSelectionMode;
@@ -56,8 +45,18 @@ import org.hisp.dhis.program.notification.NotificationTrigger;
 import org.hisp.dhis.program.notification.ProgramNotificationTemplate;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+
+import static org.hisp.dhis.common.IdentifiableObjectUtils.getUids;
+import static org.hisp.dhis.commons.util.TextUtils.getQuotedCommaDelimitedString;
+import static org.hisp.dhis.util.DateUtils.*;
 
 /**
  * @author Abyot Asalefew
@@ -110,7 +109,12 @@ public class HibernateProgramInstanceStore
         String hql = "from ProgramInstance pi";
         SqlHelper hlp = new SqlHelper( true );
 
-        if ( params.hasLastUpdated() )
+        if ( params.hasLastUpdatedDuration() )
+        {
+            hql += hlp.whereAnd() +  "pi.lastUpdated >= '" +
+                getLongGmtDateString( nowMinusDuration( params.getLastUpdatedDuration() ) ) + "'";
+        }
+        else if ( params.hasLastUpdated() )
         {
             hql += hlp.whereAnd() + "pi.lastUpdated >= '" + getMediumDateString( params.getLastUpdated() ) + "'";
         }
@@ -212,17 +216,34 @@ public class HibernateProgramInstanceStore
     @Override
     public boolean exists( String uid )
     {
-        Integer result = jdbcTemplate.queryForObject( "select count(*) from programinstance where uid=? and deleted is false", Integer.class, uid );
+        Integer result = jdbcTemplate.queryForObject( "select count(0) from programinstance where uid=? and deleted is false", Integer.class, uid );
         return result != null && result > 0;
     }
 
     @Override
     public boolean existsIncludingDeleted( String uid )
     {
-        Integer result = jdbcTemplate.queryForObject( "select count(*) from programinstance where uid=?", Integer.class, uid );
+        Integer result = jdbcTemplate.queryForObject( "select count(0) from programinstance where uid=?", Integer.class, uid );
         return result != null && result > 0;
     }
 
+    @Override
+    public List<String> getUidsIncludingDeleted( List<String> uids )
+    {
+        String hql = "select pi.uid from ProgramInstance as pi where pi.uid in (:uids)";
+        List<String> resultUids = new ArrayList<>();
+        List<List<String>> uidsPartitions = Lists.partition( Lists.newArrayList( uids ), 20000 );
+
+        for ( List<String> uidsPartition : uidsPartitions )
+        {
+            if ( !uidsPartition.isEmpty() )
+            {
+                resultUids.addAll( getSession().createQuery( hql, String.class ).setParameter( "uids", uidsPartition ).list() );
+            }
+        }
+
+        return resultUids;
+    }
 
     @Override
     public List<ProgramInstance> getWithScheduledNotifications( ProgramNotificationTemplate template, Date notificationDate )

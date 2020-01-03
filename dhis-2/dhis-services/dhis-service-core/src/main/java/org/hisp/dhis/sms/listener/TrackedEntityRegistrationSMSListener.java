@@ -28,8 +28,6 @@ package org.hisp.dhis.sms.listener;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.*;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.program.Program;
@@ -50,9 +48,16 @@ import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 @Transactional
 public class TrackedEntityRegistrationSMSListener
-    extends BaseSMSListener
+    extends
+    CommandSMSListener
 {
     private static final String SUCCESS_MESSAGE = "Tracked Entity Registered Successfully with uid. ";
 
@@ -98,21 +103,21 @@ public class TrackedEntityRegistrationSMSListener
 
         TrackedEntityInstance trackedEntityInstance = new TrackedEntityInstance();
         trackedEntityInstance.setOrganisationUnit( orgUnit );
-        trackedEntityInstance.setTrackedEntityType( trackedEntityTypeService.getTrackedEntityByName( smsCommand.getProgram().getTrackedEntityType().getName() ) );
+        trackedEntityInstance.setTrackedEntityType( trackedEntityTypeService
+            .getTrackedEntityByName( smsCommand.getProgram().getTrackedEntityType().getName() ) );
         Set<TrackedEntityAttributeValue> patientAttributeValues = new HashSet<>();
 
-        smsCommand.getCodes().stream()
-            .filter( code -> parsedMessage.containsKey( code.getCode() ) )
-            .forEach( code ->
-            {
-                TrackedEntityAttributeValue trackedEntityAttributeValue = this.createTrackedEntityAttributeValue( parsedMessage, code, trackedEntityInstance) ;
-                patientAttributeValues.add( trackedEntityAttributeValue );
-            });
+        smsCommand.getCodes().stream().filter( code -> parsedMessage.containsKey( code.getCode() ) ).forEach( code -> {
+            TrackedEntityAttributeValue trackedEntityAttributeValue = this
+                .createTrackedEntityAttributeValue( parsedMessage, code, trackedEntityInstance );
+            patientAttributeValues.add( trackedEntityAttributeValue );
+        } );
 
         long trackedEntityInstanceId = 0;
         if ( patientAttributeValues.size() > 0 )
         {
-            trackedEntityInstanceId = trackedEntityInstanceService.createTrackedEntityInstance( trackedEntityInstance, patientAttributeValues );
+            trackedEntityInstanceId = trackedEntityInstanceService.createTrackedEntityInstance( trackedEntityInstance,
+                patientAttributeValues );
         }
         else
         {
@@ -123,9 +128,10 @@ public class TrackedEntityRegistrationSMSListener
 
         programInstanceService.enrollTrackedEntityInstance( tei, smsCommand.getProgram(), new Date(), date, orgUnit );
 
-        sendFeedback( StringUtils.defaultIfBlank( smsCommand.getSuccessMessage(), SUCCESS_MESSAGE + tei.getUid() ), senderPhoneNumber, INFO );
+        sendFeedback( StringUtils.defaultIfBlank( smsCommand.getSuccessMessage(), SUCCESS_MESSAGE + tei.getUid() ),
+            senderPhoneNumber, INFO );
 
-        update( sms,  SmsMessageStatus.PROCESSED, true );
+        update( sms, SmsMessageStatus.PROCESSED, true );
     }
 
     @Override
@@ -136,7 +142,7 @@ public class TrackedEntityRegistrationSMSListener
     }
 
     private TrackedEntityAttributeValue createTrackedEntityAttributeValue( Map<String, String> parsedMessage,
-          SMSCode code, TrackedEntityInstance trackedEntityInstance )
+        SMSCode code, TrackedEntityInstance trackedEntityInstance )
     {
         String value = parsedMessage.get( code.getCode() );
         TrackedEntityAttribute trackedEntityAttribute = code.getTrackedEntityAttribute();

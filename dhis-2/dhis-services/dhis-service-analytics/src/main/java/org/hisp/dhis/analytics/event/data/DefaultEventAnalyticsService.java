@@ -132,6 +132,8 @@ public class DefaultEventAnalyticsService
     private static final String NAME_EVENT = "Event";
     private static final String NAME_PROGRAM_STAGE = "Program stage";
     private static final String NAME_EVENT_DATE = "Event date";
+    private static final String NAME_ENROLLMENT_DATE = "Enrollment date";
+    private static final String NAME_INCIDENT_DATE = "Incident date";
     private static final String NAME_GEOMETRY = "Geometry";
     private static final String NAME_LONGITUDE = "Longitude";
     private static final String NAME_LATITUDE = "Latitude";
@@ -488,13 +490,13 @@ public class DefaultEventAnalyticsService
             {
                 for ( QueryItem item : params.getItems() )
                 {
-                    grid.addHeader( new GridHeader( item.getItem().getUid(), item.getItem().getName(), item.getValueType(), item.getTypeAsString(), false, true, item.getOptionSet(), item.getLegendSet() ) );
+                    grid.addHeader( new GridHeader( item.getItem().getUid(), item.getItem().getDisplayProperty( params.getDisplayProperty() ), item.getValueType(), item.getTypeAsString(), false, true, item.getOptionSet(), item.getLegendSet() ) );
                 }
             }
 
             for ( DimensionalObject dimension : params.getDimensions() )
             {
-                grid.addHeader( new GridHeader( dimension.getDimension(), dimension.getDisplayName(), ValueType.TEXT, String.class.getName(), false, true ) );
+                grid.addHeader( new GridHeader( dimension.getDimension(), dimension.getDisplayProperty( params.getDisplayProperty() ), ValueType.TEXT, String.class.getName(), false, true ) );
             }
 
             grid.addHeader( new GridHeader( VALUE_ID, VALUE_HEADER_NAME, ValueType.NUMBER, Double.class.getName(), false, false ) );
@@ -520,7 +522,15 @@ public class DefaultEventAnalyticsService
 
             for ( EventQueryParams query : queries )
             {
-                eventAnalyticsManager.getAggregatedEventData( query, grid, maxLimit );
+                //Each query might be either an enrollment or event indicator:
+                if( query.hasEnrollmentProgramIndicatorDimension() ) 
+                {
+                    enrollmentAnalyticsManager.getAggregatedEventData(query, grid, maxLimit);
+                }
+                else
+                {
+                    eventAnalyticsManager.getAggregatedEventData( query, grid, maxLimit );
+                }
             }
 
             timer.getTime( "Got aggregated events" );
@@ -581,8 +591,16 @@ public class DefaultEventAnalyticsService
 
         grid.addHeader( new GridHeader( ITEM_EVENT, NAME_EVENT, ValueType.TEXT, String.class.getName(), false, true ) )
             .addHeader( new GridHeader( ITEM_PROGRAM_STAGE, NAME_PROGRAM_STAGE, ValueType.TEXT, String.class.getName(), false, true ) )
-            .addHeader( new GridHeader( ITEM_EVENT_DATE, NAME_EVENT_DATE, ValueType.DATE, Date.class.getName(), false, true ) )
-            .addHeader( new GridHeader( ITEM_GEOMETRY, NAME_GEOMETRY, ValueType.TEXT, String.class.getName(), false, true ) )
+            .addHeader( new GridHeader( ITEM_EVENT_DATE, NAME_EVENT_DATE, ValueType.DATE, Date.class.getName(), false, true ) );
+
+
+        if ( params.getProgram().isRegistration() )
+        {
+            grid.addHeader( new GridHeader( ITEM_ENROLLMENT_DATE, NAME_ENROLLMENT_DATE, ValueType.DATE, Date.class.getName(), false, true ) )
+                .addHeader( new GridHeader( ITEM_INCIDENT_DATE, NAME_INCIDENT_DATE, ValueType.DATE, Date.class.getName(), false, true ) );
+        }
+
+        grid.addHeader( new GridHeader( ITEM_GEOMETRY, NAME_GEOMETRY, ValueType.TEXT, String.class.getName(), false, true ) )
             .addHeader( new GridHeader( ITEM_LONGITUDE, NAME_LONGITUDE, ValueType.NUMBER, Double.class.getName(), false, true ) )
             .addHeader( new GridHeader( ITEM_LATITUDE, NAME_LATITUDE, ValueType.NUMBER, Double.class.getName(), false, true ) )
             .addHeader( new GridHeader( ITEM_ORG_UNIT_NAME, NAME_ORG_UNIT_NAME, ValueType.TEXT, String.class.getName(), false, true ) )
@@ -590,12 +608,12 @@ public class DefaultEventAnalyticsService
 
         for ( DimensionalObject dimension : params.getDimensions() )
         {
-            grid.addHeader( new GridHeader( dimension.getDimension(), dimension.getDisplayName(), ValueType.TEXT, String.class.getName(), false, true ) );
+            grid.addHeader( new GridHeader( dimension.getDimension(), dimension.getDisplayProperty( params.getDisplayProperty() ), ValueType.TEXT, String.class.getName(), false, true ) );
         }
 
         for ( QueryItem item : params.getItems() )
         {
-            grid.addHeader( new GridHeader( item.getItem().getUid(), item.getItem().getName(), item.getValueType(), item.getTypeAsString(), false, true, item.getOptionSet(), item.getLegendSet() ) );
+            grid.addHeader( new GridHeader( item.getItem().getUid(), item.getItem().getDisplayProperty( params.getDisplayProperty() ), item.getValueType(), item.getTypeAsString(), false, true, item.getOptionSet(), item.getLegendSet() ) );
         }
 
         // ---------------------------------------------------------------------

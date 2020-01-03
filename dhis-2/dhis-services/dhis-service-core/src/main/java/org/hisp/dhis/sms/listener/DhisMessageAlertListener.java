@@ -1,7 +1,7 @@
 package org.hisp.dhis.sms.listener;
 
 /*
- * Copyright (c) 2004-2018, University of Oslo
+ * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,6 +28,8 @@ package org.hisp.dhis.sms.listener;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.message.MessageConversationParams;
 import org.hisp.dhis.message.MessageSender;
 import org.hisp.dhis.message.MessageService;
@@ -41,17 +43,25 @@ import org.hisp.dhis.sms.parse.SMSParserException;
 import org.hisp.dhis.system.util.SmsUtils;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserGroup;
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.*;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 @Transactional
 public class DhisMessageAlertListener
-    extends BaseSMSListener
+    extends
+    CommandSMSListener
 {
+    private static final Log log = LogFactory.getLog( DhisMessageAlertListener.class );
+
     @Autowired
     private SMSCommandService smsCommandService;
 
@@ -105,7 +115,8 @@ public class DhisMessageAlertListener
                 User sender = users.iterator().next();
 
                 Set<User> receivers = new HashSet<>( userGroup.getMembers() );
-                messageService.sendMessage( new MessageConversationParams.Builder( receivers, sender, smsCommand.getName(), message, MessageType.SYSTEM ).build() );
+                messageService.sendMessage( new MessageConversationParams.Builder( receivers, sender,
+                    smsCommand.getName(), message, MessageType.SYSTEM ).build() );
 
                 Set<User> feedbackList = new HashSet<>();
                 feedbackList.add( sender );
@@ -123,15 +134,15 @@ public class DhisMessageAlertListener
                 }
                 else
                 {
-                    Log.info( "No sms configuration found." );
+                    log.info( "No sms configuration found." );
                 }
 
-                update( sms,  SmsMessageStatus.PROCESSED, true );
+                update( sms, SmsMessageStatus.PROCESSED, true );
             }
             else if ( users == null || users.size() == 0 )
             {
                 throw new SMSParserException(
-                        "No user associated with this phone number. Please contact your supervisor." );
+                    "No user associated with this phone number. Please contact your supervisor." );
             }
         }
     }

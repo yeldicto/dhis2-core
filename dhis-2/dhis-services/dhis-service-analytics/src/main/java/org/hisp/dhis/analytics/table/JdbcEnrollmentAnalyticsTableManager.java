@@ -181,7 +181,8 @@ public class JdbcEnrollmentAnalyticsTableManager
 
             String sql = "(select " + select + " from trackedentityattributevalue " +
                 "where trackedentityinstanceid=pi.trackedentityinstanceid " +
-                "and trackedentityattributeid=" + attribute.getId() + dataClause + ") as " + quote( attribute.getUid() );
+                "and trackedentityattributeid=" + attribute.getId() + dataClause + ")" + addClosingParentheses( select )
+                    + " as " + quote( attribute.getUid() );
 
             columns.add( new AnalyticsTableColumn( quote( attribute.getUid() ), dataType, sql ).withSkipIndex( skipIndex ) );
         }
@@ -191,8 +192,8 @@ public class JdbcEnrollmentAnalyticsTableManager
         columns.add( new AnalyticsTableColumn( quote( "incidentdate" ), TIMESTAMP, "pi.incidentdate" ) );
         columns.add( new AnalyticsTableColumn( quote( "completeddate" ), TIMESTAMP, "case pi.status when 'COMPLETED' then pi.enddate end" ) );
         columns.add( new AnalyticsTableColumn( quote( "enrollmentstatus" ), CHARACTER_50, "pi.status" ) );
-        columns.add( new AnalyticsTableColumn( quote( "longitude" ), DOUBLE, "ST_X(pi.geometry)" ) );
-        columns.add( new AnalyticsTableColumn( quote( "latitude" ), DOUBLE, "ST_Y(pi.geometry)" ) );
+        columns.add( new AnalyticsTableColumn( quote( "longitude" ), DOUBLE, "CASE WHEN 'POINT' = GeometryType(pi.geometry) THEN ST_X(pi.geometry) ELSE null END" ) );
+        columns.add( new AnalyticsTableColumn( quote( "latitude" ), DOUBLE, "CASE WHEN 'POINT' = GeometryType(pi.geometry) THEN ST_Y(pi.geometry) ELSE null END" ) );
         columns.add( new AnalyticsTableColumn( quote( "ou" ), CHARACTER_11, NOT_NULL, "ou.uid" ) );
         columns.add( new AnalyticsTableColumn( quote( "ouname" ), TEXT, NOT_NULL, "ou.name" ) );
         columns.add( new AnalyticsTableColumn( quote( "oucode" ), TEXT, "ou.code" ) );

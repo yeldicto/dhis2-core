@@ -1,7 +1,7 @@
 package org.hisp.dhis.sms.listener;
 
 /*
- * Copyright (c) 2004-2018, University of Oslo
+ * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,8 @@ package org.hisp.dhis.sms.listener;
  */
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hisp.dhis.category.CategoryOptionCombo;
 import org.hisp.dhis.category.CategoryService;
 import org.hisp.dhis.common.ValueType;
@@ -54,11 +56,11 @@ import org.hisp.dhis.sms.incoming.SmsMessageStatus;
 import org.hisp.dhis.sms.parse.ParserType;
 import org.hisp.dhis.sms.parse.SMSParserException;
 import org.hisp.dhis.system.util.SmsUtils;
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -69,8 +71,11 @@ import java.util.TreeMap;
 
 @Transactional
 public class DataValueSMSListener
-    extends BaseSMSListener
+    extends
+    CommandSMSListener
 {
+    private static final Log log = LogFactory.getLog( DataValueSMSListener.class );
+
     private static final String DATASET_LOCKED = "Dataset: %s is locked for period: %s";
 
     // -------------------------------------------------------------------------
@@ -117,9 +122,11 @@ public class DataValueSMSListener
         Period period = getPeriod( smsCommand, date );
         DataSet dataSet = smsCommand.getDataset();
 
-        if ( dataSetService.isLocked( null, dataSet, period, orgUnit, dataElementCategoryService.getDefaultCategoryOptionCombo(), null ) )
+        if ( dataSetService.isLocked( null, dataSet, period, orgUnit,
+            dataElementCategoryService.getDefaultCategoryOptionCombo(), null ) )
         {
-            sendFeedback( String.format( DATASET_LOCKED, dataSet.getUid(), period.getName() ), sms.getOriginator(), ERROR );
+            sendFeedback( String.format( DATASET_LOCKED, dataSet.getUid(), period.getName() ), sms.getOriginator(),
+                ERROR );
 
             throw new SMSParserException( String.format( DATASET_LOCKED, dataSet.getUid(), period.getName() ) );
         }
@@ -209,8 +216,7 @@ public class DataValueSMSListener
             storedBy = "[unknown] from [" + sender + "]";
         }
 
-        CategoryOptionCombo optionCombo = dataElementCategoryService
-            .getCategoryOptionCombo( code.getOptionId() );
+        CategoryOptionCombo optionCombo = dataElementCategoryService.getCategoryOptionCombo( code.getOptionId() );
 
         Period period = getPeriod( command, date );
 
@@ -307,8 +313,8 @@ public class DataValueSMSListener
                 if ( targetDataValue == null )
                 {
                     targetDataValue = new DataValue();
-                    targetDataValue.setCategoryOptionCombo(
-                        dataElementCategoryService.getDefaultCategoryOptionCombo() );
+                    targetDataValue
+                        .setCategoryOptionCombo( dataElementCategoryService.getDefaultCategoryOptionCombo() );
                     targetDataValue.setSource( orgunit );
                     targetDataValue.setDataElement( targetDataElement );
                     targetDataValue.setPeriod( period );
@@ -363,8 +369,7 @@ public class DataValueSMSListener
         for ( SMSCode code : command.getCodes() )
         {
 
-            CategoryOptionCombo optionCombo = dataElementCategoryService
-                .getCategoryOptionCombo( code.getOptionId() );
+            CategoryOptionCombo optionCombo = dataElementCategoryService.getCategoryOptionCombo( code.getOptionId() );
 
             period = getPeriod( command, date );
 
@@ -424,8 +429,7 @@ public class DataValueSMSListener
         for ( SMSCode code : command.getCodes() )
         {
 
-            CategoryOptionCombo optionCombo = dataElementCategoryService
-                .getCategoryOptionCombo( code.getOptionId() );
+            CategoryOptionCombo optionCombo = dataElementCategoryService.getCategoryOptionCombo( code.getOptionId() );
 
             period = getPeriod( command, date );
 
@@ -482,22 +486,21 @@ public class DataValueSMSListener
         }
         else
         {
-            Log.info( "No sms configuration found." );
+            log.info( "No sms configuration found." );
         }
     }
 
     private void registerCompleteDataSet( DataSet dataSet, Period period, OrganisationUnit organisationUnit,
         String storedBy )
     {
-        CategoryOptionCombo optionCombo = dataElementCategoryService
-            .getDefaultCategoryOptionCombo(); // TODO
+        CategoryOptionCombo optionCombo = dataElementCategoryService.getDefaultCategoryOptionCombo(); // TODO
 
         if ( registrationService.getCompleteDataSetRegistration( dataSet, period, organisationUnit,
             optionCombo ) == null )
         {
             Date now = new Date();
-            CompleteDataSetRegistration registration =
-                new CompleteDataSetRegistration( dataSet, period, organisationUnit, optionCombo, now, storedBy, now, storedBy, true );
+            CompleteDataSetRegistration registration = new CompleteDataSetRegistration( dataSet, period,
+                organisationUnit, optionCombo, now, storedBy, now, storedBy, true );
 
             registrationService.saveCompleteDataSetRegistration( registration );
         }
@@ -505,8 +508,7 @@ public class DataValueSMSListener
 
     private void deregisterCompleteDataSet( DataSet dataSet, Period period, OrganisationUnit organisationUnit )
     {
-        CategoryOptionCombo optionCombo = dataElementCategoryService
-            .getDefaultCategoryOptionCombo(); // TODO
+        CategoryOptionCombo optionCombo = dataElementCategoryService.getDefaultCategoryOptionCombo(); // TODO
 
         CompleteDataSetRegistration registration = registrationService.getCompleteDataSetRegistration( dataSet, period,
             organisationUnit, optionCombo );

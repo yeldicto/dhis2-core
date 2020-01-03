@@ -1,7 +1,7 @@
 package org.hisp.dhis.sms.listener;
 
 /*
- * Copyright (c) 2004-2018, University of Oslo
+ * Copyright (c) 2004-2019, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,8 @@ import java.util.Map;
 
 @Transactional
 public class UnregisteredSMSListener
-    extends BaseSMSListener
+    extends
+    CommandSMSListener
 {
 
     private static final String USER_NAME = "anonymous";
@@ -73,8 +74,7 @@ public class UnregisteredSMSListener
     @Override
     protected SMSCommand getSMSCommand( IncomingSms sms )
     {
-        return smsCommandService.getSMSCommand( SmsUtils.getCommandString( sms ),
-            ParserType.UNREGISTERED_PARSER );
+        return smsCommandService.getSMSCommand( SmsUtils.getCommandString( sms ), ParserType.UNREGISTERED_PARSER );
     }
 
     @Override
@@ -108,11 +108,8 @@ public class UnregisteredSMSListener
                 anonymousUser = userService.getUserCredentialsByUsername( userName );
             }
 
-
-            messageService.sendMessage(
-                new MessageConversationParams.Builder( userGroup.getMembers(), anonymousUser.getUserInfo(), smsCommand.getName(), sms.getText(), MessageType.SYSTEM )
-                .build()
-            );
+            messageService.sendMessage( new MessageConversationParams.Builder( userGroup.getMembers(),
+                anonymousUser.getUserInfo(), smsCommand.getName(), sms.getText(), MessageType.SYSTEM ).build() );
 
             sendFeedback( smsCommand.getReceivedMessage(), sms.getOriginator(), INFO );
 

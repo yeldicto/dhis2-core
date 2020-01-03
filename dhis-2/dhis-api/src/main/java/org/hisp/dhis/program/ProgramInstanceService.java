@@ -109,11 +109,20 @@ public interface ProgramInstanceService
     boolean programInstanceExistsIncludingDeleted( String uid );
 
     /**
+     * Returns UIDs of existing ProgramInstances (including deleted) from the provided UIDs
+     *
+     * @param uids PSI UIDs to check
+     * @return Set containing UIDs of existing PSIs (including deleted)
+     */
+    List<String> getProgramInstancesUidsIncludingDeleted( List<String> uids );
+
+    /**
      * Returns a ProgramInstanceQueryParams based on the given input.
      *
      * @param ou                    the set of organisation unit identifiers.
      * @param ouMode                the OrganisationUnitSelectionMode.
      * @param lastUpdated           the last updated for PI.
+     * @param lastUpdatedDuration   the last updated duration filter.
      * @param program               the Program identifier.
      * @param programStatus         the ProgramStatus in the given program.
      * @param programStartDate      the start date for enrollment in the given
@@ -129,9 +138,10 @@ public interface ProgramInstanceService
      * @param includeDeleted        whether to include soft deleted ones
      * @return a ProgramInstanceQueryParams.
      */
-    ProgramInstanceQueryParams getFromUrl( Set<String> ou, OrganisationUnitSelectionMode ouMode, Date lastUpdated, String program,
-        ProgramStatus programStatus, Date programStartDate, Date programEndDate, String trackedEntityType, String trackedEntityInstance,
-        Boolean followUp, Integer page, Integer pageSize, boolean totalPages, boolean skipPaging, boolean includeDeleted );
+    ProgramInstanceQueryParams getFromUrl( Set<String> ou, OrganisationUnitSelectionMode ouMode, Date lastUpdated,
+        String lastUpdatedDuration, String program, ProgramStatus programStatus, Date programStartDate,
+        Date programEndDate, String trackedEntityType, String trackedEntityInstance, Boolean followUp, Integer page,
+        Integer pageSize, boolean totalPages, boolean skipPaging, boolean includeDeleted );
 
     /**
      * Returns a list with program instance values based on the given
