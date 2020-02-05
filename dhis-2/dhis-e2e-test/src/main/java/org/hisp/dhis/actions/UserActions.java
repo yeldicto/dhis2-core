@@ -163,4 +163,15 @@ public class UserActions
     {
         return addUser( "johnny", "bravo", userName, password );
     }
+
+    public ApiResponse updateUserPassword( String userId, String newPassword )
+    {
+        JsonObject user = this.get( userId ).getBody();
+
+        user.get( "userCredentials" ).getAsJsonObject().addProperty( "password", newPassword );
+
+        user.isJsonArray();
+
+        return this.update( userId, user );
+    }
 }

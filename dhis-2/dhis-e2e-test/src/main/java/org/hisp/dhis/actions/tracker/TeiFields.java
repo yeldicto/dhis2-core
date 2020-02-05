@@ -46,15 +46,23 @@ public class TeiFields
     @Override
     public String toString()
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append( trackedEntityInstance.getFields().stream().map( Enum::name ).collect( Collectors.joining( "," ) ) );
-        sb.append( ",\n" );
-        sb.append( trackedEntityInstance.getAttributes() );
-        sb.append( ",\n" );
-        sb.append( trackedEntityInstance.getRelationships() );
-        sb.append( ",\n" );
-        sb.append( trackedEntityInstance.getEnrollment() );
-        return sb.toString();
+        if ( trackedEntityInstance != null )
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append(
+                trackedEntityInstance.getFields().stream().map( Enum::name ).collect( Collectors.joining( "," ) ) );
+            sb.append( ",\n" );
+            sb.append( trackedEntityInstance.getAttributes() );
+            sb.append( ",\n" );
+            sb.append( trackedEntityInstance.getRelationships() );
+            sb.append( ",\n" );
+            sb.append( trackedEntityInstance.getEnrollment() );
+            return sb.toString();
+        }
+        else
+        {
+            return "*";
+        }
     }
 }
 
