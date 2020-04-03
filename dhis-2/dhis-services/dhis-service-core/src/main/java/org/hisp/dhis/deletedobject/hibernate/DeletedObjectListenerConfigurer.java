@@ -1,4 +1,4 @@
-package org.hisp.dhis.artemis;
+package org.hisp.dhis.deletedobject.hibernate;
 
 /*
  * Copyright (c) 2004-2020, University of Oslo
@@ -28,41 +28,41 @@ package org.hisp.dhis.artemis;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import org.apache.qpid.jms.JmsQueue;
-import org.apache.qpid.jms.JmsTopic;
-import org.hisp.dhis.render.RenderService;
-import org.springframework.jms.core.JmsTemplate;
+import org.hibernate.event.service.spi.EventListenerRegistry;
+import org.hibernate.event.spi.EventType;
+import org.hibernate.internal.SessionFactoryImpl;
 import org.springframework.stereotype.Component;
 
-/**
- * @author Morten Olav Hansen <mortenoh@gmail.com>
- */
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
+
 @Component
-public class MessageManager
+public class DeletedObjectListenerConfigurer
 {
-    private final JmsTemplate jmsTopicTemplate;
-    private final JmsTemplate jmsQueueTemplate;
-    private final RenderService renderService;
+    @PersistenceUnit
+    private EntityManagerFactory emf;
 
-    public MessageManager( JmsTemplate jmsTopicTemplate, JmsTemplate jmsQueueTemplate, RenderService renderService )
+    private final DeletedObjectPostInsertEventListener insertEventListener;
+
+    private final DeletedObjectPostDeleteEventListener deleteEventListener;
+
+    public DeletedObjectListenerConfigurer( DeletedObjectPostInsertEventListener insertEventListener,
+        DeletedObjectPostDeleteEventListener deleteEventListener )
     {
-        this.jmsTopicTemplate = jmsTopicTemplate;
-        this.jmsQueueTemplate = jmsQueueTemplate;
-        this.renderService = renderService;
+        this.deleteEventListener = deleteEventListener;
+        this.insertEventListener = insertEventListener;
     }
 
-    public void send( String destinationName, Message message )
+    @PostConstruct
+    protected void init()
     {
-        jmsTopicTemplate.send( destinationName, session -> session.createTextMessage( renderService.toJsonAsString( message ) ) );
-    }
+        SessionFactoryImpl sessionFactory = emf.unwrap( SessionFactoryImpl.class );
 
-    public void sendTopic( String destinationName, Message message )
-    {
-        jmsTopicTemplate.send( new JmsTopic( destinationName ), session -> session.createTextMessage( renderService.toJsonAsString( message ) ) );
-    }
+        EventListenerRegistry registry = sessionFactory.getServiceRegistry().getService( EventListenerRegistry.class );
 
-    public void sendQueue( String destinationName, Message message )
-    {
-        jmsQueueTemplate.send( new JmsQueue( destinationName ), session -> session.createTextMessage( renderService.toJsonAsString( message ) ) );
+        registry.getEventListenerGroup( EventType.POST_COMMIT_INSERT ).appendListener( insertEventListener );
+
+        registry.getEventListenerGroup( EventType.POST_COMMIT_DELETE ).appendListener( deleteEventListener );
     }
 }
