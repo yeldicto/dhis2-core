@@ -90,7 +90,8 @@ public class OptionActions
         if ( optionIds != null )
         {
             JsonArray options = new JsonArray();
-            for ( String optionID : optionIds )
+            for ( String optionID : optionIds
+            )
             {
                 JsonObject option = new JsonObject();
                 option.addProperty( "id", optionID );

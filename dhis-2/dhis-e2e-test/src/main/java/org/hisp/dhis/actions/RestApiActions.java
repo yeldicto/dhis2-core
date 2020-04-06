@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.hamcrest.Matchers;
 import org.hisp.dhis.TestRunStorage;
 import org.hisp.dhis.dto.ApiResponse;
 import org.hisp.dhis.dto.ImportSummary;
@@ -44,9 +45,6 @@ import io.restassured.http.ContentType;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
-
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.oneOf;
 
 /**
  * @author Gintare Vilkelyte <vilkelyte.gintare@gmail.com>
@@ -125,7 +123,7 @@ public class RestApiActions
      * Shortcut used in preconditions only.
      * Sends post request to specified endpoint and verifies that request was successful
      *
-     * @param object Body of request
+     * @param object Body of reqeuest
      * @return ID of generated entity.
      */
     public String create( Object object )
@@ -133,7 +131,7 @@ public class RestApiActions
         ApiResponse response = post( object );
 
         response.validate()
-            .statusCode(  is(oneOf( 200, 201 ) ) );
+            .statusCode( Matchers.isOneOf( 200, 201 ) );
 
         return response.extractUid();
     }
@@ -164,6 +162,7 @@ public class RestApiActions
      *
      * @param resourceId         Id of resource
      * @param queryParamsBuilder Query params to append to url
+     * @return
      */
     public ApiResponse get( String resourceId, QueryParamsBuilder queryParamsBuilder )
     {
@@ -184,6 +183,7 @@ public class RestApiActions
      * @param contentType           Content type of the request
      * @param accept                Accepted response Content type
      * @param queryParamsBuilder    Query params to append to url
+     * @return
      */
     public ApiResponse get( String resourceId, String contentType, String accept, QueryParamsBuilder queryParamsBuilder )
     {
@@ -204,6 +204,7 @@ public class RestApiActions
      *
      * @param resourceId            Id of resource
      * @param queryParamsBuilder    Query params to append to url
+     * @return
      */
     public ApiResponse delete( String resourceId, QueryParamsBuilder queryParamsBuilder )
     {
@@ -217,6 +218,7 @@ public class RestApiActions
      * If delete request successful, removes entity from TestRunStorage.
      *
      * @param path Id of resource
+     * @return
      */
     public ApiResponse delete( String path )
     {
@@ -237,6 +239,7 @@ public class RestApiActions
      *
      * @param resourceId Id of resource
      * @param object     Body of request
+     * @return
      */
     public ApiResponse update( String resourceId, Object object )
     {
@@ -277,7 +280,9 @@ public class RestApiActions
         if ( response.containsImportSummaries() )
         {
             List<ImportSummary> importSummaries = response.getSuccessfulImportSummaries();
-            importSummaries.forEach( importSummary -> TestRunStorage.addCreatedEntity( endpoint, importSummary.getReference() ));
+            importSummaries.forEach( importSummary -> {
+                TestRunStorage.addCreatedEntity( endpoint, importSummary.getReference() );
+            } );
             return;
         }
 
@@ -285,7 +290,9 @@ public class RestApiActions
         {
             SchemasActions schemasActions = new SchemasActions();
             response.getTypeReports().stream()
-                .filter( typeReport -> typeReport.getStats().getCreated() != 0 || typeReport.getStats().getImported() != 0)
+                .filter( typeReport -> {
+                    return typeReport.getStats().getCreated() != 0 || typeReport.getStats().getImported() != 0;
+                } )
                 .forEach( tr -> {
                     List<ObjectReport> objectReports = tr.getObjectReports();
 

@@ -28,22 +28,11 @@ package org.hisp.dhis.webapi.controller;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.cache2k.Cache;
-import org.cache2k.Cache2kBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Enums;
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.hisp.dhis.attribute.AttributeService;
 import org.hisp.dhis.cache.HibernateCacheManager;
 import org.hisp.dhis.common.BaseIdentifiableObject;
@@ -52,6 +41,7 @@ import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.common.IdentifiableObjects;
 import org.hisp.dhis.common.Pager;
+import org.hisp.dhis.common.PagerUtils;
 import org.hisp.dhis.common.SubscribableObject;
 import org.hisp.dhis.common.UserContext;
 import org.hisp.dhis.dxf2.common.OrderParams;
@@ -126,11 +116,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Enums;
-import com.google.common.base.Joiner;
-import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -141,10 +137,6 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
     protected static final WebOptions NO_WEB_OPTIONS = new WebOptions( new HashMap<>() );
 
     protected static final String DEFAULTS = "INCLUDE";
-
-    private Cache<String,Integer> paginationCountCache = new Cache2kBuilder<String, Integer>() {}
-        .expireAfterWrite( 1, TimeUnit.MINUTES )
-        .build();
 
     //--------------------------------------------------------------------------
     // Dependencies
@@ -238,13 +230,12 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
         }
 
         List<T> entities = getEntityList( metadata, options, filters, orders );
-
         Pager pager = metadata.getPager();
 
         if ( options.hasPaging() && pager == null )
         {
-            long count = paginationCountCache.computeIfAbsent( calculatePaginationCountKey(currentUser, filters, options), () -> count( metadata, options, filters, orders ) );
-            pager = new Pager( options.getPage(), count, options.getPageSize() );
+            pager = new Pager( options.getPage(), entities.size(), options.getPageSize() );
+            entities = PagerUtils.pageCollection( entities, pager );
         }
 
         postProcessResponseEntities( entities, options, rpParameters );
@@ -1175,13 +1166,6 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
         return entityList;
     }
 
-    private int count( WebMetadata metadata, WebOptions options, List<String> filters, List<Order> orders )
-    {
-        Query query = queryService.getQueryFromUrl( getEntityClass(), filters, orders, new Pagination(),
-            options.getRootJunction() );
-        return queryService.count( query );
-    }
-
     private List<T> getEntity( String uid )
     {
         return getEntity( uid, NO_WEB_OPTIONS );
@@ -1433,11 +1417,5 @@ public abstract class AbstractCrudController<T extends IdentifiableObject>
         }
 
         return entitySimpleName;
-    }
-
-    private String calculatePaginationCountKey( User currentUser, List<String> filters, WebOptions options )
-    {
-        return currentUser.getUsername() + "." + getEntityName() + "." + String.join( "|", filters ) + "."
-            + options.getRootJunction().name();
     }
 }

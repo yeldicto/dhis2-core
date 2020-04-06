@@ -28,17 +28,14 @@ package org.hisp.dhis.query;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.List;
-
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.fieldfilter.Defaults;
 import org.hisp.dhis.preheat.Preheat;
 import org.hisp.dhis.query.planner.QueryPlan;
 import org.hisp.dhis.query.planner.QueryPlanner;
 import org.springframework.stereotype.Component;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -99,13 +96,10 @@ public class DefaultQueryService
     @Override
     public int count( Query query )
     {
-        Query cloned = Query.from( query );
+        query.setFirstResult( 0 );
+        query.setMaxResults( Integer.MAX_VALUE );
 
-        cloned.clearOrders();
-        cloned.setFirstResult( 0 );
-        cloned.setMaxResults( Integer.MAX_VALUE );
-
-        return countObjects( cloned );
+        return queryObjects( query ).size();
     }
 
     @Override
@@ -137,24 +131,6 @@ public class DefaultQueryService
     //---------------------------------------------------------------------------------------------
     // Helper methods
     //---------------------------------------------------------------------------------------------
-
-    private int countObjects( Query query )
-    {
-        List<? extends IdentifiableObject> objects;
-        QueryPlan queryPlan = queryPlanner.planQuery( query );
-        Query pQuery = queryPlan.getPersistedQuery();
-        Query npQuery = queryPlan.getNonPersistedQuery();
-        if ( !npQuery.isEmpty() )
-        {
-            npQuery.setObjects( criteriaQueryEngine.query( pQuery ) );
-            objects = inMemoryQueryEngine.query( npQuery );
-            return objects.size();
-        }
-        else
-        {
-            return criteriaQueryEngine.count( pQuery );
-        }
-    }
 
     private List<? extends IdentifiableObject> queryObjects( Query query )
     {
