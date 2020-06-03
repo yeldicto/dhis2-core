@@ -39,7 +39,12 @@ import static org.hisp.dhis.organisationunit.OrganisationUnit.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import javafx.util.Pair;
 
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hisp.dhis.category.*;
 import org.hisp.dhis.common.*;
 import org.hisp.dhis.commons.collection.UniqueArrayList;
@@ -62,8 +67,6 @@ import org.hisp.dhis.user.User;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * @author Lars Helge Overland
@@ -108,9 +111,9 @@ public class DefaultDimensionService
         this.mergeService = mergeService;
     }
 
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     // DimensionService implementation
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
 
     @Override
     public List<DimensionalItemObject> getCanReadDimensionItems( String uid )
@@ -326,27 +329,27 @@ public class DefaultDimensionService
             ProgramDataElementDimensionItem programDataElement;
             ProgramTrackedEntityAttributeDimensionItem programAttribute;
 
-            if ( ( operand = getDataElementOperand( idScheme, id0, id1, id2 ) ) != null )
+            if ( (operand = getDataElementOperand( idScheme, id0, id1, id2 )) != null )
             {
                 return operand;
             }
-            else if ( ( reportingRate = getReportingRate( idScheme, id0, id1 ) ) != null )
+            else if ( (reportingRate = getReportingRate( idScheme, id0, id1 )) != null )
             {
                 return reportingRate;
             }
-            else if ( ( programDataElement = getProgramDataElementDimensionItem( idScheme, id0, id1 ) ) != null )
+            else if ( (programDataElement = getProgramDataElementDimensionItem( idScheme, id0, id1 )) != null )
             {
                 return programDataElement;
             }
-            else if ( ( programAttribute = getProgramAttributeDimensionItem( idScheme, id0, id1 ) ) != null )
+            else if ( (programAttribute = getProgramAttributeDimensionItem( idScheme, id0, id1 )) != null )
             {
                 return programAttribute;
             }
         }
         else if ( !idScheme.is( IdentifiableProperty.UID ) || CodeGenerator.isValidUid( dimensionItem ) )
         {
-            DimensionalItemObject itemObject = idObjectManager.
-                get( DataDimensionItem.DATA_DIMENSION_CLASSES, idScheme, dimensionItem );
+            DimensionalItemObject itemObject = idObjectManager.get( DataDimensionItem.DATA_DIMENSION_CLASSES, idScheme,
+                dimensionItem );
 
             if ( itemObject != null )
             {
@@ -372,40 +375,45 @@ public class DefaultDimensionService
     }
 
     @Override
-    public Map<DimensionalItemId, DimensionalItemObject> getDataDimensionalItemObjectMap( Set<DimensionalItemId> itemIds )
+    public Map<DimensionalItemId, DimensionalItemObject> getDataDimensionalItemObjectMap(
+        Set<DimensionalItemId> itemIds )
     {
-        SetMap<Class<? extends IdentifiableObject>, String> atomicIds = getAtomicIds( itemIds );
+        SetMap<Class<? extends IdentifiableObject>, Pair<String, Integer>> atomicIds = getAtomicIds( itemIds );
 
-        MapMap<Class<? extends IdentifiableObject>, String, IdentifiableObject> atomicObjects = getAtomicObjects( atomicIds );
+        MapMap<Class<? extends IdentifiableObject>, String, IdentifiableObject> atomicObjects = getAtomicObjects(
+            atomicIds );
 
         return getItemObjectMap( itemIds, atomicObjects );
     }
 
     @Override
-    public Map<DimensionalItemId, DimensionalItemObject> getNoAclDataDimensionalItemObjectMap( Set<DimensionalItemId> itemIds )
+    public Map<DimensionalItemId, DimensionalItemObject> getNoAclDataDimensionalItemObjectMap(
+        Set<DimensionalItemId> itemIds )
     {
-        SetMap<Class<? extends IdentifiableObject>, String> atomicIds = getAtomicIds( itemIds );
+        SetMap<Class<? extends IdentifiableObject>, Pair<String, Integer>> atomicIds = getAtomicIds( itemIds );
 
-        MapMap<Class<? extends IdentifiableObject>, String, IdentifiableObject> atomicObjects = getNoAclAtomicObjects( atomicIds );
+        MapMap<Class<? extends IdentifiableObject>, String, IdentifiableObject> atomicObjects = getNoAclAtomicObjects(
+            atomicIds );
 
         return getItemObjectMap( itemIds, atomicObjects );
     }
 
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
     // Supportive methods
-    //--------------------------------------------------------------------------
+    // --------------------------------------------------------------------------
 
     /**
-     * Breaks down a set of dimensional item ids into the atomic object ids
-     * stored in the database. Returns a map from each class of atomic objects
-     * to the set of ids for that object class.
+     * Breaks down a set of dimensional item ids into the atomic object ids stored
+     * in the database. Returns a map from each class of atomic objects to the set
+     * of ids for that object class.
      *
      * @param itemIds a set of dimension item object ids.
      * @return map from atomic object classes to sets of atomic ids.
      */
-    private SetMap<Class<? extends IdentifiableObject>, String> getAtomicIds( Set<DimensionalItemId> itemIds )
+    private SetMap<Class<? extends IdentifiableObject>, Pair<String, Integer>> getAtomicIds(
+        Set<DimensionalItemId> itemIds )
     {
-        SetMap<Class<? extends IdentifiableObject>, String> atomicIds = new SetMap<>();
+        SetMap<Class<? extends IdentifiableObject>, Pair<String, Integer>> atomicIds = new SetMap<>();
 
         for ( DimensionalItemId id : itemIds )
         {
@@ -416,47 +424,47 @@ public class DefaultDimensionService
 
             switch ( id.getDimensionItemType() )
             {
-                case DATA_ELEMENT:
-                    atomicIds.putValue( DataElement.class, id.getId0() );
-                    break;
+            case DATA_ELEMENT:
+                atomicIds.putValue( DataElement.class, new Pair( id.getId0(), 0 ) );
+                break;
 
-                case DATA_ELEMENT_OPERAND:
-                    atomicIds.putValue( DataElement.class, id.getId0() );
-                    if ( id.getId1() != null )
-                    {
-                        atomicIds.putValue( CategoryOptionCombo.class, id.getId1() );
-                    }
-                    if ( id.getId2() != null )
-                    {
-                        atomicIds.putValue( CategoryOptionCombo.class, id.getId2() );
-                    }
-                    break;
+            case DATA_ELEMENT_OPERAND:
+                atomicIds.putValue( DataElement.class, new Pair( id.getId0(), 0 ) );
+                if ( id.getId1() != null )
+                {
+                    atomicIds.putValue( CategoryOptionCombo.class, new Pair( id.getId1(), 0 ) );
+                }
+                if ( id.getId2() != null )
+                {
+                    atomicIds.putValue( CategoryOptionCombo.class, new Pair( id.getId2(), 0 ) );
+                }
+                break;
 
-                case INDICATOR:
-                    atomicIds.putValue( Indicator.class, id.getId0() );
-                    break;
+            case INDICATOR:
+                atomicIds.putValue( Indicator.class, new Pair( id.getId0(), id.getPeriodOffset() ) );
+                break;
 
-                case REPORTING_RATE:
-                    atomicIds.putValue( DataSet.class, id.getId0() );
-                    break;
+            case REPORTING_RATE:
+                atomicIds.putValue( DataSet.class, new Pair( id.getId0(), 0 ) );
+                break;
 
-                case PROGRAM_DATA_ELEMENT:
-                    atomicIds.putValue( Program.class, id.getId0() );
-                    atomicIds.putValue( DataElement.class, id.getId1() );
-                    break;
+            case PROGRAM_DATA_ELEMENT:
+                atomicIds.putValue( Program.class, new Pair( id.getId0(), 0 ) );
+                atomicIds.putValue( DataElement.class, new Pair( id.getId1(), 0 ) );
+                break;
 
-                case PROGRAM_ATTRIBUTE:
-                    atomicIds.putValue( Program.class, id.getId0() );
-                    atomicIds.putValue( TrackedEntityAttribute.class, id.getId1() );
-                    break;
+            case PROGRAM_ATTRIBUTE:
+                atomicIds.putValue( Program.class, new Pair( id.getId0(), 0 ) );
+                atomicIds.putValue( TrackedEntityAttribute.class, new Pair( id.getId1(), 0 ) );
+                break;
 
-                case PROGRAM_INDICATOR:
-                    atomicIds.putValue( ProgramIndicator.class, id.getId0() );
-                    break;
+            case PROGRAM_INDICATOR:
+                atomicIds.putValue( ProgramIndicator.class, new Pair( id.getId0(), 0 ) );
+                break;
 
-                default:
-                    log.warn( "Unrecognized DimensionItemType " + id.getDimensionItemType().name() + " in getAtomicIds" );
-                    break;
+            default:
+                log.warn( "Unrecognized DimensionItemType " + id.getDimensionItemType().name() + " in getAtomicIds" );
+                break;
             }
         }
 
@@ -469,20 +477,23 @@ public class DefaultDimensionService
      * performance (especially for validation rules which may need to look up
      * hundreds if not thousands of objects from a class.
      *
-     * @param atomicIds a map from each class of atomic objects to the set
-     *                  of ids for that identifiable object class.
-     * @return a map from each class of atomic objects to a map that associates
-     *         each id of that class with an atomic object.
+     * @param atomicIds a map from each class of atomic objects to the set of ids
+     *        for that identifiable object class.
+     * @return a map from each class of atomic objects to a map that associates each
+     *         id of that class with an atomic object.
      */
     private MapMap<Class<? extends IdentifiableObject>, String, IdentifiableObject> getAtomicObjects(
-        SetMap<Class<? extends IdentifiableObject>, String> atomicIds )
+        SetMap<Class<? extends IdentifiableObject>, Pair<String, Integer>> atomicIds )
     {
         MapMap<Class<? extends IdentifiableObject>, String, IdentifiableObject> atomicObjects = new MapMap<>();
 
-        for ( Map.Entry<Class<? extends IdentifiableObject>, Set<String>> e : atomicIds.entrySet() )
+        for ( Map.Entry<Class<? extends IdentifiableObject>, Set<Pair<String, Integer>>> e : atomicIds.entrySet() )
         {
+            // Here we should parametrized the query with the period offset
             atomicObjects.putEntries( e.getKey(),
-                idObjectManager.get( e.getKey(), e.getValue() ).stream()
+                idObjectManager
+                    .get( e.getKey(), e.getValue().stream().map( p -> p.getKey() ).collect( Collectors.toList() ) )
+                    .stream()
                     .collect( Collectors.toMap( IdentifiableObject::getUid, o -> o ) ) );
         }
 
@@ -490,14 +501,16 @@ public class DefaultDimensionService
     }
 
     private MapMap<Class<? extends IdentifiableObject>, String, IdentifiableObject> getNoAclAtomicObjects(
-        SetMap<Class<? extends IdentifiableObject>, String> atomicIds )
+        SetMap<Class<? extends IdentifiableObject>, Pair<String, Integer>> atomicIds )
     {
         MapMap<Class<? extends IdentifiableObject>, String, IdentifiableObject> atomicObjects = new MapMap<>();
 
-        for ( Map.Entry<Class<? extends IdentifiableObject>, Set<String>> e : atomicIds.entrySet() )
+        for ( Map.Entry<Class<? extends IdentifiableObject>, Set<Pair<String, Integer>>> e : atomicIds.entrySet() )
         {
             atomicObjects.putEntries( e.getKey(),
-                idObjectManager.getNoAcl( e.getKey(), e.getValue() ).stream()
+                idObjectManager
+                    .getNoAcl( e.getKey(), e.getValue().stream().map( p -> p.getKey() ).collect( Collectors.toList() ) )
+                    .stream()
                     .collect( Collectors.toMap( IdentifiableObject::getUid, o -> o ) ) );
         }
 
@@ -509,9 +522,10 @@ public class DefaultDimensionService
      *
      * @param itemIds a set of ids of the dimension item objects to get.
      * @param atomicObjects a map from each class of atomic objects to a map that
-     *                      associates each id of that class with an atomic object.
+     *        associates each id of that class with an atomic object.
      * @return a map from the item ids to the dimension item objects.
      */
+    @SneakyThrows
     private Map<DimensionalItemId, DimensionalItemObject> getItemObjectMap( Set<DimensionalItemId> itemIds,
         MapMap<Class<? extends IdentifiableObject>, String, IdentifiableObject> atomicObjects )
     {
@@ -526,75 +540,86 @@ public class DefaultDimensionService
 
             switch ( id.getDimensionItemType() )
             {
-                case DATA_ELEMENT:
-                    DataElement dataElement = (DataElement) atomicObjects.getValue( DataElement.class, id.getId0() );
-                    if ( dataElement != null )
-                    {
-                        itemObjectMap.put( id, dataElement );
-                    }
-                    break;
+            case DATA_ELEMENT:
+                DataElement dataElement = (DataElement) atomicObjects.getValue( DataElement.class, id.getId0() );
+                if ( dataElement != null )
+                {
+                    itemObjectMap.put( id, dataElement );
+                }
+                break;
 
-                case INDICATOR:
-                    Indicator indicator = (Indicator) atomicObjects.getValue( Indicator.class, id.getId0() );
-                    if ( indicator != null )
-                    {
-                        itemObjectMap.put( id, indicator );
-                    }
-                    break;
+            case INDICATOR:
+                // In the atomic object should be present the period offset used in the query
+                Indicator indicator = (Indicator) atomicObjects.getValue( Indicator.class, id.getId0() );
+                FieldUtils.writeField( indicator, "periodOffset", 1, true );
+                if ( indicator != null )
+                {
+                    itemObjectMap.put( id, indicator );
+                }
+                break;
 
-                case DATA_ELEMENT_OPERAND:
-                    dataElement = (DataElement) atomicObjects.getValue( DataElement.class, id.getId0() );
-                    CategoryOptionCombo categoryOptionCombo = id.getId1() == null ? null : (CategoryOptionCombo) atomicObjects.getValue( CategoryOptionCombo.class, id.getId1() );
-                    CategoryOptionCombo attributeOptionCombo = id.getId2() == null ? null : (CategoryOptionCombo) atomicObjects.getValue( CategoryOptionCombo.class, id.getId2() );
-                    if ( dataElement != null &&
-                        ( id.getId1() != null ) == ( categoryOptionCombo != null ) &&
-                        ( id.getId2() != null ) == ( attributeOptionCombo != null ) )
-                    {
-                        DataElementOperand dataElementOperand = new DataElementOperand( dataElement, categoryOptionCombo, attributeOptionCombo );
-                        itemObjectMap.put( id, dataElementOperand );
-                    }
-                    break;
+            case DATA_ELEMENT_OPERAND:
+                dataElement = (DataElement) atomicObjects.getValue( DataElement.class, id.getId0() );
+                CategoryOptionCombo categoryOptionCombo = id.getId1() == null ? null
+                    : (CategoryOptionCombo) atomicObjects.getValue( CategoryOptionCombo.class, id.getId1() );
+                CategoryOptionCombo attributeOptionCombo = id.getId2() == null ? null
+                    : (CategoryOptionCombo) atomicObjects.getValue( CategoryOptionCombo.class, id.getId2() );
+                if ( dataElement != null &&
+                    (id.getId1() != null) == (categoryOptionCombo != null) &&
+                    (id.getId2() != null) == (attributeOptionCombo != null) )
+                {
+                    DataElementOperand dataElementOperand = new DataElementOperand( dataElement, categoryOptionCombo,
+                        attributeOptionCombo );
+                    itemObjectMap.put( id, dataElementOperand );
+                }
+                break;
 
-                case REPORTING_RATE:
-                    DataSet dataSet = (DataSet) atomicObjects.getValue( DataSet.class, id.getId0() );
-                    if ( dataSet != null )
-                    {
-                        ReportingRate reportingRate = new ReportingRate( dataSet, ReportingRateMetric.valueOf( id.getId1() ) );
-                        itemObjectMap.put( id, reportingRate );
-                    }
-                    break;
+            case REPORTING_RATE:
+                DataSet dataSet = (DataSet) atomicObjects.getValue( DataSet.class, id.getId0() );
+                if ( dataSet != null )
+                {
+                    ReportingRate reportingRate = new ReportingRate( dataSet,
+                        ReportingRateMetric.valueOf( id.getId1() ) );
+                    itemObjectMap.put( id, reportingRate );
+                }
+                break;
 
-                case PROGRAM_DATA_ELEMENT:
-                    Program program = (Program) atomicObjects.getValue( Program.class, id.getId0() );
-                    dataElement = (DataElement) atomicObjects.getValue( DataElement.class, id.getId1() );
-                    if ( program != null && dataElement != null )
-                    {
-                        ProgramDataElementDimensionItem programDataElementDimensionItem = new ProgramDataElementDimensionItem( program, dataElement );
-                        itemObjectMap.put( id, programDataElementDimensionItem );
-                    }
-                    break;
+            case PROGRAM_DATA_ELEMENT:
+                Program program = (Program) atomicObjects.getValue( Program.class, id.getId0() );
+                dataElement = (DataElement) atomicObjects.getValue( DataElement.class, id.getId1() );
+                if ( program != null && dataElement != null )
+                {
+                    ProgramDataElementDimensionItem programDataElementDimensionItem = new ProgramDataElementDimensionItem(
+                        program, dataElement );
+                    itemObjectMap.put( id, programDataElementDimensionItem );
+                }
+                break;
 
-                case PROGRAM_ATTRIBUTE:
-                    program = (Program) atomicObjects.getValue( Program.class, id.getId0() );
-                    TrackedEntityAttribute attribute = (TrackedEntityAttribute) atomicObjects.getValue( TrackedEntityAttribute.class, id.getId1() );
-                    if ( program != null && attribute != null )
-                    {
-                        ProgramTrackedEntityAttributeDimensionItem programTrackedEntityAttributeDimensionItem = new ProgramTrackedEntityAttributeDimensionItem( program, attribute );
-                        itemObjectMap.put( id, programTrackedEntityAttributeDimensionItem );
-                    }
-                    break;
+            case PROGRAM_ATTRIBUTE:
+                program = (Program) atomicObjects.getValue( Program.class, id.getId0() );
+                TrackedEntityAttribute attribute = (TrackedEntityAttribute) atomicObjects
+                    .getValue( TrackedEntityAttribute.class, id.getId1() );
+                if ( program != null && attribute != null )
+                {
+                    ProgramTrackedEntityAttributeDimensionItem programTrackedEntityAttributeDimensionItem = new ProgramTrackedEntityAttributeDimensionItem(
+                        program, attribute );
+                    itemObjectMap.put( id, programTrackedEntityAttributeDimensionItem );
+                }
+                break;
 
-                case PROGRAM_INDICATOR:
-                    ProgramIndicator programIndicator = (ProgramIndicator) atomicObjects.getValue( ProgramIndicator.class, id.getId0() );
-                    if ( programIndicator != null )
-                    {
-                        itemObjectMap.put( id, programIndicator );
-                    }
-                    break;
+            case PROGRAM_INDICATOR:
+                ProgramIndicator programIndicator = (ProgramIndicator) atomicObjects.getValue( ProgramIndicator.class,
+                    id.getId0() );
+                if ( programIndicator != null )
+                {
+                    itemObjectMap.put( id, programIndicator );
+                }
+                break;
 
-                default:
-                    log.warn( "Unrecognized DimensionItemType " + id.getDimensionItemType().name() + " in getItemObjectMap" );
-                    break;
+            default:
+                log.warn(
+                    "Unrecognized DimensionItemType " + id.getDimensionItemType().name() + " in getItemObjectMap" );
+                break;
             }
         }
 
@@ -603,18 +628,21 @@ public class DefaultDimensionService
 
     /**
      * Returns a {@link DataElementOperand}. For identifier wild cards
-     * {@link ExpressionService#SYMBOL_WILDCARD}, the relevant property
-     * will be null.
+     * {@link ExpressionService#SYMBOL_WILDCARD}, the relevant property will be
+     * null.
      *
-     * @param idScheme              the identifier scheme.
-     * @param dataElementId         the data element identifier.
+     * @param idScheme the identifier scheme.
+     * @param dataElementId the data element identifier.
      * @param categoryOptionComboId the category option combo identifier.
      */
-    private DataElementOperand getDataElementOperand( IdScheme idScheme, String dataElementId, String categoryOptionComboId, String attributeOptionComboId )
+    private DataElementOperand getDataElementOperand( IdScheme idScheme, String dataElementId,
+        String categoryOptionComboId, String attributeOptionComboId )
     {
         DataElement dataElement = idObjectManager.getObject( DataElement.class, idScheme, dataElementId );
-        CategoryOptionCombo categoryOptionCombo = idObjectManager.getObject( CategoryOptionCombo.class, idScheme, categoryOptionComboId );
-        CategoryOptionCombo attributeOptionCombo = idObjectManager.getObject( CategoryOptionCombo.class, idScheme, attributeOptionComboId );
+        CategoryOptionCombo categoryOptionCombo = idObjectManager.getObject( CategoryOptionCombo.class, idScheme,
+            categoryOptionComboId );
+        CategoryOptionCombo attributeOptionCombo = idObjectManager.getObject( CategoryOptionCombo.class, idScheme,
+            attributeOptionComboId );
 
         if ( dataElement == null || (categoryOptionCombo == null && !SYMBOL_WILDCARD.equals( categoryOptionComboId )) )
         {
@@ -627,9 +655,9 @@ public class DefaultDimensionService
     /**
      * Returns a {@link ReportingRate}.
      *
-     * @param idScheme  the identifier scheme.
+     * @param idScheme the identifier scheme.
      * @param dataSetId the data set identifier.
-     * @param metric    the reporting rate metric.
+     * @param metric the reporting rate metric.
      */
     private ReportingRate getReportingRate( IdScheme idScheme, String dataSetId, String metric )
     {
@@ -647,14 +675,16 @@ public class DefaultDimensionService
     /**
      * Returns a {@link ProgramTrackedEntityAttributeDimensionItem}.
      *
-     * @param idScheme    the identifier scheme.
-     * @param programId   the program identifier.
+     * @param idScheme the identifier scheme.
+     * @param programId the program identifier.
      * @param attributeId the attribute identifier.
      */
-    private ProgramTrackedEntityAttributeDimensionItem getProgramAttributeDimensionItem( IdScheme idScheme, String programId, String attributeId )
+    private ProgramTrackedEntityAttributeDimensionItem getProgramAttributeDimensionItem( IdScheme idScheme,
+        String programId, String attributeId )
     {
         Program program = idObjectManager.getObject( Program.class, idScheme, programId );
-        TrackedEntityAttribute attribute = idObjectManager.getObject( TrackedEntityAttribute.class, idScheme, attributeId );
+        TrackedEntityAttribute attribute = idObjectManager.getObject( TrackedEntityAttribute.class, idScheme,
+            attributeId );
 
         if ( program == null || attribute == null )
         {
@@ -667,11 +697,12 @@ public class DefaultDimensionService
     /**
      * Returns a {@link ProgramDataElementDimensionItem}.
      *
-     * @param idScheme      the identifier scheme.
-     * @param programId     the program identifier.
+     * @param idScheme the identifier scheme.
+     * @param programId the program identifier.
      * @param dataElementId the data element identifier.
      */
-    private ProgramDataElementDimensionItem getProgramDataElementDimensionItem( IdScheme idScheme, String programId, String dataElementId )
+    private ProgramDataElementDimensionItem getProgramDataElementDimensionItem( IdScheme idScheme, String programId,
+        String dataElementId )
     {
         Program program = idObjectManager.getObject( Program.class, idScheme, programId );
         DataElement dataElement = idObjectManager.getObject( DataElement.class, idScheme, dataElementId );
@@ -693,7 +724,7 @@ public class DefaultDimensionService
      * represented by the user organisation unit persisted properties on the
      * BaseAnalyticalObject.
      *
-     * @param object     the BaseAnalyticalObject to merge.
+     * @param object the BaseAnalyticalObject to merge.
      * @param dimensions the list of dimensions.
      */
     private void mergeDimensionalObjects( BaseAnalyticalObject object, List<DimensionalObject> dimensions )
@@ -774,7 +805,8 @@ public class DefaultDimensionService
                         {
                             String level = DimensionalObjectUtils.getValueFromKeywordParam( ou );
 
-                            Integer orgUnitLevel = organisationUnitService.getOrganisationUnitLevelByLevelOrUid( level );
+                            Integer orgUnitLevel = organisationUnitService
+                                .getOrganisationUnitLevelByLevelOrUid( level );
 
                             if ( orgUnitLevel != null )
                             {
@@ -807,15 +839,18 @@ public class DefaultDimensionService
                 {
                     DataElementGroupSetDimension groupSetDimension = new DataElementGroupSetDimension();
                     groupSetDimension.setDimension( idObjectManager.get( DataElementGroupSet.class, dimensionId ) );
-                    groupSetDimension.getItems().addAll( idObjectManager.getByUidOrdered( DataElementGroup.class, uids ) );
+                    groupSetDimension.getItems()
+                        .addAll( idObjectManager.getByUidOrdered( DataElementGroup.class, uids ) );
 
                     object.getDataElementGroupSetDimensions().add( groupSetDimension );
                 }
                 else if ( ORGANISATION_UNIT_GROUP_SET.equals( type ) )
                 {
                     OrganisationUnitGroupSetDimension groupSetDimension = new OrganisationUnitGroupSetDimension();
-                    groupSetDimension.setDimension( idObjectManager.get( OrganisationUnitGroupSet.class, dimensionId ) );
-                    groupSetDimension.getItems().addAll( idObjectManager.getByUidOrdered( OrganisationUnitGroup.class, uids ) );
+                    groupSetDimension
+                        .setDimension( idObjectManager.get( OrganisationUnitGroupSet.class, dimensionId ) );
+                    groupSetDimension.getItems()
+                        .addAll( idObjectManager.getByUidOrdered( OrganisationUnitGroup.class, uids ) );
 
                     object.getOrganisationUnitGroupSetDimensions().add( groupSetDimension );
                 }
@@ -823,7 +858,8 @@ public class DefaultDimensionService
                 {
                     CategoryDimension categoryDimension = new CategoryDimension();
                     categoryDimension.setDimension( idObjectManager.get( Category.class, dimensionId ) );
-                    categoryDimension.getItems().addAll( idObjectManager.getByUidOrdered( CategoryOption.class, uids ) );
+                    categoryDimension.getItems()
+                        .addAll( idObjectManager.getByUidOrdered( CategoryOption.class, uids ) );
 
                     object.getCategoryDimensions().add( categoryDimension );
                 }
@@ -831,7 +867,8 @@ public class DefaultDimensionService
                 {
                     CategoryOptionGroupSetDimension groupSetDimension = new CategoryOptionGroupSetDimension();
                     groupSetDimension.setDimension( idObjectManager.get( CategoryOptionGroupSet.class, dimensionId ) );
-                    groupSetDimension.getItems().addAll( idObjectManager.getByUidOrdered( CategoryOptionGroup.class, uids ) );
+                    groupSetDimension.getItems()
+                        .addAll( idObjectManager.getByUidOrdered( CategoryOptionGroup.class, uids ) );
 
                     object.getCategoryOptionGroupSetDimensions().add( groupSetDimension );
                 }
@@ -839,8 +876,9 @@ public class DefaultDimensionService
                 {
                     TrackedEntityAttributeDimension attributeDimension = new TrackedEntityAttributeDimension();
                     attributeDimension.setAttribute( idObjectManager.get( TrackedEntityAttribute.class, dimensionId ) );
-                    attributeDimension.setLegendSet( dimension.hasLegendSet() ?
-                        idObjectManager.get( LegendSet.class, dimension.getLegendSet().getUid() ) : null );
+                    attributeDimension.setLegendSet( dimension.hasLegendSet()
+                        ? idObjectManager.get( LegendSet.class, dimension.getLegendSet().getUid() )
+                        : null );
                     attributeDimension.setFilter( dimension.getFilter() );
 
                     object.getAttributeDimensions().add( attributeDimension );
@@ -849,10 +887,12 @@ public class DefaultDimensionService
                 {
                     TrackedEntityDataElementDimension dataElementDimension = new TrackedEntityDataElementDimension();
                     dataElementDimension.setDataElement( idObjectManager.get( DataElement.class, dimensionId ) );
-                    dataElementDimension.setLegendSet( dimension.hasLegendSet() ?
-                        idObjectManager.get( LegendSet.class, dimension.getLegendSet().getUid() ) : null );
-                    dataElementDimension.setProgramStage( dimension.hasProgramStage() ?
-                        idObjectManager.get( ProgramStage.class, dimension.getProgramStage().getUid() ) : null );
+                    dataElementDimension.setLegendSet( dimension.hasLegendSet()
+                        ? idObjectManager.get( LegendSet.class, dimension.getLegendSet().getUid() )
+                        : null );
+                    dataElementDimension.setProgramStage( dimension.hasProgramStage()
+                        ? idObjectManager.get( ProgramStage.class, dimension.getProgramStage().getUid() )
+                        : null );
                     dataElementDimension.setFilter( dimension.getFilter() );
 
                     object.getDataElementDimensions().add( dataElementDimension );
@@ -860,9 +900,11 @@ public class DefaultDimensionService
                 else if ( PROGRAM_INDICATOR.equals( type ) )
                 {
                     TrackedEntityProgramIndicatorDimension programIndicatorDimension = new TrackedEntityProgramIndicatorDimension();
-                    programIndicatorDimension.setProgramIndicator( idObjectManager.get( ProgramIndicator.class, dimensionId ) );
-                    programIndicatorDimension.setLegendSet( dimension.hasLegendSet() ?
-                        idObjectManager.get( LegendSet.class, dimension.getLegendSet().getUid() ) : null );
+                    programIndicatorDimension
+                        .setProgramIndicator( idObjectManager.get( ProgramIndicator.class, dimensionId ) );
+                    programIndicatorDimension.setLegendSet( dimension.hasLegendSet()
+                        ? idObjectManager.get( LegendSet.class, dimension.getLegendSet().getUid() )
+                        : null );
                     programIndicatorDimension.setFilter( dimension.getFilter() );
 
                     object.getProgramIndicatorDimensions().add( programIndicatorDimension );

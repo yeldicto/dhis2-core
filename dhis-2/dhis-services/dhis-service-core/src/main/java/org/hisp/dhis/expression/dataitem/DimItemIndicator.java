@@ -44,7 +44,7 @@ public class DimItemIndicator
     @Override
     public DimensionalItemId getDimensionalItemId( ExprContext ctx )
     {
-        return new DimensionalItemId( INDICATOR, ctx.uid0.getText() );
+        return new DimensionalItemId( INDICATOR, ctx.uid0.getText(), 1 );
     }
 
     @Override
