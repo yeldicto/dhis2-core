@@ -230,7 +230,7 @@ public class DefaultQueryPlanner
      * with one filter for each period type. Sets the dimension names and filter
      * names respectively.
      *
-     * @param the {@link DataQueryParams}.
+     * @param params the {@link DataQueryParams} object.
      * @return a list of {@link DataQueryParams}.
      */
     @Override
@@ -244,7 +244,7 @@ public class DefaultQueryPlanner
         }
         else if ( !params.getPeriods().isEmpty() )
         {
-            ListMap<String, DimensionalItemObject> periodTypePeriodMap = PartitionUtils.getPeriodTypePeriodMap( params.getPeriods() );
+            ListMap<String, DimensionalItemObject> periodTypePeriodMap = PartitionUtils.getPeriodTypePeriodMap( params );
 
             for ( String periodType : periodTypePeriodMap.keySet() )
             {
