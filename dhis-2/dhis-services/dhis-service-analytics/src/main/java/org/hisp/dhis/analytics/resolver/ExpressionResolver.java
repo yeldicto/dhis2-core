@@ -28,6 +28,10 @@ package org.hisp.dhis.analytics.resolver;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.List;
+
+import org.hisp.dhis.indicator.Indicator;
+
 /**
  * A component that can analyze analytics expressions so that each expression
  * can be resolved to its final "shape".
@@ -36,5 +40,7 @@ package org.hisp.dhis.analytics.resolver;
  */
 public interface ExpressionResolver
 {
+    List<Indicator> resolveIndicatorExpressions( List<Indicator> indicators );
+
     String resolve( String expression );
 }
