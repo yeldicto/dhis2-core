@@ -93,6 +93,14 @@ public abstract class AbstractImportValidationTest
     {
         for ( TrackerErrorReport errorReport : report.getErrorReports() )
         {
+            log.info( errorReport.toString() );
+        }
+    }
+
+    protected void printReportErrorLevel( TrackerValidationReport report )
+    {
+        for ( TrackerErrorReport errorReport : report.getErrorReports() )
+        {
             log.error( errorReport.toString() );
         }
     }

@@ -39,6 +39,8 @@ import org.hisp.dhis.tracker.bundle.TrackerBundleService;
 import org.hisp.dhis.tracker.report.TrackerBundleReport;
 import org.hisp.dhis.tracker.report.TrackerValidationReport;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Convenience class for creating a tracker bundle and calling validation and commit.
  *
@@ -78,6 +80,10 @@ public class ValidateAndCommitTestUnit
         trackerBundleParams.setImportStrategy( trackerImportStrategy );
 
         trackerBundle = trackerBundleService.create( trackerBundleParams ).get( 0 );
+
+        assertEquals( trackerBundleParams.getEvents().size(), trackerBundle.getEvents().size() );
+        assertEquals( trackerBundleParams.getEnrollments().size(), trackerBundle.getEnrollments().size() );
+        assertEquals( trackerBundleParams.getTrackedEntities().size(), trackerBundle.getTrackedEntities().size() );
 
         validationReport = trackerValidationService.validate( trackerBundle );
 
