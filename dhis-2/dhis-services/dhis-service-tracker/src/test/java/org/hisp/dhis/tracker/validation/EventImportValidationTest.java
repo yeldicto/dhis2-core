@@ -847,11 +847,6 @@ public class EventImportValidationTest
         // Print errors to log, they should normally not occur...
         printReportErrorLevel( report );
 
-        if ( createAndUpdate.getTrackerBundle().getEvents().size() == 0 )
-        {
-            log.error( "Bundle has zero events, this is an error!" );
-        }
-
         assertEquals( 0, report.getErrorReports().size() );
 
         assertEquals( 1, createAndUpdate.getTrackerBundle().getEvents().size() );
