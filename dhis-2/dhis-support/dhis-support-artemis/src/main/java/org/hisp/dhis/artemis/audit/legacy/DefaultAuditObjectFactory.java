@@ -32,6 +32,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.hisp.dhis.audit.AuditAttribute;
 import org.hisp.dhis.audit.AuditAttributes;
@@ -71,12 +72,13 @@ public class DefaultAuditObjectFactory implements AuditObjectFactory
      */
     private final Map<String, Map<Field, Method>> cachedAuditAttributeFields = new ConcurrentHashMap<>();
 
-    public DefaultAuditObjectFactory( @Qualifier("jsonMapper") ObjectMapper objectMapper )
+    public DefaultAuditObjectFactory( @Qualifier("jsonMapper") ObjectMapper objectMapper, SessionFactory sessionFactory )
     {
         this.objectMapper = objectMapper;
 
-        // TODO consider moving this to CommonsConfig
-        objectMapper.registerModule( new Hibernate5Module() );
+        Hibernate5Module hibernate5Module = new Hibernate5Module( sessionFactory );
+        hibernate5Module.enable( Hibernate5Module.Feature.FORCE_LAZY_LOADING );
+        this.objectMapper.registerModule( hibernate5Module );
     }
 
     @Override
