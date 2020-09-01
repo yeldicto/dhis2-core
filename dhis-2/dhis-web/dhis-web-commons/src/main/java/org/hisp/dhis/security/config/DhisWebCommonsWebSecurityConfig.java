@@ -54,6 +54,7 @@ import org.springframework.mobile.device.LiteDeviceResolver;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.vote.AuthenticatedVoter;
 import org.springframework.security.access.vote.UnanimousBased;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -67,6 +68,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.hisp.dhis.webapi.security.config.DhisWebApiWebSecurityConfig.setHttpHeaders;
 
 /**
  * @author Morten Svanæs <msvanaes@dhis2.org>
@@ -111,8 +114,12 @@ public class DhisWebCommonsWebSecurityConfig
     @Order( 2200 )
     public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter
     {
+
         @Autowired
         private DhisConfigurationProvider configurationProvider;
+
+        @Autowired
+        private ExternalAccessVoter externalAccessVoter;
 
         @Override
         public void configure( WebSecurity web )
@@ -126,8 +133,6 @@ public class DhisWebCommonsWebSecurityConfig
                 .antMatchers( "/dhis-web-commons/flags/**" )
                 .antMatchers( "/dhis-web-commons/fonts/**" )
                 .antMatchers( "/dhis-web-commons/i18nJavaScript.action" )
-                .antMatchers( "/dhis-web-commons/security/**" )
-
                 .antMatchers( "/api/files/style/external" )
                 .antMatchers( "/external-static/**" )
                 .antMatchers( "/favicon.ico" );
@@ -198,6 +203,8 @@ public class DhisWebCommonsWebSecurityConfig
 
                 .addFilterBefore( CorsFilter.get(), BasicAuthenticationFilter.class )
                 .addFilterBefore( CustomAuthenticationFilter.get(), UsernamePasswordAuthenticationFilter.class );
+
+            setHttpHeaders( http );
         }
 
         @Bean
@@ -309,17 +316,24 @@ public class DhisWebCommonsWebSecurityConfig
             return voter;
         }
 
-        @Bean
+        @Bean( "accessDecisionManager" )
         public LogicalOrAccessDecisionManager accessDecisionManager()
         {
             List<AccessDecisionManager> decisionVoters = Arrays.asList(
                 new UnanimousBased( ImmutableList.of( new SimpleAccessVoter( "ALL" ) ) ),
                 new UnanimousBased( ImmutableList.of( actionAccessVoter(), moduleAccessVoter() ) ),
                 new UnanimousBased( ImmutableList.of( webExpressionVoter() ) ),
-                new UnanimousBased( ImmutableList.of( ExternalAccessVoter.get() ) ),
+                new UnanimousBased( ImmutableList.of( externalAccessVoter ) ),
                 new UnanimousBased( ImmutableList.of( new AuthenticatedVoter() ) )
             );
             return new LogicalOrAccessDecisionManager( decisionVoters );
+        }
+
+        @Bean( "formLoginAuthenticationManager" )
+        public AuthenticationManager formLoginAuthenticationManager()
+            throws Exception
+        {
+            return authenticationManager();
         }
     }
 }

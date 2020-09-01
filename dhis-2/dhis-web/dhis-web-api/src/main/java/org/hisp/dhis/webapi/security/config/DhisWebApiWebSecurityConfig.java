@@ -29,6 +29,9 @@ package org.hisp.dhis.webapi.security.config;
  */
 
 import org.hisp.dhis.security.oauth2.DefaultClientDetailsService;
+import org.hisp.dhis.security.oidc.DhisClientRegistrationRepository;
+import org.hisp.dhis.security.oidc.DhisOAuth2AuthorizationRequestResolver;
+import org.hisp.dhis.security.oidc.OidcDisabledCondition;
 import org.hisp.dhis.webapi.filter.CorsFilter;
 import org.hisp.dhis.webapi.filter.CustomAuthenticationFilter;
 import org.hisp.dhis.webapi.oprovider.DhisOauthAuthenticationProvider;
@@ -36,6 +39,7 @@ import org.hisp.dhis.webapi.security.DHIS2BasicAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
@@ -72,6 +76,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.sql.DataSource;
+import java.util.Set;
 
 /**
  * @author Morten Svanæs <msvanaes@dhis2.org>
@@ -126,6 +131,8 @@ public class DhisWebApiWebSecurityConfig
                 .sessionManagement().sessionCreationPolicy( SessionCreationPolicy.NEVER );
 
             http.apply( new AuthorizationServerAuthenticationManagerConfigurer() );
+
+            setHttpHeaders( http );
         }
 
         private class AuthorizationServerAuthenticationManagerConfigurer
@@ -172,6 +179,52 @@ public class DhisWebApiWebSecurityConfig
                 .authorizationCodeServices( jdbcAuthorizationCodeServices() )
                 .tokenStore( tokenStore() )
                 .authenticationManager( authenticationManager() );
+        }
+    }
+
+    /**
+     * This class is configuring the OIDC endpoints
+     */
+    @Configuration
+    @Order( 1010 )
+    @Conditional( value = OidcDisabledCondition.class )
+    public class OidcSecurityConfig extends WebSecurityConfigurerAdapter
+    {
+        @Autowired
+        public DhisClientRegistrationRepository dhisClientRegistrationRepository;
+
+        @Autowired
+        public DhisOAuth2AuthorizationRequestResolver dhisOAuth2AuthorizationRequestResolver;
+
+        @Override
+        protected void configure( HttpSecurity http )
+            throws Exception
+        {
+            Set<String> providerIds = dhisClientRegistrationRepository.getAllRegistrationId();
+
+            http
+                .antMatcher( "/oauth2/**" )
+                .authorizeRequests( authorize -> {
+                        for ( String providerId : providerIds )
+                        {
+                            authorize
+                                .antMatchers( "/oauth2/authorization/" + providerId ).permitAll()
+                                .antMatchers( "/oauth2/code/" + providerId ).permitAll();
+                        }
+                        authorize.anyRequest().authenticated();
+                    }
+                )
+
+                .oauth2Login( oauth2 -> oauth2
+                    .clientRegistrationRepository( dhisClientRegistrationRepository )
+                    .loginProcessingUrl( "/oauth2/code/*" )
+                    .authorizationEndpoint()
+                    .authorizationRequestResolver( dhisOAuth2AuthorizationRequestResolver )
+                )
+
+                .csrf().disable();
+
+            setHttpHeaders( http );
         }
     }
 
@@ -268,6 +321,8 @@ public class DhisWebApiWebSecurityConfig
                 .exceptionHandling()
                 .accessDeniedHandler( accessDeniedHandler )
                 .authenticationEntryPoint( authenticationEntryPoint );
+
+            setHttpHeaders( http );
         }
 
         @Bean
@@ -275,5 +330,20 @@ public class DhisWebApiWebSecurityConfig
         {
             return new DHIS2BasicAuthenticationEntryPoint();
         }
+    }
+
+    public static void setHttpHeaders( HttpSecurity http )
+        throws Exception
+    {
+        http
+            .headers()
+            .defaultsDisabled()
+            .contentTypeOptions()
+            .and()
+            .xssProtection()
+            .and()
+            .httpStrictTransportSecurity()
+            .and()
+            .frameOptions().sameOrigin();
     }
 }

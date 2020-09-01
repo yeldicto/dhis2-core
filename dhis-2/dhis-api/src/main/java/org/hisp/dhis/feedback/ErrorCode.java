@@ -108,6 +108,7 @@ public enum ErrorCode
     E4027( "Value `{0}` is not a valid for property `{1}`" ),
     E4028( "Option set `{0}` already contains option `{1}`" ),
     E4029( "Job parameters cannot be null for job type: {0}" ),
+    E4030( "Object could not be deleted because it is associated with another object: {0}" ),
 
     /* SQL views */
     E4300( "SQL query is null" ),
@@ -205,8 +206,8 @@ public enum ErrorCode
     E7216( "Query item must be aggregateable when used in aggregate query: `{0}`" ),
     E7217( "User is not allowed to view event analytics data: `{0}`" ),
     E7218( "Spatial database support is not enabled" ),
-    E7219( "Data element must be of value type coordinate in order to be used as coordinate field: `{0}`" ),
-    E7220( "Attribute must be of value type coordinate to in order to be used as coordinate field: `{0}`" ),
+    E7219( "Data element must be of value type coordinate or org unit in order to be used as coordinate field: `{0}`" ),
+    E7220( "Attribute must be of value type coordinate or org unit in order to be used as coordinate field: `{0}`" ),
     E7221( "Coordinate field is invalid: `{0}`" ),
     E7222( "Query item or filter is invalid: `{0}`" ),
     E7223( "Value does not refer to a data element or attribute which are numeric and part of the program: `{0}`" ),

@@ -58,4 +58,11 @@ public interface TrackerBundleService
      * @param bundle TrackerBundle to commit.
      */
     TrackerBundleReport commit( TrackerBundle bundle );
+
+    /**
+     * Deletes objects in the bundle from persistence store if bundle mode DELETE is enabled.
+     *
+     * @param bundle TrackerBundle to delete.
+     */
+    TrackerBundleReport delete( TrackerBundle bundle );
 }
