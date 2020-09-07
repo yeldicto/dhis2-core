@@ -59,8 +59,8 @@ public class TrackerImportThread
         Assert.notNull( trackerImportParams, "Field trackerImportParams can not be null. " );
 
         trackerImportParams.setUser( null ); // set user to null to force reload in importer
-        trackerImportService
-            .importTracker( trackerImportParams ); // discard returned report, it has been put on the jobs endpoint
+        // trackerImportService
+           // .importTracker( trackerImportParams ); // discard returned report, it has been put on the jobs endpoint
     }
 
     public void setTrackerImportParams( TrackerImportParams trackerImportParams )

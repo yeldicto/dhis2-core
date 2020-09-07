@@ -33,10 +33,12 @@ import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.scheduling.JobType;
 import org.hisp.dhis.system.notification.Notification;
 import org.hisp.dhis.system.notification.Notifier;
-import org.hisp.dhis.tracker.TrackerImportParams;
+import org.hisp.dhis.tracker.TrackerImportOptions;
 import org.hisp.dhis.tracker.TrackerImportService;
 import org.hisp.dhis.tracker.bundle.TrackerBundle;
 import org.hisp.dhis.tracker.bundle.TrackerBundleParams;
+import org.hisp.dhis.tracker.domain.Enrollment;
+import org.hisp.dhis.tracker.domain.TrackerDataBundle;
 import org.hisp.dhis.tracker.job.TrackerJobWebMessageResponse;
 import org.hisp.dhis.tracker.job.TrackerMessageManager;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
@@ -95,10 +97,30 @@ public class TrackerController
     }
 
     @PostMapping( value = "", consumes = MediaType.APPLICATION_JSON_VALUE )
-    @PreAuthorize( "hasRole('ALL') or hasRole('F_TRACKER_IMPORTER_EXPERIMENTAL')" )
-    public void postJsonTracker( HttpServletRequest request, HttpServletResponse response, User currentUser )
-        throws IOException
+    public void postJsonTracker( HttpServletRequest request, HttpServletResponse response )
     {
+        TrackerDataBundle trackerDataBundle;
+        TrackerImportOptions trackerImportOptions;
+
+        try
+        {
+            trackerDataBundle = renderService.fromJson( request.getInputStream(), TrackerDataBundle.class );
+        }
+        catch ( IOException e )
+        {
+            throw new HttpClientErrorException( HttpStatus.CONFLICT, "Submitted payload is not supported: " + e.getMessage() );
+        }
+
+        trackerImportOptions = trackerImportService.getParamsFromMap( contextService.getParameterValuesMap() );
+
+        // Start import
+
+        trackerImportService.importTracker( trackerDataBundle, trackerImportOptions );
+
+        // Return something useful?
+
+
+        /*
         TrackerImportParams params = trackerImportService.getParamsFromMap( contextService.getParameterValuesMap() );
 
         TrackerBundleParams trackerBundleParams = renderService
@@ -123,6 +145,8 @@ public class TrackerController
                     .id( jobId ).location( location )
                     .build()
             ) );
+
+         */
     }
 
     @GetMapping( value = "/jobs/{uid}", produces = MediaType.APPLICATION_JSON_VALUE )

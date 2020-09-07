@@ -28,6 +28,7 @@ package org.hisp.dhis.tracker;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.hisp.dhis.tracker.domain.TrackerDataBundle;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
 
 import java.util.List;
@@ -39,12 +40,16 @@ import java.util.Map;
 public interface TrackerImportService
 {
     /**
-     * Import object using provided params. Takes the objects through all phases of the importer
-     * from preheating to validation, and then finished with a commit (unless its validate only)
+     * Imports data, from the trackerDataBundle, using the provided trackerImportOptions.
+     * This method performs all the stages of the import, from preheating, validating, comitting and initiating
+     * side effects.
      *
-     * @param params Parameters for import, including objects
+     * @param trackerDataBundle    The data to import
+     * @param trackerImportOptions The options to configure the import behaviour
      * @return Report giving status of import (and any errors)
      */
+    TrackerImportReport importTracker( TrackerDataBundle trackerDataBundle, TrackerImportOptions trackerImportOptions );
+
     TrackerImportReport importTracker( TrackerImportParams params );
 
     /**
@@ -53,5 +58,5 @@ public interface TrackerImportService
      * @param parameters Key-Value map of wanted parameters
      * @return MetadataImportParams instance created based on input parameters
      */
-    TrackerImportParams getParamsFromMap( Map<String, List<String>> parameters );
+    TrackerImportOptions getParamsFromMap( Map<String, List<String>> parameters );
 }

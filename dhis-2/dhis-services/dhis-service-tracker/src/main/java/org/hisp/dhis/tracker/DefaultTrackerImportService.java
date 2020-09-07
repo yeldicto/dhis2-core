@@ -41,6 +41,7 @@ import org.hisp.dhis.tracker.bundle.TrackerBundle;
 import org.hisp.dhis.tracker.bundle.TrackerBundleMode;
 import org.hisp.dhis.tracker.bundle.TrackerBundleParams;
 import org.hisp.dhis.tracker.bundle.TrackerBundleService;
+import org.hisp.dhis.tracker.domain.TrackerDataBundle;
 import org.hisp.dhis.tracker.preprocess.TrackerPreprocessService;
 import org.hisp.dhis.tracker.report.TrackerErrorReport;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
@@ -90,8 +91,78 @@ public class DefaultTrackerImportService
     }
 
     @Override
+    public TrackerImportReport importTracker( TrackerDataBundle trackerDataBundle, TrackerImportOptions trackerImportOptions )
+    {
+
+        System.out.println("TDB: ");
+        System.out.println("TEI: " + trackerDataBundle.getTrackedEntities().size());
+        System.out.println("PI: " + trackerDataBundle.getEnrollments().size());
+        System.out.println("PSI: " + trackerDataBundle.getEvents().size());
+        System.out.println("REL: " + trackerDataBundle.getRelationships().size());
+
+
+        System.out.println("Options: " + trackerImportOptions.toString());
+
+        return null;
+
+        // Timer requestTimer = new SystemTimer().start();
+
+        /*
+        params.setUser( getUser( params.getUser(), params.getUserId() ) );
+
+        TrackerImportReport importReport = new TrackerImportReport();
+
+        if ( params.hasJobConfiguration() )
+        {
+            notifier.notify( params.getJobConfiguration(), "(" + params.getUsername() + ") Import:Start" );
+        }
+
+        TrackerBundle trackerBundle = preheatBundle( params, importReport );
+
+        trackerBundle = preProcessBundle( trackerBundle, importReport );
+
+        TrackerValidationReport validationReport = validateBundle( params, importReport, trackerBundle );
+
+        if ( validationReport.hasErrors() && params.getAtomicMode() == AtomicMode.ALL )
+        {
+            importReport.setStatus( TrackerStatus.ERROR );
+        }
+        else
+        {
+            if ( TrackerImportStrategy.DELETE == params.getImportStrategy() )
+            {
+                deleteBundle( params, importReport, trackerBundle );
+            }
+            else
+            {
+                commitBundle( params, importReport, trackerBundle );
+            }
+        }
+
+        importReport.getTimings().setTotalImport( requestTimer.toString() );
+
+        if ( params.hasJobConfiguration() )
+        {
+            notifier
+                .update( params.getJobConfiguration(),
+                    "(" + params.getUsername() + ") Import:Done took " + requestTimer, true );
+
+            notifier.addJobSummary( params.getJobConfiguration(), importReport, TrackerImportReport.class );
+        }
+
+        long ignored = importReport.getTrackerValidationReport().getErrorReports().stream()
+            .map( TrackerErrorReport::getUid )
+            .distinct().count();
+        importReport.setIgnored( (int) ignored );
+        return importReport;
+
+         */
+    }
+
+    @Override
     public TrackerImportReport importTracker( TrackerImportParams params )
     {
+
         Timer requestTimer = new SystemTimer().start();
 
         params.setUser( getUser( params.getUser(), params.getUserId() ) );
@@ -141,6 +212,7 @@ public class DefaultTrackerImportService
             .distinct().count();
         importReport.setIgnored( (int) ignored );
         return importReport;
+
     }
 
     protected TrackerBundle preheatBundle( TrackerImportParams params, TrackerImportReport importReport )
@@ -193,7 +265,7 @@ public class DefaultTrackerImportService
         if ( params.hasJobConfiguration() )
         {
             notifier.update( params.getJobConfiguration(),
-                    "(" + params.getUsername() + ") " + "Import:Commit took " + commitTimer );
+                "(" + params.getUsername() + ") " + "Import:Commit took " + commitTimer );
         }
     }
 
@@ -220,22 +292,27 @@ public class DefaultTrackerImportService
     }
 
     @Override
-    public TrackerImportParams getParamsFromMap( Map<String, List<String>> parameters )
+    public TrackerImportOptions getParamsFromMap( Map<String, List<String>> parameters )
     {
-        TrackerImportParams params = new TrackerImportParams();
+        TrackerImportOptions options = TrackerImportOptions.builder()
+            .importMode(
+                getEnumWithDefault( TrackerBundleMode.class, parameters, "importMode", TrackerBundleMode.COMMIT ) )
+            .identifiers( getTrackerIdentifiers( parameters ) )
+            .atomicMode( getEnumWithDefault( AtomicMode.class, parameters, "atomicMode", AtomicMode.ALL ) )
+            .flushMode( getEnumWithDefault( FlushMode.class, parameters, "flushMode", FlushMode.AUTO ) )
+            .importStrategy( getEnumWithDefault( TrackerImportStrategy.class, parameters, "importStrategy",
+                TrackerImportStrategy.CREATE_AND_UPDATE ) )
+            .reportMode( getEnumWithDefault( TrackerBundleReportMode.class, parameters, "reportMode",
+                TrackerBundleReportMode.ERRORS ) )
+            .skipSideEffects( parameters.containsKey( "skipSideEffects" ) &&
+                Boolean.parseBoolean( parameters.get( "skipSideEffects" ).get( 0 ) ) )
+            .skipTextPatternValidation( parameters.containsKey( "skipTextPatternValidation" ) &&
+                Boolean.parseBoolean( parameters.get( "skipTextPatternValidation" ).get( 0 ) ) )
+            .validationMode( getEnumWithDefault( ValidationMode.class, parameters, "validationMode",
+                ValidationMode.FULL ) )
+            .build();
 
-        params.setUser( getUser( params.getUser(), params.getUserId() ) );
-        params.setValidationMode( getEnumWithDefault( ValidationMode.class, parameters, "validationMode",
-            ValidationMode.FULL ) );
-        params.setImportMode(
-            getEnumWithDefault( TrackerBundleMode.class, parameters, "importMode", TrackerBundleMode.COMMIT ) );
-        params.setIdentifiers( getTrackerIdentifiers( parameters ) );
-        params.setImportStrategy( getEnumWithDefault( TrackerImportStrategy.class, parameters, "importStrategy",
-            TrackerImportStrategy.CREATE_AND_UPDATE ) );
-        params.setAtomicMode( getEnumWithDefault( AtomicMode.class, parameters, "atomicMode", AtomicMode.ALL ) );
-        params.setFlushMode( getEnumWithDefault( FlushMode.class, parameters, "flushMode", FlushMode.AUTO ) );
-
-        return params;
+        return options;
     }
 
     //-----------------------------------------------------------------------------------
