@@ -29,6 +29,7 @@ package org.hisp.dhis.dxf2.events.aggregates;
  */
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
@@ -42,11 +43,20 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 public class ThreadPoolManager
 {
     // Thread factory that sets a user-defined thread name (useful for debugging purposes)
-
     private final static ThreadFactory threadFactory = new ThreadFactoryBuilder()
         .setNameFormat( "TRACKER-TEI-FETCH-%d" )
         .setDaemon( true )
         .build();
+
+    private static int MULTIPLIER = 1; // TODO perhaps this can be configurable
+    private static ExecutorService fixedThreadPool;
+    
+    static
+    {
+        fixedThreadPool = Executors.newFixedThreadPool(
+            Runtime.getRuntime().availableProcessors() * MULTIPLIER,
+            threadFactory );
+    }
 
     /**
      * Cached thread pool: not bound to a size, but can reuse existing threads.
@@ -55,7 +65,7 @@ public class ThreadPoolManager
 
     static Executor getPool()
     {
-        return AGGREGATE_THREAD_POOL;
+        return fixedThreadPool;
     }
 
 }
