@@ -377,7 +377,7 @@ public class DefaultPredictionService
                             }
 
                             Double value = castDouble( expressionService.getExpressionValue( generator.getExpression(),
-                                    PREDICTOR_EXPRESSION, valueMap, constantMap, null,
+                                    PREDICTOR_EXPRESSION, expressionService.convertToIdentifierMap( valueMap ), constantMap, null,
                                     outputPeriod.getDaysInPeriod(), generator.getMissingValueStrategy(),
                                     samplePeriodsMap.get( outputPeriod ), periodValueMap ) );
 
@@ -475,7 +475,7 @@ public class DefaultPredictionService
         {
             if ( sampleMap2.get( p ) != null && Boolean.TRUE !=
                 expressionService.getExpressionValue( skipTest.getExpression(),
-                PREDICTOR_SKIP_TEST, sampleMap2.get( p ), constantMap, null,
+                PREDICTOR_SKIP_TEST, expressionService.convertToIdentifierMap( sampleMap2.get( p ) ), constantMap, null,
                 p.getDaysInPeriod(), skipTest.getMissingValueStrategy(),
                 DEFAULT_SAMPLE_PERIODS, new MapMap<>() ) )
             {

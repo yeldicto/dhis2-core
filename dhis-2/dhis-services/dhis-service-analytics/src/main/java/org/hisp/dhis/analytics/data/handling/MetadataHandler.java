@@ -94,8 +94,8 @@ public class MetadataHandler
     {
         if ( !params.isSkipMeta() )
         {
-            Map<String, Object> metaData = new HashMap<>();
-            Map<String, Object> internalMetaData = new HashMap<>();
+            Map<String, Object> metaData = new HashMap<>( 32 );
+            Map<String, Object> internalMetaData = new HashMap<>( 32 );
 
             // -----------------------------------------------------------------
             // Items / names element
@@ -109,7 +109,7 @@ public class MetadataHandler
             // Item order elements
             // -----------------------------------------------------------------
 
-            Map<String, Object> dimensionItems = new HashMap<>();
+            Map<String, Object> dimensionItems = new HashMap<>( 64 );
 
             Calendar calendar = PeriodType.getCalendar();
 

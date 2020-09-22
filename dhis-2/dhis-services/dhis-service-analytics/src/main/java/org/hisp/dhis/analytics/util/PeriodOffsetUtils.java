@@ -28,6 +28,16 @@ package org.hisp.dhis.analytics.util;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hisp.dhis.common.DimensionalObject.DATA_X_DIM_ID;
+import static org.hisp.dhis.common.DimensionalObject.PERIOD_DIM_ID;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.hisp.dhis.analytics.DataQueryParams;
 import org.hisp.dhis.analytics.table.PartitionUtils;
 import org.hisp.dhis.common.DimensionItemType;
@@ -37,15 +47,6 @@ import org.hisp.dhis.common.Grid;
 import org.hisp.dhis.common.ListMap;
 import org.hisp.dhis.period.Period;
 import org.hisp.dhis.period.PeriodType;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-
-import static org.hisp.dhis.common.DimensionalObject.DATA_X_DIM_ID;
-import static org.hisp.dhis.common.DimensionalObject.PERIOD_DIM_ID;
 
 /**
  * @author Luciano Fiandesio
@@ -188,23 +189,26 @@ public class PeriodOffsetUtils
             return null;
         }
 
-        BiFunction<Integer, Integer, Integer> replaceIndexIfMissing = (Integer index, Integer defaultIndex )
+        BiFunction<Integer, Integer, Integer> replaceIndexIfMissing = ( Integer index, Integer defaultIndex )
                 -> index == -1 ? defaultIndex : index;
 
         final int dataIndex = replaceIndexIfMissing.apply( grid.getIndexOfHeader( DATA_X_DIM_ID ), 0 );
         final int periodIndex = replaceIndexIfMissing.apply( grid.getIndexOfHeader( PERIOD_DIM_ID ), 1 );
 
-        Period shifted = offset != 0 ? shiftPeriod( PeriodType.getPeriodFromIsoString( isoPeriod ), offset ) :
-            PeriodType.getPeriodFromIsoString( isoPeriod );
-
-        for ( List<Object> row : grid.getRows() )
+        if ( grid != null && CollectionUtils.isNotEmpty( grid.getRows() ) )
         {
-            final String rowUid = (String) row.get( dataIndex );
-            final String rowPeriod = (String) row.get( periodIndex );
+            Period shifted = offset != 0 ? shiftPeriod( PeriodType.getPeriodFromIsoString( isoPeriod ), offset )
+                : PeriodType.getPeriodFromIsoString( isoPeriod );
 
-            if ( rowUid.equals( dimItem.getUid() ) && rowPeriod.equals( shifted.getIsoDate() ) )
+            for ( List<Object> row : grid.getRows() )
             {
-                return row;
+                final String rowUid = (String) row.get( dataIndex );
+                final String rowPeriod = (String) row.get( periodIndex );
+
+                if ( rowUid.equals( dimItem.getUid() ) && rowPeriod.equals( shifted.getIsoDate() ) )
+                {
+                    return row;
+                }
             }
         }
 

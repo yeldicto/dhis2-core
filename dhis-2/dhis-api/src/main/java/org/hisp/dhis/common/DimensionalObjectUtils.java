@@ -730,12 +730,12 @@ public class DimensionalObjectUtils
      * Transforms a List of {@see DimensionItemObjectValue} into a Map of
      * {@see DimensionalItemObject} and value
      */
-    public static Map<DimensionalItemObject, Double> convertToDimItemValueMap(
-        List<DimensionItemObjectValue> dimensionItemObjectValues )
-    {
-        return dimensionItemObjectValues.stream()
-            .filter( item -> item.getValue() != null )
-            .collect( Collectors
-                .toMap( DimensionItemObjectValue::getDimensionalItemObject, DimensionItemObjectValue::getValue ) );
-    }
+//    public static Map<DimensionalItemObject, Double> convertToDimItemValueMap(
+//        List<DimensionItemObjectValue> dimensionItemObjectValues )
+//    {
+//        return dimensionItemObjectValues.stream()
+//            .filter( item -> item.getValue() != null )
+//            .collect( Collectors
+//                .toMap( DimensionItemObjectValue::getDimensionalItemObject, DimensionItemObjectValue::getValue ) );
+//    }
 }

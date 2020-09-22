@@ -83,7 +83,6 @@ import static org.hisp.dhis.common.DimensionalObject.DIMENSION_SEP;
 import static org.hisp.dhis.common.DimensionalObject.ORGUNIT_GROUP_DIM_ID;
 import static org.hisp.dhis.common.DimensionalObject.PERIOD_DIM_ID;
 import static org.hisp.dhis.common.DimensionalObjectUtils.asTypedList;
-import static org.hisp.dhis.common.DimensionalObjectUtils.convertToDimItemValueMap;
 import static org.hisp.dhis.common.DimensionalObjectUtils.getAttributeOptionCombos;
 import static org.hisp.dhis.common.DimensionalObjectUtils.getCategoryOptionCombos;
 import static org.hisp.dhis.common.DimensionalObjectUtils.getDataElements;
@@ -290,7 +289,7 @@ public class DataHandler
     {
         String permKey = asItemKey( dimensionItems );
 
-        final List<DimensionItemObjectValue> valueMap = permutationDimensionItemValueMap
+        final List<DimensionItemObjectValue> objectValues = permutationDimensionItemValueMap
             .getOrDefault( permKey, new ArrayList<>() );
 
         List<Period> periods = !filterPeriods.isEmpty() ? filterPeriods
@@ -305,7 +304,7 @@ public class DataHandler
             : null;
 
         return expressionService.getIndicatorValueObject( indicator, periods,
-            convertToDimItemValueMap( valueMap ), constantMap, orgUnitCountMap );
+            objectValues, constantMap, orgUnitCountMap );
     }
 
     /**
@@ -1096,7 +1095,7 @@ public class DataHandler
         timer.getSplitTime(
             "Planned analytics query, got: " + queryGroups.getLargestGroupSize() + " for optimal: " + optimalQueries );
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>( 64 );
 
         for ( List<DataQueryParams> queries : queryGroups.getSequentialQueries() )
         {
@@ -1118,8 +1117,7 @@ public class DataHandler
             futures.add( analyticsManager.getAggregatedDataValues( query, tableType, maxLimit ) );
         }
 
-        for ( Future<Map<String, Object>> future : futures )
-        {
+        futures.forEach( future -> {
             try
             {
                 Map<String, Object> taskValues = future.get();
@@ -1144,7 +1142,7 @@ public class DataHandler
                     throw new RuntimeException( "Error during execution of aggregation query task", ex );
                 }
             }
-        }
+        } );
     }
 
     /**

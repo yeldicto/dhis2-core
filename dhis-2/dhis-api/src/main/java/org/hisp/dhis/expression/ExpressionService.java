@@ -28,6 +28,12 @@ package org.hisp.dhis.expression;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.hisp.dhis.common.DimensionItemObjectValue;
 import org.hisp.dhis.common.DimensionalItemId;
 import org.hisp.dhis.common.DimensionalItemObject;
 import org.hisp.dhis.common.MapMap;
@@ -38,11 +44,6 @@ import org.hisp.dhis.indicator.Indicator;
 import org.hisp.dhis.indicator.IndicatorValue;
 import org.hisp.dhis.organisationunit.OrganisationUnitGroup;
 import org.hisp.dhis.period.Period;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Expressions are mathematical formulas and can contain references to various
@@ -133,13 +134,13 @@ public interface ExpressionService
      *
      * @param indicator the indicator for which to calculate the value.
      * @param periods a List of periods for which to calculate the value.
-     * @param valueMap the map of data values.
+     * @param objectValues the list of data values objects.
      * @param constantMap the map of constants.
      * @param orgUnitCountMap the map of organisation unit group member counts.
      * @return the calculated value as a double.
      */
     IndicatorValue getIndicatorValueObject( Indicator indicator, List<Period> periods,
-        Map<DimensionalItemObject, Double> valueMap, Map<String, Constant> constantMap,
+        List<DimensionItemObjectValue> objectValues, Map<String, Constant> constantMap,
         Map<String, Integer> orgUnitCountMap );
 
     /**
@@ -284,7 +285,7 @@ public interface ExpressionService
      * @return the calculated value as a double.
      */
     Double getExpressionValue( String expression, ParseType parseType,
-        Map<DimensionalItemObject, Double> valueMap, Map<String, Constant> constantMap,
+        Map<String, Double> valueMap, Map<String, Constant> constantMap,
         Map<String, Integer> orgUnitCountMap, Integer days,
         MissingValueStrategy missingValueStrategy );
 
@@ -304,8 +305,10 @@ public interface ExpressionService
      * @return the calculated value.
      */
     Object getExpressionValue( String expression, ParseType parseType,
-        Map<DimensionalItemObject, Double> valueMap, Map<String, Constant> constantMap,
+        Map<String, Double> valueMap, Map<String, Constant> constantMap,
         Map<String, Integer> orgUnitCountMap, Integer days,
         MissingValueStrategy missingValueStrategy, List<Period> samplePeriods,
         MapMap<Period, DimensionalItemObject, Double> periodValueMap );
+
+    Map<String, Double> convertToIdentifierMap( Map<DimensionalItemObject, Double> valueMap );
 }

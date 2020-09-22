@@ -484,7 +484,7 @@ public class DataValidationTask
             }
 
             Double value = expressionService.getExpressionValue( expression.getExpression(),
-                VALIDATION_RULE_EXPRESSION, values, context.getConstantMap(), null,
+                VALIDATION_RULE_EXPRESSION, expressionService.convertToIdentifierMap( values ), context.getConstantMap(), null,
                 period.getDaysInPeriod(), expression.getMissingValueStrategy() );
 
             if ( MathUtils.isValidDouble( value ) )

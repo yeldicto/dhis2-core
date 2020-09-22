@@ -410,15 +410,19 @@ public class JdbcAnalyticsManager
         // Dimensions
         // ---------------------------------------------------------------------
 
+        StringBuilder dimensionsQuery = new StringBuilder( sql );
+
         for ( DimensionalObject dim : params.getDimensions() )
         {
             if ( !dim.getItems().isEmpty() && !dim.isFixed() )
             {
                 String col = quoteAlias( dim.getDimensionName() );
 
-                sql += sqlHelper.whereAnd() + " " + col + " in (" + getQuotedCommaDelimitedString( getUids( dim.getItems() ) ) + ") ";
+                dimensionsQuery.append( sqlHelper.whereAnd() + " " + col + " in ("
+                    + getQuotedCommaDelimitedString( getUids( dim.getItems() ) ) + ") " );
             }
         }
+        sql = dimensionsQuery.toString();
 
         // ---------------------------------------------------------------------
         // Filters
@@ -433,6 +437,7 @@ public class JdbcAnalyticsManager
             if ( DimensionalObjectUtils.anyDimensionHasItems( filters ) )
             {
                 sql += sqlHelper.whereAnd() + " ( ";
+                StringBuilder sb = new StringBuilder( sql );
 
                 for ( DimensionalObject filter : filters )
                 {
@@ -440,11 +445,12 @@ public class JdbcAnalyticsManager
                     {
                         String col = quoteAlias( filter.getDimensionName() );
 
-                        sql += col + " in (" + getQuotedCommaDelimitedString( getUids( filter.getItems() ) ) + ") or ";
+                        sb.append(
+                            col + " in (" + getQuotedCommaDelimitedString( getUids( filter.getItems() ) ) + ") or " );
                     }
                 }
 
-                sql = removeLastOr( sql ) + ") ";
+                sql = removeLastOr( sb.toString() ) + ") ";
             }
         }
 
@@ -456,16 +462,18 @@ public class JdbcAnalyticsManager
         {
             sql += sqlHelper.whereAnd() + " ( ";
 
+            StringBuilder sb = new StringBuilder( sql );
+
             for ( OrganisationUnit unit : params.getDataApprovalLevels().keySet() )
             {
                 String ouCol = quoteAlias( LEVEL_PREFIX + unit.getLevel() );
                 Integer level = params.getDataApprovalLevels().get( unit );
 
-                sql += "(" + ouCol + " = '" + unit.getUid() + "' and " +
-                    quoteAlias( COL_APPROVALLEVEL ) + " <= " + level + ") or ";
+                sb.append("(" + ouCol + " = '" + unit.getUid() + "' and " +
+                    quoteAlias( COL_APPROVALLEVEL ) + " <= " + level + ") or ");
             }
 
-            sql = removeLastOr( sql ) + ") ";
+            sql = removeLastOr( sb.toString() ) + ") ";
         }
 
         // ---------------------------------------------------------------------

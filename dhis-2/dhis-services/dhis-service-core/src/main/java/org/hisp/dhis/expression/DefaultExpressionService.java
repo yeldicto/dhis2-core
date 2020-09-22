@@ -28,12 +28,62 @@ package org.hisp.dhis.expression;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.google.common.collect.ImmutableMap;
-import lombok.extern.slf4j.Slf4j;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.lang.Boolean.FALSE;
+import static org.hisp.dhis.antlr.AntlrParserUtils.castBoolean;
+import static org.hisp.dhis.antlr.AntlrParserUtils.castDouble;
+import static org.hisp.dhis.antlr.AntlrParserUtils.castString;
+import static org.hisp.dhis.common.DimensionItemType.DATA_ELEMENT_OPERAND;
+import static org.hisp.dhis.expression.MissingValueStrategy.NEVER_SKIP;
+import static org.hisp.dhis.expression.MissingValueStrategy.SKIP_IF_ALL_VALUES_MISSING;
+import static org.hisp.dhis.expression.ParseType.INDICATOR_EXPRESSION;
+import static org.hisp.dhis.expression.ParseType.PREDICTOR_EXPRESSION;
+import static org.hisp.dhis.expression.ParseType.PREDICTOR_SKIP_TEST;
+import static org.hisp.dhis.expression.ParseType.SIMPLE_TEST;
+import static org.hisp.dhis.expression.ParseType.VALIDATION_RULE_EXPRESSION;
+import static org.hisp.dhis.parser.expression.ParserUtils.COMMON_EXPRESSION_ITEMS;
+import static org.hisp.dhis.parser.expression.ParserUtils.DEFAULT_SAMPLE_PERIODS;
+import static org.hisp.dhis.parser.expression.ParserUtils.DOUBLE_VALUE_IF_NULL;
+import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_EVALUATE;
+import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_GET_DESCRIPTIONS;
+import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_GET_IDS;
+import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_GET_ORG_UNIT_GROUPS;
+import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_REGENERATE;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.AVG;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.A_BRACE;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.COUNT;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.DAYS;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.D_BRACE;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.HASH_BRACE;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.I_BRACE;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.MAX;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.MEDIAN;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.MIN;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.N_BRACE;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.OUG_BRACE;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.PERCENTILE_CONT;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.R_BRACE;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.STDDEV;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.STDDEV_POP;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.STDDEV_SAMP;
+import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.SUM;
+import static org.springframework.util.ObjectUtils.isEmpty;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.hisp.dhis.analytics.DataType;
 import org.hisp.dhis.antlr.Parser;
 import org.hisp.dhis.antlr.ParserException;
 import org.hisp.dhis.category.CategoryService;
+import org.hisp.dhis.common.DimensionItemObjectValue;
 import org.hisp.dhis.common.DimensionService;
 import org.hisp.dhis.common.DimensionalItemId;
 import org.hisp.dhis.common.DimensionalItemObject;
@@ -75,39 +125,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import com.google.common.collect.ImmutableMap;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.lang.Boolean.FALSE;
-import static org.hisp.dhis.antlr.AntlrParserUtils.castBoolean;
-import static org.hisp.dhis.antlr.AntlrParserUtils.castDouble;
-import static org.hisp.dhis.antlr.AntlrParserUtils.castString;
-import static org.hisp.dhis.common.DimensionItemType.DATA_ELEMENT_OPERAND;
-import static org.hisp.dhis.expression.MissingValueStrategy.NEVER_SKIP;
-import static org.hisp.dhis.expression.MissingValueStrategy.SKIP_IF_ALL_VALUES_MISSING;
-import static org.hisp.dhis.expression.ParseType.INDICATOR_EXPRESSION;
-import static org.hisp.dhis.expression.ParseType.PREDICTOR_EXPRESSION;
-import static org.hisp.dhis.expression.ParseType.PREDICTOR_SKIP_TEST;
-import static org.hisp.dhis.expression.ParseType.SIMPLE_TEST;
-import static org.hisp.dhis.expression.ParseType.VALIDATION_RULE_EXPRESSION;
-import static org.hisp.dhis.parser.expression.ParserUtils.COMMON_EXPRESSION_ITEMS;
-import static org.hisp.dhis.parser.expression.ParserUtils.DEFAULT_SAMPLE_PERIODS;
-import static org.hisp.dhis.parser.expression.ParserUtils.DOUBLE_VALUE_IF_NULL;
-import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_EVALUATE;
-import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_GET_DESCRIPTIONS;
-import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_GET_IDS;
-import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_GET_ORG_UNIT_GROUPS;
-import static org.hisp.dhis.parser.expression.ParserUtils.ITEM_REGENERATE;
-import static org.hisp.dhis.parser.expression.antlr.ExpressionParser.*;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The expression is a string describing a formula containing data element ids
@@ -282,7 +302,7 @@ public class DefaultExpressionService
 
     @Override
     public IndicatorValue getIndicatorValueObject( Indicator indicator, List<Period> periods,
-        Map<DimensionalItemObject, Double> valueMap, Map<String, Constant> constantMap,
+        List<DimensionItemObjectValue> objectValues, Map<String, Constant> constantMap,
         Map<String, Integer> orgUnitCountMap )
     {
         if ( indicator == null || indicator.getNumerator() == null || indicator.getDenominator() == null )
@@ -292,11 +312,13 @@ public class DefaultExpressionService
 
         Integer days = periods != null ? getDaysFromPeriods( periods ) : null;
 
+        Map<String, Double> periodDoubleValueMap = convertToIdentifierMap( objectValues );
+
         Double denominatorValue = getExpressionValue( indicator.getDenominator(), INDICATOR_EXPRESSION,
-            valueMap, constantMap, orgUnitCountMap, days, SKIP_IF_ALL_VALUES_MISSING );
+            periodDoubleValueMap, constantMap, orgUnitCountMap, days, SKIP_IF_ALL_VALUES_MISSING );
 
         Double numeratorValue = getExpressionValue( indicator.getNumerator(), INDICATOR_EXPRESSION,
-            valueMap, constantMap, orgUnitCountMap, days, SKIP_IF_ALL_VALUES_MISSING );
+            periodDoubleValueMap, constantMap, orgUnitCountMap, days, SKIP_IF_ALL_VALUES_MISSING );
 
         if ( denominatorValue != null && denominatorValue != 0d && numeratorValue != null )
         {
@@ -505,7 +527,7 @@ public class DefaultExpressionService
 
     @Override
     public Double getExpressionValue( String expression, ParseType parseType,
-        Map<DimensionalItemObject, Double> valueMap, Map<String, Constant> constantMap,
+        Map<String, Double> valueMap, Map<String, Constant> constantMap,
         Map<String, Integer> orgUnitCountMap, Integer days,
         MissingValueStrategy missingValueStrategy )
     {
@@ -515,7 +537,7 @@ public class DefaultExpressionService
 
     @Override
     public Object getExpressionValue( String expression, ParseType parseType,
-        Map<DimensionalItemObject, Double> valueMap, Map<String, Constant> constantMap,
+        Map<String, Double> valueMap, Map<String, Constant> constantMap,
         Map<String, Integer> orgUnitCountMap, Integer days,
         MissingValueStrategy missingValueStrategy,
         List<Period> samplePeriods, MapMap<Period, DimensionalItemObject, Double> periodValueMap )
@@ -528,7 +550,7 @@ public class DefaultExpressionService
         CommonExpressionVisitor visitor = newVisitor( parseType, ITEM_EVALUATE,
             samplePeriods, constantMap, missingValueStrategy );
 
-        visitor.setItemValueMap( convertToIdentifierMap( valueMap ) );
+        visitor.setItemValueMap( valueMap );
         visitor.setPeriodItemValueMap( convertToIdentifierPeriodMap( periodValueMap ) );
         visitor.setOrgUnitCountMap( orgUnitCountMap );
 
@@ -701,6 +723,23 @@ public class DefaultExpressionService
         return periods.stream().mapToInt( Period::getDaysInPeriod ).sum();
     }
 
+    private Map<String, Double> convertToIdentifierMap( final List<DimensionItemObjectValue> objectValues )
+    {
+        final Map periodObjectValueMap = new HashMap( 64 );
+
+        objectValues.stream().filter( Objects::nonNull ).forEach( objectValue -> {
+            final DimensionalItemObject dio = objectValue.getDimensionalItemObject();
+            if ( dio != null )
+            {
+                periodObjectValueMap.put(
+                    dio.getDimensionItem() + (dio.getPeriodOffset() == 0 ? "" : "." + dio.getPeriodOffset()),
+                    objectValue.getValue() );
+            }
+        } );
+
+        return periodObjectValueMap;
+    }
+
     /**
      * Converts a Map of {@see DimensionalItemObject} and values into a Map
      * of {@see DimensionalItemObject} identifier and value.
@@ -713,7 +752,8 @@ public class DefaultExpressionService
      * @param valueMap a Map
      * @return a Map of DimensionalItemObject and value
      */
-    private Map<String, Double> convertToIdentifierMap( Map<DimensionalItemObject, Double> valueMap )
+    @Override
+    public Map<String, Double> convertToIdentifierMap( Map<DimensionalItemObject, Double> valueMap )
     {
         return valueMap.entrySet().stream().collect(
             Collectors.toMap(
