@@ -43,6 +43,7 @@ import static org.hisp.dhis.DhisConvenienceTest.createOrganisationUnitGroup;
 import static org.hisp.dhis.DhisConvenienceTest.createPeriod;
 import static org.hisp.dhis.DhisConvenienceTest.getDate;
 import static org.hisp.dhis.category.CategoryCombo.DEFAULT_CATEGORY_COMBO_NAME;
+import static org.hisp.dhis.common.DimensionalObjectUtils.convertToIdentifierMap;
 import static org.hisp.dhis.expression.Expression.SEPARATOR;
 import static org.hisp.dhis.expression.ExpressionService.SYMBOL_DAYS;
 import static org.hisp.dhis.expression.ExpressionService.SYMBOL_WILDCARD;
@@ -75,6 +76,7 @@ import org.hisp.dhis.category.CategoryOptionCombo;
 import org.hisp.dhis.category.CategoryService;
 import org.hisp.dhis.common.CodeGenerator;
 import org.hisp.dhis.common.DataDimensionType;
+import org.hisp.dhis.common.DimensionItemObjectValue;
 import org.hisp.dhis.common.DimensionItemType;
 import org.hisp.dhis.common.DimensionService;
 import org.hisp.dhis.common.DimensionalItemId;
@@ -640,7 +642,7 @@ public class ExpressionService2Test
         Map<String, Integer> orgUnitCountMap = new HashMap<>();
         orgUnitCountMap.put( groupA.getUid(), groupA.getMembers().size() );
 
-        Map<String, Double> periodValueMap = target.convertToIdentifierMap( valueMap );
+        Map<String, Double> periodValueMap = convertToIdentifierMap( valueMap );
 
         assertEquals( 46d, target
             .getExpressionValue( expressionA, INDICATOR_EXPRESSION, periodValueMap, constantMap(), null, null,
@@ -677,22 +679,22 @@ public class ExpressionService2Test
         indicatorA.setNumerator( expressionE );
         indicatorA.setDenominator( expressionF );
 
-        Map<DimensionalItemObject, Double> valueMap = new HashMap<>();
+        List<DimensionItemObjectValue> objectValues = new ArrayList<>();
 
-        valueMap.put( new DataElementOperand( deA, coc ), 12d );
-        valueMap.put( new DataElementOperand( deB, coc ), 34d );
-        valueMap.put( new DataElementOperand( deA, cocA, cocB ), 46d );
-        valueMap.put( new DataElementOperand( deB, cocA ), 10d );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deA, coc ), 12d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deB, coc ), 34d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deA, cocA, cocB ), 46d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deB, cocA ), 10d ) );
 
-//        IndicatorValue value = target.getIndicatorValueObject( indicatorA, Collections.singletonList( period ),
-//            valueMap, constantMap(), null );
-//
-//        assertEquals( 24d, value.getNumeratorValue(), DELTA );
-//        assertEquals( 12d, value.getDenominatorValue(), DELTA );
-//        assertEquals( 100, value.getMultiplier() );
-//        assertEquals( 1, value.getDivisor() );
-//        assertEquals( 100d, value.getFactor(), DELTA );
-//        assertEquals( 200d, value.getValue(), DELTA );
+        IndicatorValue value = target.getIndicatorValueObject( indicatorA, Collections.singletonList( period ),
+            objectValues, constantMap(), null );
+
+        assertEquals( 24d, value.getNumeratorValue(), DELTA );
+        assertEquals( 12d, value.getDenominatorValue(), DELTA );
+        assertEquals( 100, value.getMultiplier() );
+        assertEquals( 1, value.getDivisor() );
+        assertEquals( 100d, value.getFactor(), DELTA );
+        assertEquals( 200d, value.getValue(), DELTA );
 
         // # ------------------------------------------------------------------- #
 
@@ -701,16 +703,15 @@ public class ExpressionService2Test
         indicatorB.setDenominator( expressionF );
         indicatorB.setAnnualized( true );
 
-//        value = target
-//            .getIndicatorValueObject( indicatorB, Collections.singletonList( period ), valueMap, constantMap(),
-//                null );
-//
-//        assertEquals( 36d, value.getNumeratorValue(), DELTA );
-//        assertEquals( 12d, value.getDenominatorValue(), DELTA );
-//        assertEquals( 36500, value.getMultiplier() );
-//        assertEquals( 31, value.getDivisor() );
-//        assertEquals( 1177.419, value.getFactor(), DELTA );
-//        assertEquals( 3532.258, value.getValue(), DELTA );
+        value = target.getIndicatorValueObject( indicatorB, Collections.singletonList( period ), objectValues,
+            constantMap(), null );
+
+        assertEquals( 36d, value.getNumeratorValue(), DELTA );
+        assertEquals( 12d, value.getDenominatorValue(), DELTA );
+        assertEquals( 36500, value.getMultiplier() );
+        assertEquals( 31, value.getDivisor() );
+        assertEquals( 1177.419, value.getFactor(), DELTA );
+        assertEquals( 3532.258, value.getValue(), DELTA );
     }
 
     @Test
@@ -822,21 +823,21 @@ public class ExpressionService2Test
         indicatorA.setNumerator( expressionE );
         indicatorA.setDenominator( expressionF );
 
-        Map<DimensionalItemObject, Double> valueMap = new HashMap<>();
+        List<DimensionItemObjectValue> objectValues = new ArrayList<>();
 
-        valueMap.put( new DataElementOperand( deA, coc ), 12d );
-        valueMap.put( new DataElementOperand( deB, coc ), 34d );
-        valueMap.put( new DataElementOperand( deA, cocA, cocB ), 46d );
-        valueMap.put( new DataElementOperand( deB, cocA ), 10d );
-//
-//        IndicatorValue value = target.getIndicatorValueObject( indicatorA, periods, valueMap, constantMap(), null );
-//
-//        assertEquals( 24d, value.getNumeratorValue(), DELTA );
-//        assertEquals( 12d, value.getDenominatorValue(), DELTA );
-//        assertEquals( 36500, value.getMultiplier() );
-//        assertEquals( 182, value.getDivisor() );
-//        assertEquals( 200.55d, Precision.round( value.getFactor(), 2 ), DELTA );
-//        assertEquals( 401.1d, Precision.round( value.getValue(), 2 ), DELTA );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deA, coc ), 12d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deB, coc ), 34d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deA, cocA, cocB ), 46d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deB, cocA ), 10d ) );
+
+        IndicatorValue value = target.getIndicatorValueObject( indicatorA, periods, objectValues, constantMap(), null );
+
+        assertEquals( 24d, value.getNumeratorValue(), DELTA );
+        assertEquals( 12d, value.getDenominatorValue(), DELTA );
+        assertEquals( 36500, value.getMultiplier() );
+        assertEquals( 182, value.getDivisor() );
+        assertEquals( 200.55d, Precision.round( value.getFactor(), 2 ), DELTA );
+        assertEquals( 401.1d, Precision.round( value.getValue(), 2 ), DELTA );
     }
 
     @Test
@@ -855,21 +856,21 @@ public class ExpressionService2Test
         indicatorA.setNumerator( expressionE );
         indicatorA.setDenominator( expressionF );
 
-        Map<DimensionalItemObject, Double> valueMap = new HashMap<>();
+        List<DimensionItemObjectValue> objectValues = new ArrayList<>();
 
-        valueMap.put( new DataElementOperand( deA, coc ), 12d );
-        valueMap.put( new DataElementOperand( deB, coc ), 34d );
-        valueMap.put( new DataElementOperand( deA, cocA, cocB ), 46d );
-        valueMap.put( new DataElementOperand( deB, cocA ), 10d );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deA, coc ), 12d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deB, coc ), 34d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deA, cocA, cocB ), 46d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deB, cocA ), 10d ) );
 
-//        IndicatorValue value = target.getIndicatorValueObject( indicatorA, null, valueMap, constantMap(), null );
-//
-//        assertEquals( 24d, value.getNumeratorValue(), DELTA );
-//        assertEquals( 12d, value.getDenominatorValue(), DELTA );
-//        assertEquals( 100, value.getMultiplier() );
-//        assertEquals( 1, value.getDivisor() );
-//        assertEquals( 100.0d, Precision.round( value.getFactor(), 2 ), DELTA );
-//        assertEquals( 200.0d, Precision.round( value.getValue(), 2 ), DELTA );
+        IndicatorValue value = target.getIndicatorValueObject( indicatorA, null, objectValues, constantMap(), null );
+
+        assertEquals( 24d, value.getNumeratorValue(), DELTA );
+        assertEquals( 12d, value.getDenominatorValue(), DELTA );
+        assertEquals( 100, value.getMultiplier() );
+        assertEquals( 1, value.getDivisor() );
+        assertEquals( 100.0d, Precision.round( value.getFactor(), 2 ), DELTA );
+        assertEquals( 200.0d, Precision.round( value.getValue(), 2 ), DELTA );
     }
 
     @Test
@@ -881,14 +882,14 @@ public class ExpressionService2Test
         indicatorA.setNumerator( expressionF );
         indicatorA.setDenominator( expressionP );
 
-//        Map<DimensionalItemObject, Double> valueMap = new HashMap<>();
-//
-//        valueMap.put( new DataElementOperand( deB, coc ), 12d );
-//        valueMap.put( new DataElementOperand( deC, coc ), 18d );
-//
-//        IndicatorValue value = target.getIndicatorValueObject( indicatorA, null, valueMap, constantMap(), null );
-//
-//        assertNull( value );
+        List<DimensionItemObjectValue> objectValues = new ArrayList<>();
+
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deB, coc ), 12d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deC, coc ), 18d ) );
+
+        IndicatorValue value = target.getIndicatorValueObject( indicatorA, null, objectValues, constantMap(), null );
+
+        assertNull( value );
     }
 
     @Test
@@ -904,10 +905,15 @@ public class ExpressionService2Test
 
         valueMap.put( new DataElementOperand( deA, coc ), 12d );
         valueMap.put( new DataElementOperand( deB, coc ), 0d );
-//
-//        IndicatorValue value = target.getIndicatorValueObject( indicatorA, null, valueMap, constantMap(), null );
-//
-//        assertNull( value );
+
+        List<DimensionItemObjectValue> objectValues = new ArrayList<>();
+
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deA, coc ), 12d ) );
+        objectValues.add( new DimensionItemObjectValue( new DataElementOperand( deB, coc ), 0d ) );
+
+        IndicatorValue value = target.getIndicatorValueObject( indicatorA, null, objectValues, constantMap(), null );
+
+        assertNull( value );
     }
 
     private Map<String, Constant> constantMap()

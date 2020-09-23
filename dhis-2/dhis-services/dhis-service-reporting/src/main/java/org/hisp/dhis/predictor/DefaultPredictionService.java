@@ -31,6 +31,7 @@ package org.hisp.dhis.predictor;
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.hisp.dhis.antlr.AntlrParserUtils.castDouble;
+import static org.hisp.dhis.common.DimensionalObjectUtils.convertToIdentifierMap;
 import static org.hisp.dhis.expression.MissingValueStrategy.NEVER_SKIP;
 import static org.hisp.dhis.expression.ParseType.PREDICTOR_EXPRESSION;
 import static org.hisp.dhis.expression.ParseType.PREDICTOR_SKIP_TEST;
@@ -377,7 +378,7 @@ public class DefaultPredictionService
                             }
 
                             Double value = castDouble( expressionService.getExpressionValue( generator.getExpression(),
-                                    PREDICTOR_EXPRESSION, expressionService.convertToIdentifierMap( valueMap ), constantMap, null,
+                                    PREDICTOR_EXPRESSION, convertToIdentifierMap( valueMap ), constantMap, null,
                                     outputPeriod.getDaysInPeriod(), generator.getMissingValueStrategy(),
                                     samplePeriodsMap.get( outputPeriod ), periodValueMap ) );
 
@@ -475,7 +476,7 @@ public class DefaultPredictionService
         {
             if ( sampleMap2.get( p ) != null && Boolean.TRUE !=
                 expressionService.getExpressionValue( skipTest.getExpression(),
-                PREDICTOR_SKIP_TEST, expressionService.convertToIdentifierMap( sampleMap2.get( p ) ), constantMap, null,
+                PREDICTOR_SKIP_TEST, convertToIdentifierMap( sampleMap2.get( p ) ), constantMap, null,
                 p.getDaysInPeriod(), skipTest.getMissingValueStrategy(),
                 DEFAULT_SAMPLE_PERIODS, new MapMap<>() ) )
             {

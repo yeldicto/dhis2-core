@@ -29,6 +29,7 @@ package org.hisp.dhis.validation;
  */
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.hisp.dhis.common.DimensionalObjectUtils.convertToIdentifierMap;
 import static org.hisp.dhis.expression.MissingValueStrategy.NEVER_SKIP;
 import static org.hisp.dhis.expression.ParseType.SIMPLE_TEST;
 import static org.hisp.dhis.expression.ParseType.VALIDATION_RULE_EXPRESSION;
@@ -484,7 +485,7 @@ public class DataValidationTask
             }
 
             Double value = expressionService.getExpressionValue( expression.getExpression(),
-                VALIDATION_RULE_EXPRESSION, expressionService.convertToIdentifierMap( values ), context.getConstantMap(), null,
+                VALIDATION_RULE_EXPRESSION, convertToIdentifierMap( values ), context.getConstantMap(), null,
                 period.getDaysInPeriod(), expression.getMissingValueStrategy() );
 
             if ( MathUtils.isValidDouble( value ) )

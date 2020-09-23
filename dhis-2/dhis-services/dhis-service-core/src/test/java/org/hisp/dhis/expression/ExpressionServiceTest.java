@@ -32,6 +32,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
+import static org.hisp.dhis.common.DimensionalObjectUtils.convertToIdentifierMap;
 import static org.hisp.dhis.common.ReportingRateMetric.ACTUAL_REPORTS;
 import static org.hisp.dhis.common.ReportingRateMetric.ACTUAL_REPORTS_ON_TIME;
 import static org.hisp.dhis.common.ReportingRateMetric.EXPECTED_REPORTS;
@@ -48,6 +49,7 @@ import static org.hisp.dhis.expression.ParseType.VALIDATION_RULE_EXPRESSION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,7 @@ import org.hisp.dhis.category.CategoryOption;
 import org.hisp.dhis.category.CategoryOptionCombo;
 import org.hisp.dhis.category.CategoryService;
 import org.hisp.dhis.common.BaseIdentifiableObject;
+import org.hisp.dhis.common.DimensionItemObjectValue;
 import org.hisp.dhis.common.DimensionalItemObject;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
@@ -558,7 +561,7 @@ public class ExpressionServiceTest
             .getExpressionDimensionalItemObjects( expr, parseType );
 
         Object value = expressionService.getExpressionValue( expr, parseType,
-            expressionService.convertToIdentifierMap( valueMap ), constantMap, ORG_UNIT_COUNT_MAP, DAYS,
+            convertToIdentifierMap( valueMap ), constantMap, ORG_UNIT_COUNT_MAP, DAYS,
             missingValueStrategy, TEST_SAMPLE_PERIODS, samples );
 
         return result( value, items );
@@ -1249,25 +1252,32 @@ public class ExpressionServiceTest
 
         Period period = createPeriod( "20010101" );
 
-//        IndicatorValue value = expressionService.getIndicatorValueObject( indicatorA,
-//            singletonList( period ), valueMap, constantMap, null );
-//
-//        assertEquals( 2.5, value.getNumeratorValue(), DELTA );
-//        assertEquals( 5.0, value.getDenominatorValue(), DELTA );
-//        assertEquals( 100.0, value.getFactor(), DELTA );
-//        assertEquals( 100, value.getMultiplier(), DELTA );
-//        assertEquals( 1, value.getDivisor(), DELTA );
-//        assertEquals( 50.0, value.getValue(), DELTA );
+        IndicatorValue value = expressionService.getIndicatorValueObject( indicatorA,
+            singletonList( period ), asObjectValueList( valueMap ), constantMap, null );
 
-//        value = expressionService.getIndicatorValueObject( indicatorB, singletonList( period ), valueMap,
-//            constantMap, null );
+        assertEquals( 2.5, value.getNumeratorValue(), DELTA );
+        assertEquals( 5.0, value.getDenominatorValue(), DELTA );
+        assertEquals( 100.0, value.getFactor(), DELTA );
+        assertEquals( 100, value.getMultiplier(), DELTA );
+        assertEquals( 1, value.getDivisor(), DELTA );
+        assertEquals( 50.0, value.getValue(), DELTA );
 
-//        assertEquals( 20.0, value.getNumeratorValue(), DELTA );
-//        assertEquals( 5.0, value.getDenominatorValue(), DELTA );
-//        assertEquals( 36500.0, value.getFactor(), DELTA );
-//        assertEquals( 36500, value.getMultiplier(), DELTA );
-//        assertEquals( 1, value.getDivisor(), DELTA );
-//        assertEquals( 146000.0, value.getValue(), DELTA );
+        value = expressionService.getIndicatorValueObject( indicatorB, singletonList( period ),
+            asObjectValueList( valueMap ), constantMap, null );
+
+        assertEquals( 20.0, value.getNumeratorValue(), DELTA );
+        assertEquals( 5.0, value.getDenominatorValue(), DELTA );
+        assertEquals( 36500.0, value.getFactor(), DELTA );
+        assertEquals( 36500, value.getMultiplier(), DELTA );
+        assertEquals( 1, value.getDivisor(), DELTA );
+        assertEquals( 146000.0, value.getValue(), DELTA );
+    }
+
+    private List<DimensionItemObjectValue> asObjectValueList( Map<DimensionalItemObject, Double> valueMap )
+    {
+        List<DimensionItemObjectValue> objectValues = new ArrayList<>();
+        valueMap.forEach( ( entry, value ) -> objectValues.add( new DimensionItemObjectValue( entry, value ) ) );
+        return objectValues;
     }
 
     private Indicator createIndicator( char uniqueCharacter, IndicatorType type, String numerator )

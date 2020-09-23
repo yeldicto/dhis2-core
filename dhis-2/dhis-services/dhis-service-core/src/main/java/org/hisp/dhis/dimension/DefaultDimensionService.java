@@ -440,6 +440,7 @@ public class DefaultDimensionService
             final String[] keyIds = { key.getId0(), key.getId1(), key.getId2() };
             final DimensionalItemObject item = map.get( key );
             final String dimItemIdKey = Joiner.on( "-" ).useForNull( "null" ).join( keyIds );
+
             if ( dios.containsKey( dimItemIdKey ) )
             {
                 // Make sure that an Item with a Period Offset > 0 is returned,

@@ -469,8 +469,8 @@ public class JdbcAnalyticsManager
                 String ouCol = quoteAlias( LEVEL_PREFIX + unit.getLevel() );
                 Integer level = params.getDataApprovalLevels().get( unit );
 
-                sb.append("(" + ouCol + " = '" + unit.getUid() + "' and " +
-                    quoteAlias( COL_APPROVALLEVEL ) + " <= " + level + ") or ");
+                sb.append( "(" + ouCol + " = '" + unit.getUid() + "' and " +
+                    quoteAlias( COL_APPROVALLEVEL ) + " <= " + level + ") or " );
             }
 
             sql = removeLastOr( sb.toString() ) + ") ";

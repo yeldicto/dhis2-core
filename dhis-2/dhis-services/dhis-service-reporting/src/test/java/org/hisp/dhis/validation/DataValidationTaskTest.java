@@ -36,6 +36,7 @@ import static org.hisp.dhis.DhisConvenienceTest.createExpression2;
 import static org.hisp.dhis.DhisConvenienceTest.createOrganisationUnit;
 import static org.hisp.dhis.DhisConvenienceTest.createPeriod;
 import static org.hisp.dhis.DhisConvenienceTest.createValidationRule;
+import static org.hisp.dhis.common.DimensionalObjectUtils.convertToIdentifierMap;
 import static org.hisp.dhis.expression.ParseType.SIMPLE_TEST;
 import static org.hisp.dhis.expression.ParseType.VALIDATION_RULE_EXPRESSION;
 import static org.junit.Assert.assertThat;
@@ -223,7 +224,7 @@ public class DataValidationTaskTest
     private void mockExpressionService( Expression expression, Map<DimensionalItemObject, Double> vals,
         ValidationRunContext ctx, Double val )
     {
-        Map<String, Double> periodValueMap = expressionService.convertToIdentifierMap( vals );
+        Map<String, Double> periodValueMap = convertToIdentifierMap( vals );
 
         when( expressionService.getExpressionValue( expression.getExpression(), VALIDATION_RULE_EXPRESSION, periodValueMap,
             ctx.getConstantMap(), null, p1.getDaysInPeriod(), expression.getMissingValueStrategy() ) )

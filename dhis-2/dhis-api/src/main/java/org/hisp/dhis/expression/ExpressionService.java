@@ -309,6 +309,4 @@ public interface ExpressionService
         Map<String, Integer> orgUnitCountMap, Integer days,
         MissingValueStrategy missingValueStrategy, List<Period> samplePeriods,
         MapMap<Period, DimensionalItemObject, Double> periodValueMap );
-
-    Map<String, Double> convertToIdentifierMap( Map<DimensionalItemObject, Double> valueMap );
 }

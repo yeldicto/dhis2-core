@@ -727,15 +727,24 @@ public class DimensionalObjectUtils
     }
 
     /**
-     * Transforms a List of {@see DimensionItemObjectValue} into a Map of
-     * {@see DimensionalItemObject} and value
+     * Converts a Map of {@see DimensionalItemObject} and values into a Map
+     * of {@see DimensionalItemObject} identifier and value.
+     *
+     * If the {@see DimensionalItemObject} has a Period offset set, the value of the offset is added to the Map key:
+     *
+     * [identifier.periodOffset]
+     *
+     *
+     * @param valueMap a Map
+     * @return a Map of DimensionalItemObject and value
      */
-//    public static Map<DimensionalItemObject, Double> convertToDimItemValueMap(
-//        List<DimensionItemObjectValue> dimensionItemObjectValues )
-//    {
-//        return dimensionItemObjectValues.stream()
-//            .filter( item -> item.getValue() != null )
-//            .collect( Collectors
-//                .toMap( DimensionItemObjectValue::getDimensionalItemObject, DimensionItemObjectValue::getValue ) );
-//    }
+    public static Map<String, Double> convertToIdentifierMap( Map<DimensionalItemObject, Double> valueMap )
+    {
+        return valueMap.entrySet().stream().collect(
+            Collectors.toMap(
+                e -> e.getKey().getDimensionItem()
+                    + (e.getKey().getPeriodOffset() == 0 ? "" : "." + e.getKey().getPeriodOffset()),
+                Map.Entry::getValue ) );
+
+    }
 }
