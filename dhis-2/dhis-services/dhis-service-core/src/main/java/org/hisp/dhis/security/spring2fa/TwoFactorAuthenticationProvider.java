@@ -71,7 +71,7 @@ public class TwoFactorAuthenticationProvider extends DaoAuthenticationProvider
     }
 
     @Override
-    public Authentication authenticate( Authentication auth )
+    public synchronized Authentication authenticate( Authentication auth )
         throws AuthenticationException
     {
         log.info( String.format( "Login attempt: %s", auth.getName() ) );
