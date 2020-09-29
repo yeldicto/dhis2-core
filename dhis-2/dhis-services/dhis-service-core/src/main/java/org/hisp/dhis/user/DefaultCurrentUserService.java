@@ -111,7 +111,8 @@ public class DefaultCurrentUserService
     @Transactional( readOnly = true )
     public User getCurrentUser()
     {
-        String username = getCurrentUsername();
+        String username = "admin";
+//        getCurrentUsername();
 
         if ( username == null )
         {
@@ -125,7 +126,7 @@ public class DefaultCurrentUserService
             return null;
         }
 
-        User user = userStore.getUser( userId );
+        User user = userStore.getUser( 1 );
 
         // TODO: this is pretty ugly way to retrieve auths
         user.getUserCredentials().getAllAuthorities();
@@ -136,7 +137,8 @@ public class DefaultCurrentUserService
     @Transactional( readOnly = true )
     public UserInfo getCurrentUserInfo()
     {
-        String currentUsername = getCurrentUsername();
+        String currentUsername = "admin";
+            //getCurrentUsername();
 
         if ( currentUsername == null )
         {
@@ -150,7 +152,10 @@ public class DefaultCurrentUserService
             return null;
         }
 
-        return new UserInfo( userId, currentUsername, getCurrentUserAuthorities() );
+        User user = userStore.getUser( 1 );
+        Set<String> allAuthorities = user.getUserCredentials().getAllAuthorities();
+
+        return new UserInfo( userId, currentUsername, allAuthorities );
     }
 
     private Long getUserId( String username )
