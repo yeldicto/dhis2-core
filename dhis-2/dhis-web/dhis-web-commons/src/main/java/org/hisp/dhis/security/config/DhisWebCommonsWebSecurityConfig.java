@@ -75,7 +75,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hisp.dhis.webapi.security.config.DhisWebApiWebSecurityConfig.setHttpHeaders;
 
 /**
  * @author Morten Svanæs <msvanaes@dhis2.org>
@@ -89,29 +88,29 @@ public class DhisWebCommonsWebSecurityConfig
     /**
      * This configuration class is responsible for setting up the session management.
      */
-    @Configuration
-    @Order( 3300 )
-    public static class SessionWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter
-    {
-        @Bean
-        public static SessionRegistryImpl sessionRegistry()
-        {
-            return new org.springframework.security.core.session.SessionRegistryImpl();
-        }
-
-        @Override
-        protected void configure( HttpSecurity http )
-            throws Exception
-        {
-            http
-                .sessionManagement()
-                .sessionCreationPolicy( SessionCreationPolicy.ALWAYS )
-                .enableSessionUrlRewriting( false )
-                .maximumSessions( 10 )
-                .expiredUrl( "/dhis-web-commons-security/logout.action" )
-                .sessionRegistry( sessionRegistry() );
-        }
-    }
+//    @Configuration
+//    @Order( 3300 )
+//    public static class SessionWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter
+//    {
+//        @Bean
+//        public static SessionRegistryImpl sessionRegistry()
+//        {
+//            return new org.springframework.security.core.session.SessionRegistryImpl();
+//        }
+//
+//        @Override
+//        protected void configure( HttpSecurity http )
+//            throws Exception
+//        {
+//            http
+//                .sessionManagement()
+//                .sessionCreationPolicy( SessionCreationPolicy.ALWAYS )
+//                .enableSessionUrlRewriting( false )
+//                .maximumSessions( 10 )
+//                .expiredUrl( "/dhis-web-commons-security/logout.action" )
+//                .sessionRegistry( sessionRegistry() );
+//        }
+//    }
 
     /**
      * This configuration class is responsible for setting up the form login and everything related to the web pages.
@@ -120,34 +119,34 @@ public class DhisWebCommonsWebSecurityConfig
     @Order( 2200 )
     public static class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter
     {
-        @Autowired
-        private TwoFactorWebAuthenticationDetailsSource twoFactorWebAuthenticationDetailsSource;
+//        @Autowired
+//        private TwoFactorWebAuthenticationDetailsSource twoFactorWebAuthenticationDetailsSource;
+//
+//        @Autowired
+//        private I18nManager i18nManager;
+//
+//        @Autowired
+//        private DhisConfigurationProvider configurationProvider;
+//
+//        @Autowired
+//        private ExternalAccessVoter externalAccessVoter;
+//
+//        @Autowired
+//        TwoFactorAuthenticationProvider twoFactorAuthenticationProvider;
+//
+//        @Autowired
+//        private DhisOidcLogoutSuccessHandler dhisOidcLogoutSuccessHandler;
+//
+//        @Autowired
+//        @Qualifier( "customLdapAuthenticationProvider" )
+//        CustomLdapAuthenticationProvider customLdapAuthenticationProvider;
 
-        @Autowired
-        private I18nManager i18nManager;
-
-        @Autowired
-        private DhisConfigurationProvider configurationProvider;
-
-        @Autowired
-        private ExternalAccessVoter externalAccessVoter;
-
-        @Autowired
-        TwoFactorAuthenticationProvider twoFactorAuthenticationProvider;
-
-        @Autowired
-        private DhisOidcLogoutSuccessHandler dhisOidcLogoutSuccessHandler;
-
-        @Autowired
-        @Qualifier( "customLdapAuthenticationProvider" )
-        CustomLdapAuthenticationProvider customLdapAuthenticationProvider;
-
-        public void configure( AuthenticationManagerBuilder auth )
-            throws Exception
-        {
-            auth.authenticationProvider( twoFactorAuthenticationProvider );
-            auth.authenticationProvider( customLdapAuthenticationProvider );
-        }
+//        public void configure( AuthenticationManagerBuilder auth )
+//            throws Exception
+//        {
+//            auth.authenticationProvider( twoFactorAuthenticationProvider );
+////            auth.authenticationProvider( customLdapAuthenticationProvider );
+//        }
 
         @Override
         public void configure( WebSecurity web )
@@ -156,88 +155,89 @@ public class DhisWebCommonsWebSecurityConfig
             super.configure( web );
             web
                 .ignoring()
-                .antMatchers( "/dhis-web-commons/javascripts/**" )
-                .antMatchers( "/dhis-web-commons/css/**" )
-                .antMatchers( "/dhis-web-commons/flags/**" )
-                .antMatchers( "/dhis-web-commons/fonts/**" )
-                .antMatchers( "/dhis-web-commons/i18nJavaScript.action" )
-                .antMatchers( "/api/files/style/external" )
-                .antMatchers( "/external-static/**" )
-                .antMatchers( "/favicon.ico" );
+            .antMatchers("/**");
+//                .antMatchers( "/dhis-web-commons/javascripts/**" )
+//                .antMatchers( "/dhis-web-commons/css/**" )
+//                .antMatchers( "/dhis-web-commons/flags/**" )
+//                .antMatchers( "/dhis-web-commons/fonts/**" )
+//                .antMatchers( "/dhis-web-commons/i18nJavaScript.action" )
+//                .antMatchers( "/api/files/style/external" )
+//                .antMatchers( "/external-static/**" )
+//                .antMatchers( "/favicon.ico" );
         }
 
         @Override
         protected void configure( HttpSecurity http )
             throws Exception
         {
-            http
-                .authorizeRequests()
+//            http
+//                .authorizeRequests()
+//
+//                .accessDecisionManager( accessDecisionManager() )
+//
+//                .requestMatchers( analyticsPluginResources() ).permitAll()
+//
+//                .antMatchers( "/dhis-web-commons/security/*" ).permitAll()
+//                .antMatchers( "/oauth2/**" ).permitAll()
+//                .antMatchers( "/dhis-web-dashboard/**" ).hasAnyAuthority( "ALL", "M_dhis-web-dashboard" )
+//                .antMatchers( "/dhis-web-pivot/**" ).hasAnyAuthority( "ALL", "M_dhis-web-pivot" )
+//                .antMatchers( "/dhis-web-visualizer/**" ).hasAnyAuthority( "ALL", "M_dhis-web-visualizer" )
+//                .antMatchers( "/dhis-web-data-visualizer/**" ).hasAnyAuthority( "ALL", "M_dhis-web-data-visualizer" )
+//                .antMatchers( "/dhis-web-mapping/**" ).hasAnyAuthority( "ALL", "M_dhis-web-mapping" )
+//                .antMatchers( "/dhis-web-maps/**" ).hasAnyAuthority( "ALL", "M_dhis-web-maps" )
+//                .antMatchers( "/dhis-web-event-reports/**" ).hasAnyAuthority( "ALL", "M_dhis-web-event-reports" )
+//                .antMatchers( "/dhis-web-event-visualizer/**" ).hasAnyAuthority( "ALL", "M_dhis-web-event-visualizer" )
+//                .antMatchers( "/dhis-web-interpretation/**" ).hasAnyAuthority( "ALL", "M_dhis-web-interpretation" )
+//                .antMatchers( "/dhis-web-settings/**" ).hasAnyAuthority( "ALL", "M_dhis-web-settings" )
+//                .antMatchers( "/dhis-web-maintenance/**" ).hasAnyAuthority( "ALL", "M_dhis-web-maintenance" )
+//                .antMatchers( "/dhis-web-app-management/**" ).hasAnyAuthority( "ALL", "M_dhis-web-app-management" )
+//                .antMatchers( "/dhis-web-usage-analytics/**" ).hasAnyAuthority( "ALL", "M_dhis-web-usage-analytics" )
+//                .antMatchers( "/dhis-web-event-capture/**" ).hasAnyAuthority( "ALL", "M_dhis-web-event-capture" )
+//                .antMatchers( "/dhis-web-tracker-capture/**" ).hasAnyAuthority( "ALL", "M_dhis-web-tracker-capture" )
+//                .antMatchers( "/dhis-web-cache-cleaner/**" ).hasAnyAuthority( "ALL", "M_dhis-web-cache-cleaner" )
+//                .antMatchers( "/dhis-web-data-administration/**" )
+//                .hasAnyAuthority( "ALL", "M_dhis-web-data-administration" )
+//                .antMatchers( "/dhis-web-data-quality/**" ).hasAnyAuthority( "ALL", "M_dhis-web-data-quality" )
+//                .antMatchers( "/dhis-web-messaging/**" ).hasAnyAuthority( "ALL", "M_dhis-web-messaging" )
+//                .antMatchers( "/dhis-web-datastore/**" ).hasAnyAuthority( "ALL", "M_dhis-web-datastore" )
+//                .antMatchers( "/dhis-web-scheduler/**" ).hasAnyAuthority( "ALL", "M_dhis-web-scheduler" )
+//                .antMatchers( "/dhis-web-sms-configuration/**" )
+//                .hasAnyAuthority( "ALL", "M_dhis-web-sms-configuration" )
+//                .antMatchers( "/dhis-web-user/**" ).hasAnyAuthority( "ALL", "M_dhis-web-user" )
+//
+//                .antMatchers( "/**" ).authenticated()
+//                .and()
+//
+//                .formLogin()
+//                .authenticationDetailsSource( twoFactorWebAuthenticationDetailsSource )
+//                .loginPage( "/dhis-web-commons/security/login.action" )
+//                .usernameParameter( "j_username" ).passwordParameter( "j_password" )
+//                .loginProcessingUrl( "/dhis-web-commons-security/login.action" )
+//                .failureHandler( authenticationFailureHandler() )
+//                .successHandler( authenticationSuccessHandler() )
+//                .permitAll()
+//                .and()
+//
+//                .logout()
+//                .logoutUrl( "/dhis-web-commons-security/logout.action" )
+//                .logoutSuccessUrl( "/" )
+//                .logoutSuccessHandler( dhisOidcLogoutSuccessHandler )
+//                .deleteCookies( "JSESSIONID" )
+//                .permitAll()
+//                .and()
+//
+//                .exceptionHandling()
+//                .authenticationEntryPoint( entryPoint() )
+//
+//                .and()
+//
+//                .csrf()
+//                .disable()
+//
+//                .addFilterBefore( CorsFilter.get(), BasicAuthenticationFilter.class )
+//                .addFilterBefore( CustomAuthenticationFilter.get(), UsernamePasswordAuthenticationFilter.class );
 
-                .accessDecisionManager( accessDecisionManager() )
-
-                .requestMatchers( analyticsPluginResources() ).permitAll()
-
-                .antMatchers( "/dhis-web-commons/security/*" ).permitAll()
-                .antMatchers( "/oauth2/**" ).permitAll()
-                .antMatchers( "/dhis-web-dashboard/**" ).hasAnyAuthority( "ALL", "M_dhis-web-dashboard" )
-                .antMatchers( "/dhis-web-pivot/**" ).hasAnyAuthority( "ALL", "M_dhis-web-pivot" )
-                .antMatchers( "/dhis-web-visualizer/**" ).hasAnyAuthority( "ALL", "M_dhis-web-visualizer" )
-                .antMatchers( "/dhis-web-data-visualizer/**" ).hasAnyAuthority( "ALL", "M_dhis-web-data-visualizer" )
-                .antMatchers( "/dhis-web-mapping/**" ).hasAnyAuthority( "ALL", "M_dhis-web-mapping" )
-                .antMatchers( "/dhis-web-maps/**" ).hasAnyAuthority( "ALL", "M_dhis-web-maps" )
-                .antMatchers( "/dhis-web-event-reports/**" ).hasAnyAuthority( "ALL", "M_dhis-web-event-reports" )
-                .antMatchers( "/dhis-web-event-visualizer/**" ).hasAnyAuthority( "ALL", "M_dhis-web-event-visualizer" )
-                .antMatchers( "/dhis-web-interpretation/**" ).hasAnyAuthority( "ALL", "M_dhis-web-interpretation" )
-                .antMatchers( "/dhis-web-settings/**" ).hasAnyAuthority( "ALL", "M_dhis-web-settings" )
-                .antMatchers( "/dhis-web-maintenance/**" ).hasAnyAuthority( "ALL", "M_dhis-web-maintenance" )
-                .antMatchers( "/dhis-web-app-management/**" ).hasAnyAuthority( "ALL", "M_dhis-web-app-management" )
-                .antMatchers( "/dhis-web-usage-analytics/**" ).hasAnyAuthority( "ALL", "M_dhis-web-usage-analytics" )
-                .antMatchers( "/dhis-web-event-capture/**" ).hasAnyAuthority( "ALL", "M_dhis-web-event-capture" )
-                .antMatchers( "/dhis-web-tracker-capture/**" ).hasAnyAuthority( "ALL", "M_dhis-web-tracker-capture" )
-                .antMatchers( "/dhis-web-cache-cleaner/**" ).hasAnyAuthority( "ALL", "M_dhis-web-cache-cleaner" )
-                .antMatchers( "/dhis-web-data-administration/**" )
-                .hasAnyAuthority( "ALL", "M_dhis-web-data-administration" )
-                .antMatchers( "/dhis-web-data-quality/**" ).hasAnyAuthority( "ALL", "M_dhis-web-data-quality" )
-                .antMatchers( "/dhis-web-messaging/**" ).hasAnyAuthority( "ALL", "M_dhis-web-messaging" )
-                .antMatchers( "/dhis-web-datastore/**" ).hasAnyAuthority( "ALL", "M_dhis-web-datastore" )
-                .antMatchers( "/dhis-web-scheduler/**" ).hasAnyAuthority( "ALL", "M_dhis-web-scheduler" )
-                .antMatchers( "/dhis-web-sms-configuration/**" )
-                .hasAnyAuthority( "ALL", "M_dhis-web-sms-configuration" )
-                .antMatchers( "/dhis-web-user/**" ).hasAnyAuthority( "ALL", "M_dhis-web-user" )
-
-                .antMatchers( "/**" ).authenticated()
-                .and()
-
-                .formLogin()
-                .authenticationDetailsSource( twoFactorWebAuthenticationDetailsSource )
-                .loginPage( "/dhis-web-commons/security/login.action" )
-                .usernameParameter( "j_username" ).passwordParameter( "j_password" )
-                .loginProcessingUrl( "/dhis-web-commons-security/login.action" )
-                .failureHandler( authenticationFailureHandler() )
-                .successHandler( authenticationSuccessHandler() )
-                .permitAll()
-                .and()
-
-                .logout()
-                .logoutUrl( "/dhis-web-commons-security/logout.action" )
-                .logoutSuccessUrl( "/" )
-                .logoutSuccessHandler( dhisOidcLogoutSuccessHandler )
-                .deleteCookies( "JSESSIONID" )
-                .permitAll()
-                .and()
-
-                .exceptionHandling()
-                .authenticationEntryPoint( entryPoint() )
-
-                .and()
-
-                .csrf()
-                .disable()
-
-                .addFilterBefore( CorsFilter.get(), BasicAuthenticationFilter.class )
-                .addFilterBefore( CustomAuthenticationFilter.get(), UsernamePasswordAuthenticationFilter.class );
-
-            setHttpHeaders( http );
+//            setHttpHeaders( http );
         }
 
         @Bean
@@ -247,19 +247,19 @@ public class DhisWebCommonsWebSecurityConfig
             return new Http401LoginUrlAuthenticationEntryPoint( "/dhis-web-commons/security/login.action" );
         }
 
-        @Bean
-        public DefaultAuthenticationSuccessHandler authenticationSuccessHandler()
-        {
-            DefaultAuthenticationSuccessHandler successHandler = new DefaultAuthenticationSuccessHandler();
-            successHandler.setRedirectStrategy( mappedRedirectStrategy() );
-            if ( configurationProvider.getProperty( ConfigurationKey.SYSTEM_SESSION_TIMEOUT ) != null )
-            {
-                successHandler.setSessionTimeout(
-                    Integer.parseInt( configurationProvider.getProperty( ConfigurationKey.SYSTEM_SESSION_TIMEOUT ) ) );
-            }
-
-            return successHandler;
-        }
+//        @Bean
+//        public DefaultAuthenticationSuccessHandler authenticationSuccessHandler()
+//        {
+//            DefaultAuthenticationSuccessHandler successHandler = new DefaultAuthenticationSuccessHandler();
+//            successHandler.setRedirectStrategy( mappedRedirectStrategy() );
+//            if ( configurationProvider.getProperty( ConfigurationKey.SYSTEM_SESSION_TIMEOUT ) != null )
+//            {
+//                successHandler.setSessionTimeout(
+//                    Integer.parseInt( configurationProvider.getProperty( ConfigurationKey.SYSTEM_SESSION_TIMEOUT ) ) );
+//            }
+//
+//            return successHandler;
+//        }
 
         @Bean
         public MappedRedirectStrategy mappedRedirectStrategy()
@@ -271,22 +271,22 @@ public class DhisWebCommonsWebSecurityConfig
             return mappedRedirectStrategy;
         }
 
-        @Bean
-        public CustomExceptionMappingAuthenticationFailureHandler authenticationFailureHandler()
-        {
-            CustomExceptionMappingAuthenticationFailureHandler handler =
-                new CustomExceptionMappingAuthenticationFailureHandler( i18nManager );
-
-            // Handles the special case when a user failed to login because it has expired...
-            handler.setExceptionMappings(
-                ImmutableMap.of(
-                    "org.springframework.security.authentication.CredentialsExpiredException",
-                    "/dhis-web-commons/security/expired.action" ) );
-
-            handler.setDefaultFailureUrl( "/dhis-web-commons/security/login.action?failed=true" );
-
-            return handler;
-        }
+//        @Bean
+//        public CustomExceptionMappingAuthenticationFailureHandler authenticationFailureHandler()
+//        {
+//            CustomExceptionMappingAuthenticationFailureHandler handler =
+//                new CustomExceptionMappingAuthenticationFailureHandler( i18nManager );
+//
+//            // Handles the special case when a user failed to login because it has expired...
+//            handler.setExceptionMappings(
+//                ImmutableMap.of(
+//                    "org.springframework.security.authentication.CredentialsExpiredException",
+//                    "/dhis-web-commons/security/expired.action" ) );
+//
+//            handler.setDefaultFailureUrl( "/dhis-web-commons/security/login.action?failed=true" );
+//
+//            return handler;
+//        }
 
         @Bean
         public DeviceResolver deviceResolver()
@@ -356,7 +356,7 @@ public class DhisWebCommonsWebSecurityConfig
                 new UnanimousBased( ImmutableList.of( new SimpleAccessVoter( "ALL" ) ) ),
                 new UnanimousBased( ImmutableList.of( actionAccessVoter(), moduleAccessVoter() ) ),
                 new UnanimousBased( ImmutableList.of( webExpressionVoter() ) ),
-                new UnanimousBased( ImmutableList.of( externalAccessVoter ) ),
+//                new UnanimousBased( ImmutableList.of( externalAccessVoter ) ),
                 new UnanimousBased( ImmutableList.of( new AuthenticatedVoter() ) )
             );
             return new LogicalOrAccessDecisionManager( decisionVoters );

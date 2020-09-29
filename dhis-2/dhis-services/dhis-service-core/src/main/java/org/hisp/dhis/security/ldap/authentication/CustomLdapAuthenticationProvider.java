@@ -40,27 +40,30 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @author Viet Nguyen <viet@dhis2.org>
  */
 @Component
-public class CustomLdapAuthenticationProvider extends LdapAuthenticationProvider
+public class CustomLdapAuthenticationProvider
+
 {
-    private final DhisConfigurationProvider configurationProvider;
-
-    public CustomLdapAuthenticationProvider( LdapAuthenticator authenticator,
-        LdapAuthoritiesPopulator authoritiesPopular, DhisConfigurationProvider configurationProvider )
-    {
-        super( authenticator, authoritiesPopular );
-
-        checkNotNull( configurationProvider );
-        this.configurationProvider = configurationProvider;
-    }
-
-    @Override
-    public boolean supports( Class<?> authentication )
-    {
-        if ( !configurationProvider.isLdapConfigured() )
-        {
-            return false;
-        }
-
-        return super.supports( authentication );
-    }
+//        extends LdapAuthenticationProvider
+//
+//    private final DhisConfigurationProvider configurationProvider;
+//
+//    public CustomLdapAuthenticationProvider( LdapAuthenticator authenticator,
+//        LdapAuthoritiesPopulator authoritiesPopular, DhisConfigurationProvider configurationProvider )
+//    {
+//        super( authenticator, authoritiesPopular );
+//
+//        checkNotNull( configurationProvider );
+//        this.configurationProvider = configurationProvider;
+//    }
+//
+//    @Override
+//    public boolean supports( Class<?> authentication )
+//    {
+//        if ( !configurationProvider.isLdapConfigured() )
+//        {
+//            return false;
+//        }
+//
+//        return super.supports( authentication );
+//    }
 }

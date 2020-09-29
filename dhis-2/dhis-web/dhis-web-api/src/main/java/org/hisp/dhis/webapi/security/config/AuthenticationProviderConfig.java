@@ -58,81 +58,81 @@ import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 @EnableWebSecurity
 public class AuthenticationProviderConfig
 {
-    @Autowired
-    private DhisConfigurationProvider configurationProvider;
-
-    @Autowired
-    TwoFactorAuthenticationProvider twoFactorAuthenticationProvider;
-
-    @Autowired
-    DefaultClientDetailsUserDetailsService defaultClientDetailsUserDetailsService;
-
-    @Bean
-    public TwoFactorWebAuthenticationDetailsSource twoFactorWebAuthenticationDetailsSource()
-    {
-        return new TwoFactorWebAuthenticationDetailsSource();
-    }
-
-    @Bean(name ="customLdapAuthenticationProvider")
-    CustomLdapAuthenticationProvider customLdapAuthenticationProvider()
-    {
-        return new CustomLdapAuthenticationProvider( dhisBindAuthenticator(),
-            userDetailsServiceLdapAuthoritiesPopulator( defaultClientDetailsUserDetailsService ),
-            configurationProvider );
-    }
-
-    @Bean
-    public DefaultSpringSecurityContextSource defaultSpringSecurityContextSource()
-    {
-        DefaultSpringSecurityContextSource defaultSpringSecurityContextSource = new DefaultSpringSecurityContextSource(
-            configurationProvider.getProperty( ConfigurationKey.LDAP_URL ) );
-        defaultSpringSecurityContextSource
-            .setUserDn( configurationProvider.getProperty( ConfigurationKey.LDAP_MANAGER_DN ) );
-        defaultSpringSecurityContextSource
-            .setPassword( configurationProvider.getProperty( ConfigurationKey.LDAP_MANAGER_PASSWORD ) );
-
-        return defaultSpringSecurityContextSource;
-    }
-
-    @Bean
-    public FilterBasedLdapUserSearch filterBasedLdapUserSearch()
-    {
-        return new FilterBasedLdapUserSearch( configurationProvider.getProperty( ConfigurationKey.LDAP_SEARCH_BASE ),
-            configurationProvider.getProperty( ConfigurationKey.LDAP_SEARCH_FILTER ),
-            defaultSpringSecurityContextSource() );
-    }
-
-    @Bean
-    @DependsOn( "org.hisp.dhis.user.UserService" )
-    public DhisBindAuthenticator dhisBindAuthenticator()
-    {
-        DhisBindAuthenticator dhisBindAuthenticator = new DhisBindAuthenticator( defaultSpringSecurityContextSource() );
-        dhisBindAuthenticator.setUserSearch( filterBasedLdapUserSearch() );
-        return dhisBindAuthenticator;
-    }
-
-    @Bean
-    public UserDetailsServiceLdapAuthoritiesPopulator userDetailsServiceLdapAuthoritiesPopulator(
-        UserDetailsService userDetailsService )
-    {
-        return new UserDetailsServiceLdapAuthoritiesPopulator( userDetailsService );
-    }
-
-    @Bean
-    public DefaultAuthenticationEventPublisher authenticationEventPublisher()
-    {
-        return new DefaultAuthenticationEventPublisher();
-    }
-
-    @Bean
-    public AuthenticationLoggerListener authenticationLoggerListener()
-    {
-        return new AuthenticationLoggerListener();
-    }
-
-    @Bean
-    public AuthenticationListener authenticationListener()
-    {
-        return new AuthenticationListener();
-    }
+//    @Autowired
+//    private DhisConfigurationProvider configurationProvider;
+//
+//    @Autowired
+//    TwoFactorAuthenticationProvider twoFactorAuthenticationProvider;
+//
+//    @Autowired
+//    DefaultClientDetailsUserDetailsService defaultClientDetailsUserDetailsService;
+//
+//    @Bean
+//    public TwoFactorWebAuthenticationDetailsSource twoFactorWebAuthenticationDetailsSource()
+//    {
+//        return new TwoFactorWebAuthenticationDetailsSource();
+//    }
+//
+//    @Bean(name ="customLdapAuthenticationProvider")
+//    CustomLdapAuthenticationProvider customLdapAuthenticationProvider()
+//    {
+//        return new CustomLdapAuthenticationProvider( dhisBindAuthenticator(),
+//            userDetailsServiceLdapAuthoritiesPopulator( defaultClientDetailsUserDetailsService ),
+//            configurationProvider );
+//    }
+//
+//    @Bean
+//    public DefaultSpringSecurityContextSource defaultSpringSecurityContextSource()
+//    {
+//        DefaultSpringSecurityContextSource defaultSpringSecurityContextSource = new DefaultSpringSecurityContextSource(
+//            configurationProvider.getProperty( ConfigurationKey.LDAP_URL ) );
+//        defaultSpringSecurityContextSource
+//            .setUserDn( configurationProvider.getProperty( ConfigurationKey.LDAP_MANAGER_DN ) );
+//        defaultSpringSecurityContextSource
+//            .setPassword( configurationProvider.getProperty( ConfigurationKey.LDAP_MANAGER_PASSWORD ) );
+//
+//        return defaultSpringSecurityContextSource;
+//    }
+//
+//    @Bean
+//    public FilterBasedLdapUserSearch filterBasedLdapUserSearch()
+//    {
+//        return new FilterBasedLdapUserSearch( configurationProvider.getProperty( ConfigurationKey.LDAP_SEARCH_BASE ),
+//            configurationProvider.getProperty( ConfigurationKey.LDAP_SEARCH_FILTER ),
+//            defaultSpringSecurityContextSource() );
+//    }
+//
+//    @Bean
+//    @DependsOn( "org.hisp.dhis.user.UserService" )
+//    public DhisBindAuthenticator dhisBindAuthenticator()
+//    {
+//        DhisBindAuthenticator dhisBindAuthenticator = new DhisBindAuthenticator( defaultSpringSecurityContextSource() );
+//        dhisBindAuthenticator.setUserSearch( filterBasedLdapUserSearch() );
+//        return dhisBindAuthenticator;
+//    }
+//
+//    @Bean
+//    public UserDetailsServiceLdapAuthoritiesPopulator userDetailsServiceLdapAuthoritiesPopulator(
+//        UserDetailsService userDetailsService )
+//    {
+//        return new UserDetailsServiceLdapAuthoritiesPopulator( userDetailsService );
+//    }
+//
+//    @Bean
+//    public DefaultAuthenticationEventPublisher authenticationEventPublisher()
+//    {
+//        return new DefaultAuthenticationEventPublisher();
+//    }
+//
+//    @Bean
+//    public AuthenticationLoggerListener authenticationLoggerListener()
+//    {
+//        return new AuthenticationLoggerListener();
+//    }
+//
+//    @Bean
+//    public AuthenticationListener authenticationListener()
+//    {
+//        return new AuthenticationListener();
+//    }
 }
