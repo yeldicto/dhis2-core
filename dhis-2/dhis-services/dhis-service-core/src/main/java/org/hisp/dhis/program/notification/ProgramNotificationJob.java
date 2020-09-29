@@ -35,8 +35,12 @@ import org.hisp.dhis.scheduling.JobType;
 import org.hisp.dhis.system.notification.NotificationLevel;
 import org.hisp.dhis.system.notification.Notifier;
 import org.hisp.dhis.system.util.Clock;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContextEvent;
 import java.util.Calendar;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -108,5 +112,4 @@ public class ProgramNotificationJob extends AbstractJob
         programNotificationService.sendScheduledNotificationsForDay( calendar.getTime() );
         programNotificationService.sendScheduledNotifications();
     }
-
 }

@@ -59,6 +59,8 @@ import org.hisp.dhis.program.ProgramStageInstanceStore;
 import org.hisp.dhis.program.ProgramTrackedEntityAttribute;
 import org.hisp.dhis.program.message.ProgramMessage;
 import org.hisp.dhis.program.message.ProgramMessageService;
+import org.hisp.dhis.program.notification.template.snapshot.NotificationTemplateMapper;
+import org.hisp.dhis.program.notification.template.snapshot.NotificationTemplateService;
 import org.hisp.dhis.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValue;
@@ -115,6 +117,8 @@ public class ProgramNotificationServiceTest extends DhisConvenienceTest
     @Mock
     private ProgramNotificationTemplateStore notificationTemplateStore;
 
+    private NotificationTemplateMapper notificationTemplateMapper = new NotificationTemplateMapper();
+
     private DefaultProgramNotificationService programNotificationService;
 
     private Set<ProgramInstance> programInstances = new HashSet<>();
@@ -162,7 +166,7 @@ public class ProgramNotificationServiceTest extends DhisConvenienceTest
     {
         programNotificationService = new DefaultProgramNotificationService( this.programMessageService,
             this.messageService, this.programInstanceStore, this.programStageInstanceStore, this.manager,
-            this.programNotificationRenderer, this.programStageNotificationRenderer, notificationTemplateStore );
+            this.programNotificationRenderer, this.programStageNotificationRenderer, notificationTemplateStore, notificationTemplateMapper );
 
         setUpInstances();
 
@@ -607,7 +611,7 @@ public class ProgramNotificationServiceTest extends DhisConvenienceTest
         programNotificationTemplateForToday = createProgramNotificationTemplate( TEMPLATE_NAME, 0, NotificationTrigger.PROGRAM_RULE, ProgramNotificationRecipient.TRACKED_ENTITY_INSTANCE, today );
 
         programNotificationInstaceForToday = new ProgramNotificationInstance();
-        programNotificationInstaceForToday.setProgramNotificationTemplate( programNotificationTemplateForToday );
+        programNotificationInstaceForToday.setProgramNotificationTemplateSnapshot( notificationTemplateMapper.toTemplateSnapshot( programNotificationTemplateForToday ) );
         programNotificationInstaceForToday.setName( programNotificationTemplateForToday.getName() );
         programNotificationInstaceForToday.setAutoFields();
         programNotificationInstaceForToday.setScheduledAt( today );

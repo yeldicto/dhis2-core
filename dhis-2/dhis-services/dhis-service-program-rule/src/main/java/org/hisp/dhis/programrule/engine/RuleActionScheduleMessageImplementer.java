@@ -28,6 +28,7 @@ package org.hisp.dhis.programrule.engine;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.apache.activemq.artemis.core.server.management.NotificationService;
 import org.hisp.dhis.common.IdentifiableObjectStore;
 import org.hisp.dhis.notification.logging.ExternalNotificationLogEntry;
 import org.hisp.dhis.notification.logging.NotificationLoggingService;
@@ -39,6 +40,7 @@ import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.program.notification.ProgramNotificationInstance;
 import org.hisp.dhis.program.notification.ProgramNotificationTemplate;
 import org.hisp.dhis.program.notification.ProgramNotificationTemplateStore;
+import org.hisp.dhis.program.notification.template.snapshot.NotificationTemplateService;
 import org.hisp.dhis.rules.models.RuleAction;
 import org.hisp.dhis.rules.models.RuleActionScheduleMessage;
 import org.hisp.dhis.rules.models.RuleEffect;
@@ -60,15 +62,18 @@ public class RuleActionScheduleMessageImplementer extends NotificationRuleAction
     // -------------------------------------------------------------------------
 
     private final IdentifiableObjectStore<ProgramNotificationInstance> programNotificationInstanceStore;
+    private final NotificationTemplateService notificationTemplateService;
 
     public RuleActionScheduleMessageImplementer( ProgramNotificationTemplateStore programNotificationTemplateStore,
          NotificationLoggingService notificationLoggingService,
          ProgramInstanceService programInstanceService,
          ProgramStageInstanceService programStageInstanceService,
-         @Qualifier( "org.hisp.dhis.program.notification.ProgramNotificationInstanceStore" )IdentifiableObjectStore<ProgramNotificationInstance> programNotificationInstanceStore )
+         @Qualifier( "org.hisp.dhis.program.notification.ProgramNotificationInstanceStore" )IdentifiableObjectStore<ProgramNotificationInstance> programNotificationInstanceStore,
+         NotificationTemplateService notificationTemplateService)
     {
         super(programNotificationTemplateStore, notificationLoggingService, programInstanceService, programStageInstanceService);
         this.programNotificationInstanceStore = programNotificationInstanceStore;
+        this.notificationTemplateService = notificationTemplateService;
     }
 
     @Override
@@ -96,7 +101,7 @@ public class RuleActionScheduleMessageImplementer extends NotificationRuleAction
             return;
         }
 
-        ProgramNotificationInstance notificationInstance = createNotificationInstance( template, date );
+        ProgramNotificationInstance notificationInstance = notificationTemplateService.createNotificationInstance( template, date );
         notificationInstance.setProgramStageInstance( null );
         notificationInstance.setProgramInstance( programInstance );
 
@@ -128,7 +133,7 @@ public class RuleActionScheduleMessageImplementer extends NotificationRuleAction
             return;
         }
 
-        ProgramNotificationInstance notificationInstance = createNotificationInstance( template, date );
+        ProgramNotificationInstance notificationInstance = notificationTemplateService.createNotificationInstance( template, date );
         notificationInstance.setProgramStageInstance( programStageInstance );
         notificationInstance.setProgramInstance( null );
 
