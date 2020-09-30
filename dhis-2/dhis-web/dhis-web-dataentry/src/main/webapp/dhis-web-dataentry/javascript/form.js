@@ -251,12 +251,7 @@ $( document ).ready( function()
 dhis2.de.manageOfflineData = function()
 {
     if( dhis2.de.storageManager.hasLocalData() ) {
-        var message = i18n_need_to_sync_notification
-          + ' <button id="sync_button" type="button">' + i18n_sync_now + '</button>';
-
-        setHeaderMessage(message);
-
-        $('#sync_button').bind('click', dhis2.de.uploadLocalData);
+        dhis2.de.uploadLocalData();
     }
     else {
         if( dhis2.de.emptyOrganisationUnits ) {
