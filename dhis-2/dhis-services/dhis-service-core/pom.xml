@@ -67,7 +67,7 @@
       <artifactId>dhis-support-expression-parser</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hisp.dhis.parser</groupId>
+      <groupId>org.hisp.dhis</groupId>
       <artifactId>dhis-antlr-expression-parser</artifactId>
     </dependency>
     <dependency>

@@ -26,7 +26,7 @@
       <artifactId>dhis-support-jdbc</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hisp.dhis.parser</groupId>
+      <groupId>org.hisp.dhis</groupId>
       <artifactId>dhis-antlr-expression-parser</artifactId>
     </dependency>
 
