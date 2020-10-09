@@ -67,32 +67,32 @@ public class DeletedObjectPostInsertEventListener
     @Override
     public void onPostInsert( PostInsertEvent event )
     {
-        if ( IdentifiableObject.class.isInstance( event.getEntity() )
-            && MetadataObject.class.isInstance( event.getEntity() )
-            && !EmbeddedObject.class.isInstance( event.getEntity() ) )
-        {
-            StatelessSession session = event.getPersister().getFactory().openStatelessSession();
-            session.beginTransaction();
-
-            try
-            {
-                List<DeletedObject> deletedObjects = deletedObjectService
-                    .getDeletedObjects( new DeletedObjectQuery( (IdentifiableObject) event.getEntity() ) );
-
-                deletedObjects.forEach( deletedObject -> session.delete( deletedObject ) );
-
-                session.getTransaction().commit();
-            }
-            catch ( Exception ex )
-            {
-                log.error( "Failed to delete DeletedObject for:" + event.getEntity() );
-                session.getTransaction().rollback();
-            }
-            finally
-            {
-                session.close();
-            }
-        }
+//        if ( IdentifiableObject.class.isInstance( event.getEntity() )
+//            && MetadataObject.class.isInstance( event.getEntity() )
+//            && !EmbeddedObject.class.isInstance( event.getEntity() ) )
+//        {
+//            StatelessSession session = event.getPersister().getFactory().openStatelessSession();
+//            session.beginTransaction();
+//
+//            try
+//            {
+//                List<DeletedObject> deletedObjects = deletedObjectService
+//                    .getDeletedObjects( new DeletedObjectQuery( (IdentifiableObject) event.getEntity() ) );
+//
+//                deletedObjects.forEach( deletedObject -> session.delete( deletedObject ) );
+//
+//                session.getTransaction().commit();
+//            }
+//            catch ( Exception ex )
+//            {
+//                log.error( "Failed to delete DeletedObject for:" + event.getEntity() );
+//                session.getTransaction().rollback();
+//            }
+//            finally
+//            {
+//                session.close();
+//            }
+//        }
     }
 
     @Override

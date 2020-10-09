@@ -50,32 +50,32 @@ public class DeletedObjectPostDeleteEventListener implements PostCommitDeleteEve
     @Override
     public void onPostDelete( PostDeleteEvent event )
     {
-        if ( IdentifiableObject.class.isInstance( event.getEntity() )
-            && MetadataObject.class.isInstance( event.getEntity() )
-            && !EmbeddedObject.class.isInstance( event.getEntity() ) )
-        {
-            IdentifiableObject identifiableObject = (IdentifiableObject) event.getEntity();
-            DeletedObject deletedObject = new DeletedObject( identifiableObject );
-            deletedObject.setDeletedBy( getUsername() );
-
-            StatelessSession session = event.getPersister().getFactory().openStatelessSession();
-            session.beginTransaction();
-
-            try
-            {
-                session.insert( deletedObject );
-                session.getTransaction().commit();
-            }
-            catch ( Exception ex )
-            {
-                log.error( "Failed to save DeletedObject: "+ deletedObject );
-                session.getTransaction().rollback();
-            }
-            finally
-            {
-                session.close();
-            }
-        }
+//        if ( IdentifiableObject.class.isInstance( event.getEntity() )
+//            && MetadataObject.class.isInstance( event.getEntity() )
+//            && !EmbeddedObject.class.isInstance( event.getEntity() ) )
+//        {
+//            IdentifiableObject identifiableObject = (IdentifiableObject) event.getEntity();
+//            DeletedObject deletedObject = new DeletedObject( identifiableObject );
+//            deletedObject.setDeletedBy( getUsername() );
+//
+//            StatelessSession session = event.getPersister().getFactory().openStatelessSession();
+//            session.beginTransaction();
+//
+//            try
+//            {
+//                session.insert( deletedObject );
+//                session.getTransaction().commit();
+//            }
+//            catch ( Exception ex )
+//            {
+//                log.error( "Failed to save DeletedObject: "+ deletedObject );
+//                session.getTransaction().rollback();
+//            }
+//            finally
+//            {
+//                session.close();
+//            }
+//        }
     }
 
     @Override
