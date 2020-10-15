@@ -121,6 +121,8 @@ public class HibernateConfig
         dataSource.setAcquireIncrement( 5 );
         dataSource.setMaxIdleTime( 7200 );
 
+        dataSource.setTestConnectionOnCheckin( true );
+
         return dataSource;
     }
 
