@@ -28,6 +28,13 @@ package org.hisp.dhis.trackedentityattributevalue;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.hisp.dhis.external.conf.ConfigurationKey.CHANGELOG_TRACKER;
+import static org.hisp.dhis.system.util.ValidationUtils.dataValueIsValid;
+
+import java.util.Collection;
+import java.util.List;
+
 import org.hisp.dhis.common.AuditType;
 import org.hisp.dhis.common.IllegalQueryException;
 import org.hisp.dhis.external.conf.DhisConfigurationProvider;
@@ -41,13 +48,6 @@ import org.hisp.dhis.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import java.util.Collection;
-import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.hisp.dhis.system.util.ValidationUtils.dataValueIsValid;
-import static org.hisp.dhis.external.conf.ConfigurationKey.CHANGELOG_TRACKER;
 
 /**
  * @author Abyot Asalefew
@@ -181,7 +181,8 @@ public class DefaultTrackedEntityAttributeValueService
 
         attributeValue.setAutoFields();
 
-        if ( attributeValue.getAttribute().getValueType().isFile() && !addFileValue( attributeValue ) )
+        if ( attributeValue.getAttribute().getValueType().isFile() &&
+            !StringUtils.isEmpty( attributeValue.getValue() ) && !addFileValue( attributeValue ) )
         {
             throw new IllegalQueryException(
                 String.format( "FileResource with id '%s' not found", attributeValue.getValue() ) );
