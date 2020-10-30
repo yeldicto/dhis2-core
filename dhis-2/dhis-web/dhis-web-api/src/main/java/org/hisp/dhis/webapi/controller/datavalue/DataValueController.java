@@ -127,7 +127,7 @@ public class DataValueController
     @PreAuthorize( "hasRole('ALL') or hasRole('F_DATAVALUE_ADD')" )
     @RequestMapping( method = RequestMethod.POST )
     @ResponseStatus( HttpStatus.CREATED )
-    public void saveDataValue(
+    public void saveDataValueEndpoint(
         @RequestParam String de,
         @RequestParam( required = false ) String co,
         @RequestParam( required = false ) String cc,
@@ -141,7 +141,14 @@ public class DataValueController
         @RequestParam( required = false ) boolean force, HttpServletResponse response )
         throws WebMessageException
     {
+        saveDataValue( de, co, cc, cp, pe, ou, ds, value, comment, followUp, force );
+    }
 
+    public void saveDataValue( String de, String co, String cc, String cp,
+        String pe, String ou, String ds, String value, String comment,
+        Boolean followUp, boolean force )
+        throws WebMessageException
+    {
         boolean strictPeriods = (Boolean) systemSettingManager.getSystemSetting(SettingKey.DATA_IMPORT_STRICT_PERIODS);
 
         boolean strictCategoryOptionCombos = (Boolean) systemSettingManager.getSystemSetting(SettingKey.DATA_IMPORT_STRICT_CATEGORY_OPTION_COMBOS);

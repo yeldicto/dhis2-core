@@ -47,6 +47,7 @@ import org.hisp.dhis.fileresource.ImageFileDimension;
 import org.hisp.dhis.schema.descriptors.FileResourceSchemaDescriptor;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
+import org.hisp.dhis.webapi.controller.datavalue.DataValueController;
 import org.hisp.dhis.webapi.mvc.annotation.ApiVersion;
 import org.hisp.dhis.webapi.utils.FileResourceUtils;
 import org.hisp.dhis.common.DhisApiVersion;
@@ -66,6 +67,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static org.apache.commons.lang3.ObjectUtils.allNotNull;
+import static org.apache.commons.lang3.ObjectUtils.anyNotNull;
+import static org.hisp.dhis.fileresource.FileResourceDomain.DATA_VALUE;
 
 /**
  * @author Halvdan Hoem Grelland
@@ -89,6 +94,9 @@ public class FileResourceController
 
     @Autowired
     private FileResourceService fileResourceService;
+
+    @Autowired
+    private DataValueController dataValueController;
 
     // -------------------------------------------------------------------------
     // Controller methods
@@ -148,10 +156,24 @@ public class FileResourceController
 
     @PostMapping
     public WebMessage saveFileResource( @RequestParam MultipartFile file,
-        @RequestParam( defaultValue = "DATA_VALUE" ) FileResourceDomain domain
-    )
+        @RequestParam( defaultValue = "DATA_VALUE" ) FileResourceDomain domain,
+        @RequestParam( required = false ) String de,
+        @RequestParam( required = false ) String co,
+        @RequestParam( required = false ) String cc,
+        @RequestParam( required = false ) String cp,
+        @RequestParam( required = false ) String pe,
+        @RequestParam( required = false ) String ou,
+        @RequestParam( required = false ) String ds,
+        @RequestParam( required = false ) String comment,
+        @RequestParam( required = false ) Boolean followUp,
+        @RequestParam( required = false ) boolean force, HttpServletResponse response )
         throws WebMessageException, IOException
     {
+        if ( domain == DATA_VALUE && anyNotNull( de, pe, ou ) != allNotNull( de, pe, ou ) )
+        {
+            throw new WebMessageException( WebMessageUtils.conflict( "To save a file resource data value, de, pe, and ou must all be present." ) );
+        }
+
         String filename = StringUtils
             .defaultIfBlank( FilenameUtils.getName( file.getOriginalFilename() ), DEFAULT_FILENAME );
 
@@ -180,6 +202,11 @@ public class FileResourceController
 
         WebMessage webMessage = new WebMessage( Status.OK, HttpStatus.ACCEPTED );
         webMessage.setResponse( new FileResourceWebMessageResponse( fileResource ) );
+
+        if ( domain == DATA_VALUE && de != null )
+        {
+            dataValueController.saveDataValue( de, co, cc, cp, pe, ou, ds, fileResource.getUid(), comment, followUp, force );
+        }
 
         return webMessage;
     }
