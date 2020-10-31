@@ -151,9 +151,11 @@ public class AssignedUserValidationHookTest
 
         TrackerImportReport report = trackerImportService.importTracker( params );
 
-        assertTrue( report.getTrackerValidationReport().getErrorReports().size() == 1);
-        assertEquals( "Assigned user `123` is not a valid uid.", report.getTrackerValidationReport().getErrorReports().get( 0 ).getMessage() );
-        assertEquals( TrackerErrorCode.E1118, report.getTrackerValidationReport().getErrorReports().get( 0 ).getErrorCode() );
+        assertEquals( 1, report.getTrackerValidationReport().getErrorReports().size() );
+        assertEquals( "Assigned user `123` is not a valid uid.",
+            report.getTrackerValidationReport().getErrorReports().get( 0 ).getMessage() );
+        assertEquals( TrackerErrorCode.E1118,
+            report.getTrackerValidationReport().getErrorReports().get( 0 ).getErrorCode() );
     }
 
     @Test
@@ -181,9 +183,11 @@ public class AssignedUserValidationHookTest
 
         TrackerImportReport report = trackerImportService.importTracker( params );
 
-        assertTrue( report.getTrackerValidationReport().getErrorReports().size() == 1);
-        assertEquals( "Assigned user `A01234567890` is not a valid uid.", report.getTrackerValidationReport().getErrorReports().get( 0 ).getMessage() );
-        assertEquals( TrackerErrorCode.E1118, report.getTrackerValidationReport().getErrorReports().get( 0 ).getErrorCode() );
+        assertEquals( 1, report.getTrackerValidationReport().getErrorReports().size() );
+        assertEquals( "Assigned user `A01234567890` is not a valid uid.",
+            report.getTrackerValidationReport().getErrorReports().get( 0 ).getMessage() );
+        assertEquals( TrackerErrorCode.E1118,
+            report.getTrackerValidationReport().getErrorReports().get( 0 ).getErrorCode() );
     }
 
     @Test
