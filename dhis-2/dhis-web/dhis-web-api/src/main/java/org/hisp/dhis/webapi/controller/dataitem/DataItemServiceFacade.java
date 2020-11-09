@@ -34,6 +34,7 @@ import static java.util.Collections.emptyList;
 import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.hisp.dhis.common.DimensionItemType.REPORTING_RATE;
+import static org.hisp.dhis.webapi.controller.dataitem.helper.FilteringHelper.containsDimensionTypeFilter;
 import static org.hisp.dhis.webapi.controller.dataitem.helper.FilteringHelper.extractEntitiesFromInFilter;
 import static org.hisp.dhis.webapi.controller.dataitem.helper.FilteringHelper.extractEntityFromEqualFilter;
 import static org.hisp.dhis.webapi.controller.dataitem.helper.OrderingHelper.sort;
@@ -153,7 +154,7 @@ public class DataItemServiceFacade
      * DataItemViewObject objects. During the conversion process the dimensional
      * objects of type REPORTING_RATE will have the report metric attribute
      * respectively populated.
-     * 
+     *
      * @param dimensionalItems
      * @return the converted list of DataItemViewObject objects.
      */
@@ -200,7 +201,7 @@ public class DataItemServiceFacade
     {
         final Set<Class<? extends BaseDimensionalItemObject>> targetedEntities = new HashSet<>( 0 );
 
-        if ( isNotEmpty( filters ) )
+        if ( containsDimensionTypeFilter( filters ) )
         {
             final Iterator<String> iterator = filters.iterator();
 
