@@ -163,7 +163,7 @@ public class DataItemQueryController
         checkAuthorization( currentUser, targetEntities );
 
         // Retrieving the data items based on the input params.
-        final List<BaseDimensionalItemObject> dimensionalItems = dataItemServiceFacade.retrieveDataItemEntities(
+        final List<DataItemViewObject> dimensionalItems = dataItemServiceFacade.retrieveDataItemEntities(
             targetEntities, filters, options, orderParams );
 
         // Creating the response node.

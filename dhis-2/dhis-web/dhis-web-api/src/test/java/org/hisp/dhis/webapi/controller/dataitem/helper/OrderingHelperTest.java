@@ -42,9 +42,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hisp.dhis.common.BaseDimensionalItemObject;
 import org.hisp.dhis.common.IllegalQueryException;
 import org.hisp.dhis.dxf2.common.OrderParams;
+import org.hisp.dhis.webapi.controller.dataitem.DataItemViewObject;
 import org.junit.Test;
 
 public class OrderingHelperTest
@@ -53,7 +53,7 @@ public class OrderingHelperTest
     public void sortWhenDimensionalItemsIsEmpty()
     {
         // Given
-        final List<BaseDimensionalItemObject> emptyDimensionalItems = emptyList();
+        final List<DataItemViewObject> emptyDimensionalItems = emptyList();
         final OrderParams orderParams = new OrderParams();
 
         // When
@@ -67,8 +67,8 @@ public class OrderingHelperTest
     public void sortWhenOrderParamsIsNull()
     {
         // Given
-        final List<BaseDimensionalItemObject> anyDimensionalItems = mockDimensionalItems( 2 );
-        final List<BaseDimensionalItemObject> unchangedList = mockDimensionalItems( 2 );
+        final List<DataItemViewObject> anyDimensionalItems = mockDimensionalItems( 2 );
+        final List<DataItemViewObject> unchangedList = mockDimensionalItems( 2 );
         final OrderParams nullOrderParams = new OrderParams();
 
         // When
@@ -84,8 +84,8 @@ public class OrderingHelperTest
         // Given
         final Set<String> orderings = new HashSet<>( singletonList( "name:asc" ) );
         final OrderParams orderParams = new OrderParams( orderings );
-        final List<BaseDimensionalItemObject> anyDimensionalItems = mockDimensionalItems( 2 );
-        final List<BaseDimensionalItemObject> ascList = mockDimensionalItems( 2 );
+        final List<DataItemViewObject> anyDimensionalItems = mockDimensionalItems( 2 );
+        final List<DataItemViewObject> ascList = mockDimensionalItems( 2 );
         Collections.sort( ascList );
 
         // When
@@ -101,8 +101,8 @@ public class OrderingHelperTest
         // Given
         final Set<String> orderings = new HashSet<>( singletonList( "name:desc" ));
         final OrderParams orderParams = new OrderParams( orderings );
-        final List<BaseDimensionalItemObject> anyDimensionalItems = mockDimensionalItems( 2 );
-        final List<BaseDimensionalItemObject> ascList = mockDimensionalItems( 2 );
+        final List<DataItemViewObject> anyDimensionalItems = mockDimensionalItems( 2 );
+        final List<DataItemViewObject> ascList = mockDimensionalItems( 2 );
         Collections.reverse( ascList );
 
         // When
@@ -118,7 +118,7 @@ public class OrderingHelperTest
         // Given
         final Set<String> orderingWithNoValue = new HashSet<>( singletonList( "name:" ) );
         final OrderParams orderParams = new OrderParams( orderingWithNoValue );
-        final List<BaseDimensionalItemObject> anyDimensionalItems = mockDimensionalItems( 2 );
+        final List<DataItemViewObject> anyDimensionalItems = mockDimensionalItems( 2 );
 
 
         // When
@@ -126,13 +126,17 @@ public class OrderingHelperTest
             () -> sort( anyDimensionalItems, orderParams ) );
     }
 
-    private List<BaseDimensionalItemObject> mockDimensionalItems( final int totalOfItems )
+    private List<DataItemViewObject> mockDimensionalItems( final int totalOfItems )
     {
-        final List<BaseDimensionalItemObject> dataItemEntities = new ArrayList<>( 0 );
+        final List<DataItemViewObject> dataItemEntities = new ArrayList<>( 0 );
 
         for ( int i = 0; i < totalOfItems; i++ )
         {
-            dataItemEntities.add( new BaseDimensionalItemObject( "d-" + i ) );
+            final DataItemViewObject dataItemViewObject = new DataItemViewObject();
+            dataItemViewObject.setName( "d-" + i );
+            dataItemViewObject.setCode( "d-" + i );
+            dataItemViewObject.setUid( "d-" + i );
+            dataItemEntities.add( dataItemViewObject );
         }
 
         return dataItemEntities;

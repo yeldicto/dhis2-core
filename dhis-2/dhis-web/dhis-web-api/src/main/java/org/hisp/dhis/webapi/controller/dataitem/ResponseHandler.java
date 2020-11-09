@@ -110,9 +110,9 @@ class ResponseHandler
      * @param fields the list of fields to be returned
      */
     void addResultsToNode( final RootNode rootNode,
-        final List<BaseDimensionalItemObject> dimensionalItemsFound, final List<String> fields )
+        final List<DataItemViewObject> dimensionalItemsFound, final List<String> fields )
     {
-        final CollectionNode collectionNode = fieldFilterService.toCollectionNode( BaseDimensionalItemObject.class,
+        final CollectionNode collectionNode = fieldFilterService.toCollectionNode( DataItemViewObject.class,
                 new FieldFilterParams( dimensionalItemsFound, fields ) );
         collectionNode.setName( "dataItems" );
         rootNode.addChild( collectionNode );

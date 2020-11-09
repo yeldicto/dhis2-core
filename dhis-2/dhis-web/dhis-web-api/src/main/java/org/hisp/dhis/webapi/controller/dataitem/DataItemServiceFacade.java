@@ -29,14 +29,18 @@ package org.hisp.dhis.webapi.controller.dataitem;
  */
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptyList;
+import static org.apache.commons.beanutils.BeanUtils.copyProperties;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.hisp.dhis.common.DimensionItemType.REPORTING_RATE;
 import static org.hisp.dhis.webapi.controller.dataitem.helper.FilteringHelper.extractEntitiesFromInFilter;
 import static org.hisp.dhis.webapi.controller.dataitem.helper.FilteringHelper.extractEntityFromEqualFilter;
 import static org.hisp.dhis.webapi.controller.dataitem.helper.OrderingHelper.sort;
 import static org.hisp.dhis.webapi.controller.dataitem.helper.PaginationHelper.slice;
 import static org.hisp.dhis.webapi.utils.PaginationUtils.NO_PAGINATION;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,6 +65,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableMap;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * This class is tight to the controller layer and is responsible to encapsulate
  * logic that does not belong to the controller but does not belong to the
@@ -68,10 +74,14 @@ import com.google.common.collect.ImmutableMap;
  * controller and service layers. The main goal is to alleviate the controller
  * layer.
  */
+@Slf4j
 @Component
 public class DataItemServiceFacade
 {
     private final int PAGINATION_FIRST_RESULT = 0;
+
+    private final Set<String> METRICS = newHashSet( "Actual reports", "Actual reports on time", "Expected reports",
+        "Reporting rate", "Reporting rate on time" );
 
     private final QueryService queryService;
 
@@ -109,11 +119,12 @@ public class DataItemServiceFacade
      * @param options request options
      * @return the consolidated collection of entities found.
      */
-    List<BaseDimensionalItemObject> retrieveDataItemEntities(
+    List<DataItemViewObject> retrieveDataItemEntities(
         final Set<Class<? extends BaseDimensionalItemObject>> targetEntities, final List<String> filters,
         final WebOptions options, final OrderParams orderParams )
     {
-        List<BaseDimensionalItemObject> dimensionalItems = new ArrayList<>( 0 );
+        final List<BaseDimensionalItemObject> dimensionalItems = new ArrayList<>();
+        List<DataItemViewObject> dataItemViewObjects = new ArrayList<>();
 
         if ( isNotEmpty( targetEntities ) )
         {
@@ -124,14 +135,58 @@ public class DataItemServiceFacade
                 dimensionalItems.addAll( executeQuery( query ) );
             }
 
+            // Converting and adding report metrics labels
+            dataItemViewObjects = convertToViewObjectList( dimensionalItems );
+
             // In memory sorting
-            sort( dimensionalItems, orderParams );
+            sort( dataItemViewObjects, orderParams );
 
             // In memory pagination.
-            dimensionalItems = slice( options, dimensionalItems );
+            dataItemViewObjects = slice( options, dataItemViewObjects );
         }
 
-        return dimensionalItems;
+        return dataItemViewObjects;
+    }
+
+    /**
+     * Converts the given list of BaseDimensionalItemObject objects into a list of
+     * DataItemViewObject objects. During the conversion process the dimensional
+     * objects of type REPORTING_RATE will have the report metric attribute
+     * respectively populated.
+     * 
+     * @param dimensionalItems
+     * @return the converted list of DataItemViewObject objects.
+     */
+    private List<DataItemViewObject> convertToViewObjectList( final List<BaseDimensionalItemObject> dimensionalItems )
+    {
+        final List<DataItemViewObject> dataItemViewObjects = new ArrayList<>();
+
+        for ( final BaseDimensionalItemObject itemObject : dimensionalItems )
+        {
+            try
+            {
+                // Converting into DataItemViewObject.
+                final DataItemViewObject dataItemViewObject = new DataItemViewObject();
+                copyProperties( dataItemViewObject, itemObject );
+
+                // Adding reporting metric when the dimension type is REPORTING_RATE.
+                if ( REPORTING_RATE.equals( itemObject.getDimensionItemType() ) )
+                {
+                    for ( final String metric : METRICS )
+                    {
+                        dataItemViewObject.addReportMetric( itemObject.getDisplayFormName() + " (" + metric + ")" );
+                    }
+                }
+
+                dataItemViewObjects.add( dataItemViewObject );
+            }
+            catch ( IllegalAccessException | InvocationTargetException e )
+            {
+                log.error( "Error converting to DataItemViewObject", e );
+            }
+        }
+
+        return dataItemViewObjects;
     }
 
     /**
@@ -161,6 +216,7 @@ public class DataItemServiceFacade
                     {
                         targetedEntities.add( entity );
                     }
+
                     if ( isNotEmpty( entities ) )
                     {
                         targetedEntities.addAll( entities );

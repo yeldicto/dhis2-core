@@ -33,8 +33,8 @@ import static org.springframework.util.Assert.state;
 
 import java.util.List;
 
-import org.hisp.dhis.common.BaseDimensionalItemObject;
 import org.hisp.dhis.common.Pager;
+import org.hisp.dhis.webapi.controller.dataitem.DataItemViewObject;
 import org.hisp.dhis.webapi.webdomain.WebOptions;
 
 /**
@@ -44,24 +44,24 @@ import org.hisp.dhis.webapi.webdomain.WebOptions;
 public class PaginationHelper
 {
     /**
-     * This method will slice the given list based on the given option and return
+     * This method will slice the given list based on the given options and return
      * only the elements present in the pagination window.
      * 
      * @param options
-     * @param dimensionalItems
+     * @param itemViewObjects
      * @return the list of "sliced" items
      */
-    public static List<BaseDimensionalItemObject> slice( final WebOptions options,
-        List<BaseDimensionalItemObject> dimensionalItems )
+    public static List<DataItemViewObject> slice( final WebOptions options,
+        List<DataItemViewObject> itemViewObjects )
     {
         state( options.getPage() > 0, "Current page must be greater than zero." );
         state( options.getPageSize() > 0, "Page size must be greater than zero." );
 
-        if ( options.hasPaging() && isNotEmpty( dimensionalItems ) )
+        if ( options.hasPaging() && isNotEmpty( itemViewObjects ) )
         {
             // Pagination input
             final int currentPage = options.getPage();
-            final int totalOfElements = dimensionalItems.size();
+            final int totalOfElements = itemViewObjects.size();
             final int maxElementsPerPage = options.getPageSize();
 
             final Pager pager = new Pager( currentPage, totalOfElements, maxElementsPerPage );
@@ -72,15 +72,15 @@ public class PaginationHelper
             if ( hasMorePages )
             {
                 final int nextElementsWindow = pager.getPageSize() * pager.getPage();
-                dimensionalItems = dimensionalItems.subList( currentElementIndex, nextElementsWindow );
+                itemViewObjects = itemViewObjects.subList( currentElementIndex, nextElementsWindow );
             }
             else
             {
                 // This is the last page
-                dimensionalItems = dimensionalItems.subList( pager.getOffset(), totalOfElements );
+                itemViewObjects = itemViewObjects.subList( pager.getOffset(), totalOfElements );
             }
         }
 
-        return dimensionalItems;
+        return itemViewObjects;
     }
 }

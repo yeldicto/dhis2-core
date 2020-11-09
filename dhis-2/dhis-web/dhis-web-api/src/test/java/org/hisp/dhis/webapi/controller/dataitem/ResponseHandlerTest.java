@@ -109,7 +109,9 @@ public class ResponseHandlerTest
     {
         // Given
         final RootNode anyRootNode = new RootNode( "any" );
-        final List<BaseDimensionalItemObject> anyDimensionalItems = singletonList( new BaseDimensionalItemObject( "any" ) );
+        final DataItemViewObject anyDataItemViewObject = new DataItemViewObject();
+        anyDataItemViewObject.setName( "any" );
+        final List<DataItemViewObject> anyDimensionalItems = singletonList( anyDataItemViewObject );
         final List<String> anyFields = singletonList( "any" );
         final CollectionNode anyCollectionNode = new CollectionNode( "any" );
 

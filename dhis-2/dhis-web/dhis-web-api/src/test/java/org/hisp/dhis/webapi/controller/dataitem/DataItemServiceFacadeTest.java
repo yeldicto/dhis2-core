@@ -36,7 +36,9 @@ import static java.util.Collections.emptySet;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hisp.dhis.common.DimensionItemType.INDICATOR;
 import static org.hisp.dhis.query.Query.from;
 import static org.hisp.dhis.webapi.controller.dataitem.DataItemServiceFacade.DATA_TYPE_ENTITY_MAP;
 import static org.hisp.dhis.webapi.webdomain.WebOptions.PAGE;
@@ -103,11 +105,13 @@ public class DataItemServiceFacadeTest
             any( Pagination.class ), any( Type.class ) ) ).thenReturn( anyQuery );
         when( (List<BaseDimensionalItemObject>) queryService.query( any( Query.class ) ) )
             .thenReturn( expectedItemsFound );
-        final List<BaseDimensionalItemObject> actualDimensionalItems = dataItemServiceFacade
+        final List<DataItemViewObject> actualDimensionalItems = dataItemServiceFacade
             .retrieveDataItemEntities( anyTargetEntities, anyFilters, anyWebOptions, anyOrderParams );
 
         // Then
-        assertThat( actualDimensionalItems, containsInAnyOrder( expectedItemsFound.toArray() ) );
+        assertThat( actualDimensionalItems, hasSize( 2 ) );
+        assertThat( actualDimensionalItems.get( 0 ).getDimensionItemType(), is( INDICATOR ) );
+        assertThat( actualDimensionalItems.get( 1 ).getDimensionItemType(), is( INDICATOR ) );
     }
 
     @Test
@@ -115,7 +119,6 @@ public class DataItemServiceFacadeTest
     {
         // Given
         final Set<Class<? extends BaseDimensionalItemObject>> anyTargetEntities = emptySet();
-        final List<BaseDimensionalItemObject> expectedItemsFound = asList( new Indicator(), new Indicator() );
         final List<String> anyFilters = asList( "anyFilter" );
         final WebOptions anyWebOptions = mockWebOptions( 10, 1 );
         final Set<String> anyOrdering = new HashSet<>( asList( "name:desc" ) );
@@ -123,11 +126,7 @@ public class DataItemServiceFacadeTest
         final Query anyQuery = from( new Schema( Indicator.class, "indicator", "indicators" ) );
 
         // When
-        when( queryService.getQueryFromUrl( any(), anyList(), anyList(),
-            any( Pagination.class ), any( Type.class ) ) ).thenReturn( anyQuery );
-        when( (List<BaseDimensionalItemObject>) queryService.query( any( Query.class ) ) )
-            .thenReturn( expectedItemsFound );
-        final List<BaseDimensionalItemObject> actualDimensionalItems = dataItemServiceFacade
+        final List<DataItemViewObject> actualDimensionalItems = dataItemServiceFacade
             .retrieveDataItemEntities( anyTargetEntities, anyFilters, anyWebOptions, anyOrderParams );
 
         // Then

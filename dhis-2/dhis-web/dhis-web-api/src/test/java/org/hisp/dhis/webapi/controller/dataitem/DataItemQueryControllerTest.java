@@ -103,7 +103,7 @@ public class DataItemQueryControllerTest
         final User anyUser = new User();
         final Set<Class<? extends BaseDimensionalItemObject>> targetEntities = new HashSet<>(
             singletonList( Indicator.class ) );
-        final List<BaseDimensionalItemObject> itemsFound = singletonList( new Indicator() );
+        final List<DataItemViewObject> itemsFound = singletonList( new DataItemViewObject() );
 
         // When
         when( dataItemServiceFacade.extractTargetEntities( anyList() ) ).thenReturn( targetEntities );
@@ -131,7 +131,7 @@ public class DataItemQueryControllerTest
         final User anyUser = new User();
         final Set<Class<? extends BaseDimensionalItemObject>> targetEntities = new HashSet<>(
             singletonList( Indicator.class ) );
-        final List<BaseDimensionalItemObject> itemsFound = emptyList();
+        final List<DataItemViewObject> itemsFound = emptyList();
 
         // When
         when( dataItemServiceFacade.extractTargetEntities( anyList() ) ).thenReturn( targetEntities );
