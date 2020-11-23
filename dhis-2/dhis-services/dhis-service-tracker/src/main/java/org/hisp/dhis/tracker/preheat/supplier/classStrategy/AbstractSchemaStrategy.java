@@ -44,6 +44,8 @@ import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.TrackerIdentifier;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
+import org.hisp.dhis.tracker.preheat.mappers.PreheatMapper;
+import org.mapstruct.factory.Mappers;
 
 /**
  * Abstract Tracker Preheat strategy that applies to strategies that employ the
@@ -73,7 +75,12 @@ public abstract class AbstractSchemaStrategy implements ClassBasedSupplierStrate
         TrackerIdentifier identifier = params.getIdentifiers().getByClass( getSchemaClass() );
         Schema schema = schemaService.getDynamicSchema( getSchemaClass() );
 
-        queryForIdentifiableObjects( preheat, schema, identifier, splitList );
+        queryForIdentifiableObjects( preheat, schema, identifier, splitList, mapper() );
+    }
+
+    private Class<? extends PreheatMapper> mapper()
+    {
+        return getClass().getAnnotation( StrategyFor.class ).mapper();
     }
 
     protected Class<?> getSchemaClass()
@@ -83,7 +90,7 @@ public abstract class AbstractSchemaStrategy implements ClassBasedSupplierStrate
 
     @SuppressWarnings( "unchecked" )
     protected void queryForIdentifiableObjects( TrackerPreheat preheat, Schema schema, TrackerIdentifier identifier,
-        List<List<String>> splitList )
+        List<List<String>> splitList, Class<? extends PreheatMapper> mapper )
     {
 
         TrackerIdScheme idScheme = identifier.getIdScheme();
@@ -104,7 +111,7 @@ public abstract class AbstractSchemaStrategy implements ClassBasedSupplierStrate
                 query.setUser( preheat.getUser() );
                 query.add( generateRestrictionFromIdentifiers( idScheme, ids ) );
                 query.setDefaults( Defaults.INCLUDE );
-                objects = queryService.query( query );
+                objects = Mappers.getMapper( mapper ).map( queryService.query( query ) );
             }
 
             preheat.put( identifier, objects );

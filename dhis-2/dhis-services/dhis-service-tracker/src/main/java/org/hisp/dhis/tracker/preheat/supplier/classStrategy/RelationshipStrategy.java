@@ -33,8 +33,10 @@ import java.util.List;
 import org.hisp.dhis.relationship.RelationshipStore;
 import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.domain.Relationship;
+import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
+import org.hisp.dhis.tracker.preheat.mappers.RelationshipMapper;
 import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
@@ -58,7 +60,8 @@ public class RelationshipStrategy implements ClassBasedSupplierStrategy
         {
             List<org.hisp.dhis.relationship.Relationship> relationships = relationshipStore
                 .getByUid( ids, preheat.getUser() );
-            preheat.putRelationships( TrackerIdScheme.UID, relationships );
+            preheat.putRelationships( TrackerIdScheme.UID,
+                DetachUtils.detach( RelationshipMapper.INSTANCE, relationships ) );
         }
     }
 }

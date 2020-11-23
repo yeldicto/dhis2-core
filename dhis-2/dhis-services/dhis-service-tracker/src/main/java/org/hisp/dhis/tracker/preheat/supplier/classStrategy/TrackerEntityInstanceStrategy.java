@@ -35,10 +35,10 @@ import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentity.TrackedEntityInstanceStore;
 import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.domain.TrackedEntity;
+import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.hisp.dhis.tracker.preheat.mappers.TrackedEntityInstanceMapper;
-import org.hisp.dhis.tracker.preheat.mappers.TrackedEntityTypeMapper;
 import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
@@ -60,16 +60,19 @@ public class TrackerEntityInstanceStrategy implements ClassBasedSupplierStrategy
     {
         for ( List<String> ids : splitList )
         {
+            // Fetch all Tracked Entity Instance present in the payload
             List<TrackedEntityInstance> trackedEntityInstances = trackedEntityInstanceStore.getByUid( ids,
                 preheat.getUser() );
 
+            // Get the uids of all the TEIs which are root (a TEI is not root when is a
+            // property of another object, e.g. enrollment)
             final List<String> rootEntities = params.getTrackedEntities().stream()
                 .map( TrackedEntity::getTrackedEntity )
                 .collect( Collectors.toList() );
 
+            // Add to preheat
             preheat.putTrackedEntities( TrackerIdScheme.UID,
-                trackedEntityInstances.stream().map( tei -> TrackedEntityInstanceMapper.INSTANCE.map( tei ) )
-                    .collect( Collectors.toList() ),
+                DetachUtils.detach( TrackedEntityInstanceMapper.INSTANCE, trackedEntityInstances ),
                 RootEntitiesUtils.filterOutNonRootEntities( ids, rootEntities ) );
         }
     }

@@ -35,8 +35,10 @@ import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceStore;
 import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.domain.Enrollment;
+import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
+import org.hisp.dhis.tracker.preheat.mappers.ProgramInstanceMapper;
 import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
@@ -63,7 +65,8 @@ public class EnrollmentStrategy implements ClassBasedSupplierStrategy
             final List<String> rootEntities = params.getEnrollments().stream().map( Enrollment::getEnrollment )
                 .collect( Collectors.toList() );
 
-            preheat.putEnrollments( TrackerIdScheme.UID, programInstances,
+            preheat.putEnrollments( TrackerIdScheme.UID,
+                DetachUtils.detach( ProgramInstanceMapper.INSTANCE, programInstances ),
                 params.getEnrollments().stream().filter(
                     e -> RootEntitiesUtils.filterOutNonRootEntities( ids, rootEntities ).contains( e.getEnrollment() ) )
                     .collect( Collectors.toList() ) );

@@ -31,8 +31,10 @@ package org.hisp.dhis.tracker.preheat.supplier;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.relationship.RelationshipType;
 import org.hisp.dhis.tracker.TrackerIdentifier;
+import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
+import org.hisp.dhis.tracker.preheat.mappers.RelationshipTypeMapper;
 import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
@@ -51,6 +53,7 @@ public class RelationshipTypeSupplier extends AbstractPreheatSupplier
     @Override
     public void preheatAdd( TrackerPreheatParams params, TrackerPreheat preheat )
     {
-        preheat.put( TrackerIdentifier.UID, manager.getAll( RelationshipType.class ) );
+        preheat.put( TrackerIdentifier.UID,
+            DetachUtils.detach( RelationshipTypeMapper.INSTANCE, manager.getAll( RelationshipType.class ) ) );
     }
 }

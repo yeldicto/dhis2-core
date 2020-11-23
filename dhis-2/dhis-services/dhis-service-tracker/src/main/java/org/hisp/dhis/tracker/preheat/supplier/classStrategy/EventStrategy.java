@@ -35,8 +35,10 @@ import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceStore;
 import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.domain.Event;
+import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
+import org.hisp.dhis.tracker.preheat.mappers.ProgramStageInstanceMapper;
 import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
@@ -64,7 +66,8 @@ public class EventStrategy implements ClassBasedSupplierStrategy
             final List<String> rootEntities = params.getEvents().stream().map( Event::getEvent )
                 .collect( Collectors.toList() );
 
-            preheat.putEvents( TrackerIdScheme.UID, programStageInstances,
+            preheat.putEvents( TrackerIdScheme.UID,
+                DetachUtils.detach( ProgramStageInstanceMapper.INSTANCE, programStageInstances ),
                 params.getEvents().stream()
                     .filter(
                         e -> RootEntitiesUtils.filterOutNonRootEntities( ids, rootEntities ).contains( e.getEvent() ) )

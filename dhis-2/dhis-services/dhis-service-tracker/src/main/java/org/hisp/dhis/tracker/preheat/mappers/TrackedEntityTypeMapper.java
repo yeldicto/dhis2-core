@@ -1,14 +1,13 @@
 package org.hisp.dhis.tracker.preheat.mappers;
 
-import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentity.TrackedEntityType;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring")
-public interface TrackedEntityTypeMapper
+@Mapper
+public interface TrackedEntityTypeMapper extends PreheatMapper<TrackedEntityType>
 {
-    TrackedEntityTypeMapper INSTANCE = Mappers.getMapper(TrackedEntityTypeMapper.class);
+    TrackedEntityTypeMapper INSTANCE = Mappers.getMapper( TrackedEntityTypeMapper.class );
 
-    TrackedEntityType map(TrackedEntityType trackedEntityType);
+    TrackedEntityType map( TrackedEntityType trackedEntityType );
 }

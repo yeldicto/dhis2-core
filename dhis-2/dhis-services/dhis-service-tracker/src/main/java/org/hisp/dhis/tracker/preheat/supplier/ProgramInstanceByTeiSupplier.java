@@ -46,8 +46,10 @@ import org.hisp.dhis.program.ProgramStatus;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.domain.Event;
+import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
+import org.hisp.dhis.tracker.preheat.mappers.ProgramInstanceMapper;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -121,7 +123,7 @@ public class ProgramInstanceByTeiSupplier extends AbstractPreheatSupplier
             {
                 final List<ProgramInstance> programInstances = result.getOrDefault( event.getUid(), new ArrayList<>() );
                 programInstances.add( pi );
-                result.put( event.getEvent(), programInstances );
+                result.put( event.getEvent(), DetachUtils.detach(ProgramInstanceMapper.INSTANCE, programInstances ) );
             }
         }
 
