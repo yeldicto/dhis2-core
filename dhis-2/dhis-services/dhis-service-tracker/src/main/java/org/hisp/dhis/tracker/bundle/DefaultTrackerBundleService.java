@@ -146,6 +146,7 @@ public class DefaultTrackerBundleService
     }
 
     @Override
+    @Transactional
     public TrackerBundle create( TrackerBundleParams params )
     {
         TrackerBundle trackerBundle = params.toTrackerBundle();

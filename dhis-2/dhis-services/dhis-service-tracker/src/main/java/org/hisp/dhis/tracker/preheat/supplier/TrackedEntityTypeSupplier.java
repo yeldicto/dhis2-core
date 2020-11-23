@@ -33,17 +33,22 @@ import org.hisp.dhis.trackedentity.TrackedEntityType;
 import org.hisp.dhis.tracker.TrackerIdentifier;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
+import org.hisp.dhis.tracker.preheat.mappers.TrackedEntityTypeMapper;
 import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Luciano Fiandesio
  */
 @RequiredArgsConstructor
 @Component
-public class TrackedEntityTypeSupplier extends AbstractPreheatSupplier
+public class TrackedEntityTypeSupplier
+    extends AbstractPreheatSupplier
 {
     @NonNull
     private final IdentifiableObjectManager manager;
@@ -51,6 +56,10 @@ public class TrackedEntityTypeSupplier extends AbstractPreheatSupplier
     @Override
     public void preheatAdd( TrackerPreheatParams params, TrackerPreheat preheat )
     {
-        preheat.put( TrackerIdentifier.UID, manager.getAll( TrackedEntityType.class ) );
+        List<TrackedEntityType> all = manager.getAll( TrackedEntityType.class );
+        all.stream()
+            .map( tet -> TrackedEntityTypeMapper.INSTANCE.map( tet ) )
+            .collect( Collectors.toList() );
+        preheat.put( TrackerIdentifier.UID, all );
     }
 }

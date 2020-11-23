@@ -37,6 +37,8 @@ import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.domain.TrackedEntity;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
+import org.hisp.dhis.tracker.preheat.mappers.TrackedEntityInstanceMapper;
+import org.hisp.dhis.tracker.preheat.mappers.TrackedEntityTypeMapper;
 import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
@@ -65,7 +67,9 @@ public class TrackerEntityInstanceStrategy implements ClassBasedSupplierStrategy
                 .map( TrackedEntity::getTrackedEntity )
                 .collect( Collectors.toList() );
 
-            preheat.putTrackedEntities( TrackerIdScheme.UID, trackedEntityInstances,
+            preheat.putTrackedEntities( TrackerIdScheme.UID,
+                trackedEntityInstances.stream().map( tei -> TrackedEntityInstanceMapper.INSTANCE.map( tei ) )
+                    .collect( Collectors.toList() ),
                 RootEntitiesUtils.filterOutNonRootEntities( ids, rootEntities ) );
         }
     }
