@@ -49,7 +49,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Component
-@StrategyFor( TrackedEntity.class )
+@StrategyFor( value = TrackedEntity.class, mapper = TrackedEntityInstanceMapper.class )
 public class TrackerEntityInstanceStrategy implements ClassBasedSupplierStrategy
 {
     @NonNull
@@ -72,7 +72,8 @@ public class TrackerEntityInstanceStrategy implements ClassBasedSupplierStrategy
 
             // Add to preheat
             preheat.putTrackedEntities( TrackerIdScheme.UID,
-                DetachUtils.detach( TrackedEntityInstanceMapper.INSTANCE, trackedEntityInstances ),
+                DetachUtils.detach( this.getClass().getAnnotation( StrategyFor.class ).mapper(),
+                    trackedEntityInstances ),
                 RootEntitiesUtils.filterOutNonRootEntities( ids, rootEntities ) );
         }
     }

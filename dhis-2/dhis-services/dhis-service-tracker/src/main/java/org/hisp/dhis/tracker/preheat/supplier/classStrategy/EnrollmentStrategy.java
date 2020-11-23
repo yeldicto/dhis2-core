@@ -49,7 +49,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Component
-@StrategyFor( Enrollment.class )
+@StrategyFor( value = Enrollment.class, mapper = ProgramInstanceMapper.class )
 public class EnrollmentStrategy implements ClassBasedSupplierStrategy
 {
     @NonNull
@@ -66,7 +66,7 @@ public class EnrollmentStrategy implements ClassBasedSupplierStrategy
                 .collect( Collectors.toList() );
 
             preheat.putEnrollments( TrackerIdScheme.UID,
-                DetachUtils.detach( ProgramInstanceMapper.INSTANCE, programInstances ),
+                DetachUtils.detach( this.getClass().getAnnotation( StrategyFor.class ).mapper(), programInstances ),
                 params.getEnrollments().stream().filter(
                     e -> RootEntitiesUtils.filterOutNonRootEntities( ids, rootEntities ).contains( e.getEnrollment() ) )
                     .collect( Collectors.toList() ) );

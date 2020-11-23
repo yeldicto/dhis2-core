@@ -49,7 +49,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Component
-@StrategyFor( Event.class )
+@StrategyFor( value = Event.class, mapper = ProgramStageInstanceMapper.class )
 public class EventStrategy implements ClassBasedSupplierStrategy
 {
     @NonNull
@@ -67,7 +67,8 @@ public class EventStrategy implements ClassBasedSupplierStrategy
                 .collect( Collectors.toList() );
 
             preheat.putEvents( TrackerIdScheme.UID,
-                DetachUtils.detach( ProgramStageInstanceMapper.INSTANCE, programStageInstances ),
+                DetachUtils.detach( this.getClass().getAnnotation( StrategyFor.class ).mapper(),
+                    programStageInstances ),
                 params.getEvents().stream()
                     .filter(
                         e -> RootEntitiesUtils.filterOutNonRootEntities( ids, rootEntities ).contains( e.getEvent() ) )

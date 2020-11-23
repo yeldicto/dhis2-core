@@ -47,10 +47,4 @@ public class CatOptionComboStrategy extends AbstractSchemaStrategy
     {
         super( schemaService, queryService, manager );
     }
-
-    @Override
-    protected Class<?> getSchemaClass()
-    {
-        return getClass().getAnnotation( StrategyFor.class ).value();
-    }
 }

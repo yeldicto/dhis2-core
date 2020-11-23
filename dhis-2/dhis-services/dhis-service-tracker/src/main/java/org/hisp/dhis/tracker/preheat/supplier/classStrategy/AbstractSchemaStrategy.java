@@ -29,6 +29,7 @@ package org.hisp.dhis.tracker.preheat.supplier.classStrategy;
  */
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hisp.dhis.attribute.Attribute;
 import org.hisp.dhis.common.IdentifiableObject;
@@ -111,7 +112,8 @@ public abstract class AbstractSchemaStrategy implements ClassBasedSupplierStrate
                 query.setUser( preheat.getUser() );
                 query.add( generateRestrictionFromIdentifiers( idScheme, ids ) );
                 query.setDefaults( Defaults.INCLUDE );
-                objects = Mappers.getMapper( mapper ).map( queryService.query( query ) );
+                objects = queryService.query( query ).stream().map( o -> Mappers.getMapper( mapper ).map( o ) )
+                    .map( IdentifiableObject.class::cast ).collect( Collectors.toList() );
             }
 
             preheat.put( identifier, objects );

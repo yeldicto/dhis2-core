@@ -47,7 +47,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Component
-@StrategyFor( Relationship.class )
+@StrategyFor( value = Relationship.class, mapper = RelationshipMapper.class )
 public class RelationshipStrategy implements ClassBasedSupplierStrategy
 {
     @NonNull
@@ -61,7 +61,7 @@ public class RelationshipStrategy implements ClassBasedSupplierStrategy
             List<org.hisp.dhis.relationship.Relationship> relationships = relationshipStore
                 .getByUid( ids, preheat.getUser() );
             preheat.putRelationships( TrackerIdScheme.UID,
-                DetachUtils.detach( RelationshipMapper.INSTANCE, relationships ) );
+                DetachUtils.detach( this.getClass().getAnnotation( StrategyFor.class ).mapper(), relationships ) );
         }
     }
 }
