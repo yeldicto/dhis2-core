@@ -4,7 +4,7 @@ import org.hisp.dhis.program.ProgramStageInstance;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(uses = DebugMapper.class)
 public interface ProgramStageInstanceMapper extends PreheatMapper<ProgramStageInstance>
 {
     ProgramStageInstanceMapper INSTANCE = Mappers.getMapper( ProgramStageInstanceMapper.class );

@@ -4,7 +4,7 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(uses = DebugMapper.class)
 public interface OrganisationUnitMapper extends PreheatMapper<OrganisationUnit>
 {
     OrganisationUnitMapper INSTANCE = Mappers.getMapper( OrganisationUnitMapper.class );

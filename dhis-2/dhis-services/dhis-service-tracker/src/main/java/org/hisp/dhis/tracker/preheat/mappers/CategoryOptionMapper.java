@@ -5,10 +5,10 @@ import org.hisp.dhis.program.ProgramInstance;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(uses = DebugMapper.class)
 public interface CategoryOptionMapper extends PreheatMapper<CategoryOption>
 {
     CategoryOptionMapper INSTANCE = Mappers.getMapper( CategoryOptionMapper.class );
 
-    CategoryOption map( ProgramInstance CategoryOption );
+    CategoryOption map( CategoryOption categoryOption );
 }

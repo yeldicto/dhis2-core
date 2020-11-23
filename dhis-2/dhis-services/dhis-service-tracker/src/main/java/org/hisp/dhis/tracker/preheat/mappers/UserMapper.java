@@ -4,7 +4,7 @@ import org.hisp.dhis.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(uses = DebugMapper.class)
 public interface UserMapper extends PreheatMapper<User>
 {
     UserMapper INSTANCE = Mappers.getMapper( UserMapper.class );
