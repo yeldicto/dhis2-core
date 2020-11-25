@@ -28,12 +28,9 @@ package org.hisp.dhis.tracker.bundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hisp.dhis.tracker.AtomicMode;
 import org.hisp.dhis.tracker.FlushMode;
 import org.hisp.dhis.tracker.TrackerIdentifierParams;
@@ -47,8 +44,13 @@ import org.hisp.dhis.tracker.domain.TrackedEntity;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.hisp.dhis.user.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Used for setting up bundle parameters, closely modelled around {@see org.hisp.dhis.tracker.TrackerImportParams}
@@ -61,6 +63,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonDeserialize( converter = TrackerBundleParamsConverter.class )
+@Deprecated
 public class TrackerBundleParams
 {
     /**
@@ -68,11 +71,6 @@ public class TrackerBundleParams
      */
     @JsonProperty
     private String userId;
-
-    /**
-     * User to use for import job.
-     */
-    private User user;
 
     /**
      * Should import be imported or just validated.
@@ -162,16 +160,9 @@ public class TrackerBundleParams
     @Builder.Default
     private List<Relationship> relationships = new ArrayList<>();
 
-    @JsonProperty
-    public String getUsername()
-    {
-        return User.username( user );
-    }
-
     public TrackerBundle toTrackerBundle()
     {
         return TrackerBundle.builder()
-            .user( user )
             .importMode( importMode )
             .importStrategy( importStrategy )
             .skipTextPatternValidation( skipTextPatternValidation )
@@ -190,7 +181,6 @@ public class TrackerBundleParams
     {
         return TrackerPreheatParams.builder()
             .userId( userId )
-            .user( user )
             .identifiers( identifiers )
             .trackedEntities( trackedEntities )
             .enrollments( enrollments )

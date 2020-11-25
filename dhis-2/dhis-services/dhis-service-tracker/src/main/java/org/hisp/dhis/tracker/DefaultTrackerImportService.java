@@ -185,7 +185,7 @@ public class DefaultTrackerImportService
 
     protected TrackerBundle preheatBundle( TrackerImportParams params )
     {
-        return  trackerBundleService.create( params.toTrackerBundleParams() );
+        return  trackerBundleService.create( params );
     }
 
     protected void preProcessBundle( TrackerBundle bundle )
@@ -236,10 +236,7 @@ public class DefaultTrackerImportService
     public TrackerImportParams getParamsFromMap( Map<String, List<String>> parameters )
     {
         TrackerImportParams params = new TrackerImportParams();
-        if ( params.getUser() == null )
-        {
-            params.setUser( trackerUserService.getUser( params.getUserId() ) );
-        }
+
         params.setValidationMode( getEnumWithDefault( ValidationMode.class, parameters, "validationMode",
             ValidationMode.FULL ) );
         params.setImportMode(

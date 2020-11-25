@@ -16,6 +16,7 @@ import org.hisp.dhis.common.CodeGenerator;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.random.BeanRandomizer;
 import org.hisp.dhis.tracker.TrackerIdScheme;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.domain.Event;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
@@ -59,12 +60,12 @@ public class UserSupplierTest
         when( manager.getByUid( eq( User.class ),
                 argThat( t -> t.containsAll( userIds ) ) ) ).thenReturn( users );
 
-        final TrackerPreheatParams preheatParams = TrackerPreheatParams.builder()
+        final TrackerImportParams params = TrackerImportParams.builder()
                 .events( events )
                 .build();
 
         TrackerPreheat preheat = new TrackerPreheat();
-        this.supplier.preheatAdd( preheatParams, preheat );
+        this.supplier.preheatAdd( params, preheat );
 
         for ( String userUid : userIds )
         {

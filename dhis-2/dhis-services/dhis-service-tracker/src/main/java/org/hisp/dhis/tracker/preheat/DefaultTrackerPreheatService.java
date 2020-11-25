@@ -40,15 +40,16 @@ import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.commons.timer.SystemTimer;
 import org.hisp.dhis.commons.timer.Timer;
 import org.hisp.dhis.preheat.PreheatException;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.preheat.supplier.PreheatSupplier;
 import org.hisp.dhis.tracker.validation.TrackerImportPreheatConfig;
-import org.hisp.dhis.user.CurrentUserService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,9 +61,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class DefaultTrackerPreheatService implements TrackerPreheatService, ApplicationContextAware
 {
+    @NonNull
     private final IdentifiableObjectManager manager;
-
-    private final CurrentUserService currentUserService;
 
     private List<String> preheatSuppliers;
 
@@ -70,7 +70,7 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
     public void init()
     {
         this.preheatSuppliers = TrackerImportPreheatConfig.PREHEAT_ORDER.stream().map( Class::getSimpleName )
-                .collect( Collectors.toList() );
+            .collect( Collectors.toList() );
     }
 
     // TODO this flag should be configurable
@@ -78,7 +78,7 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
 
     @Override
     @Transactional( readOnly = true )
-    public TrackerPreheat preheat( TrackerPreheatParams params )
+    public TrackerPreheat preheat( TrackerImportParams params )
     {
         Timer timer = new SystemTimer().start();
 
@@ -118,7 +118,7 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
         if ( FAIL_FAST_ON_PREHEAT_ERROR )
         {
             throw new PreheatException( "An error occurred during the preheat process. Preheater with name "
-                    + Introspector.decapitalize( supplier ) + "failed", e );
+                + Introspector.decapitalize( supplier ) + "failed", e );
         }
         else
         {
@@ -136,7 +136,7 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
 
     @Override
     public void setApplicationContext( ApplicationContext applicationContext )
-            throws BeansException
+        throws BeansException
     {
         this.ctx = applicationContext;
     }

@@ -28,6 +28,12 @@ package org.hisp.dhis.tracker.bundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hisp.dhis.tracker.utils.ImportUtils.build;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -38,7 +44,11 @@ import java.util.stream.Collectors;
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
-import org.hisp.dhis.dxf2.metadata.objectbundle.*;
+import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundle;
+import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleMode;
+import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleParams;
+import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleService;
+import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleValidationService;
 import org.hisp.dhis.dxf2.metadata.objectbundle.feedback.ObjectBundleValidationReport;
 import org.hisp.dhis.eventdatavalue.EventDataValue;
 import org.hisp.dhis.importexport.ImportStrategy;
@@ -47,15 +57,12 @@ import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.tracker.TrackerImportService;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
+import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-
-import static org.hamcrest.Matchers.hasItem;
-import static org.hisp.dhis.tracker.utils.ImportUtils.build;
-import static org.junit.Assert.*;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -83,6 +90,10 @@ public class EventDataValueTest
 
     @Autowired
     private IdentifiableObjectManager manager;
+
+    @Autowired
+    private CurrentUserService currentUserService;
+
 
     @Override
     protected void setUpTest()
@@ -113,15 +124,15 @@ public class EventDataValueTest
 
         TrackerBundleParams teiParams = renderService.fromJson( inputStream, TrackerBundleParams.class );
         params.setUser( userA );
-        TrackerImportReport teiImportReport = trackerImportService.importTracker( build( teiParams ) );
+        TrackerImportReport teiImportReport = trackerImportService.importTracker( build( teiParams, userA.getUid() ) );
 
         assertTrue( teiImportReport.getValidationReport().getErrorReports().isEmpty() );
 
         TrackerBundleParams enrollmentParams = renderService
             .fromJson( new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream(),
                 TrackerBundleParams.class );
-        enrollmentParams.setUser( userA );
-        TrackerImportReport enrollmentImportReport = trackerImportService.importTracker( build( enrollmentParams ) );
+        enrollmentParams.setUserId( userA.getUid() );
+        TrackerImportReport enrollmentImportReport = trackerImportService.importTracker( build( enrollmentParams, userA.getUid() ) );
         assertTrue( enrollmentImportReport.getValidationReport().getErrorReports().isEmpty() );
     }
 
@@ -137,6 +148,7 @@ public class EventDataValueTest
             .trackedEntities( trackerBundleParams.getTrackedEntities() )
             .enrollments( trackerBundleParams.getEnrollments() )
             .events( trackerBundleParams.getEvents() )
+            .userId( currentUserService.getCurrentUser().getUid() )
             .build() );
 
         trackerBundleService.commit( trackerBundle );
@@ -163,6 +175,7 @@ public class EventDataValueTest
             .trackedEntities( trackerBundleParams.getTrackedEntities() )
             .enrollments( trackerBundleParams.getEnrollments() )
             .events( trackerBundleParams.getEvents() )
+            .userId( currentUserService.getCurrentUser().getUid() )
             .build() );
 
 
@@ -187,6 +200,7 @@ public class EventDataValueTest
             .trackedEntities( trackerBundleParams.getTrackedEntities() )
             .enrollments( trackerBundleParams.getEnrollments() )
             .events( trackerBundleParams.getEvents() )
+            .userId( currentUserService.getCurrentUser().getUid() )
             .build() );
 
         trackerBundleService.commit( trackerBundle );

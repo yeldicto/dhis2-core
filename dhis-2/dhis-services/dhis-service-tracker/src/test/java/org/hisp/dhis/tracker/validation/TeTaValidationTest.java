@@ -160,7 +160,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 
@@ -212,7 +212,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 
@@ -245,7 +245,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         trackerBundle = trackerBundleService.create( bundle );
         report = trackerValidationService.validate( trackerBundle );
@@ -275,7 +275,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 
@@ -318,7 +318,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 
@@ -362,7 +362,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 
@@ -393,7 +393,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        build.setUser( user );
+        build.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( build );
 
@@ -428,7 +428,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 
@@ -449,7 +449,7 @@ public class TeTaValidationTest
 
         user = userService.getUser( ADMIN_USER_UID );
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         trackerBundle = trackerBundleService.create( bundle );
 
@@ -471,7 +471,7 @@ public class TeTaValidationTest
 
         user = userService.getUser( ADMIN_USER_UID );
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         trackerBundle = trackerBundleService.create( bundle );
 
@@ -500,7 +500,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 
@@ -519,7 +519,7 @@ public class TeTaValidationTest
 
         user = userService.getUser( ADMIN_USER_UID );
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         trackerBundle = trackerBundleService.create( bundle );
 
@@ -550,7 +550,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 
@@ -581,7 +581,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 
@@ -616,7 +616,7 @@ public class TeTaValidationTest
             .events( trackerBundleParams.getEvents() )
             .build();
 
-        bundle.setUser( user );
+        bundle.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundle );
 

@@ -52,6 +52,7 @@ import org.hisp.dhis.program.ProgramInstanceStore;
 import org.hisp.dhis.program.ProgramStatus;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.tracker.TrackerIdScheme;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.domain.Event;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
@@ -101,7 +102,7 @@ public class ProgramInstanceByTeiHookTest
         ProgramInstance p2 = createProgramInstance( program1 );
         ProgramInstance p3 = createProgramInstance( program1 );
 
-        TrackerPreheatParams params = TrackerPreheatParams.builder().build();
+        TrackerImportParams params = TrackerImportParams.builder().build();
 
         Event e1 = createEvent( p1, t1 );
         Event e2 = createEvent( p2, t2 );
@@ -158,7 +159,7 @@ public class ProgramInstanceByTeiHookTest
         ProgramInstance p2 = createProgramInstance( program1 );
         ProgramInstance p3 = createProgramInstance( program1 );
 
-        TrackerPreheatParams params = TrackerPreheatParams.builder().build();
+        TrackerImportParams params = TrackerImportParams.builder().build();
 
         Event e1 = createEvent( p1, t1 );
         Event e2 = createEvent( p2, t2 );

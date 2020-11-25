@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import org.hisp.dhis.common.CodeGenerator;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.tracker.TrackerIdentifier;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.domain.Event;
 import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
@@ -57,7 +58,7 @@ public class UserSupplier extends AbstractPreheatSupplier
     private final IdentifiableObjectManager manager;
 
     @Override
-    public void preheatAdd( TrackerPreheatParams params, TrackerPreheat preheat )
+    public void preheatAdd(TrackerImportParams params, TrackerPreheat preheat )
     {
         Set<String> userUids = params.getEvents().stream()
             .filter( Objects::nonNull )

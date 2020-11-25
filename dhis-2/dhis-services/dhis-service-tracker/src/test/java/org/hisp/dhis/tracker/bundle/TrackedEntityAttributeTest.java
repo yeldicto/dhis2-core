@@ -28,6 +28,14 @@ package org.hisp.dhis.tracker.bundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
@@ -50,18 +58,11 @@ import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatService;
+import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -92,6 +93,9 @@ public class TrackedEntityAttributeTest
 
     @Autowired
     private IdentifiableObjectManager manager;
+
+    @Autowired
+    private CurrentUserService currentUserService;
 
     @Override
     protected void setUpTest()
@@ -129,6 +133,7 @@ public class TrackedEntityAttributeTest
             .trackedEntities( trackerBundleParams.getTrackedEntities() )
             .enrollments( trackerBundleParams.getEnrollments() )
             .events( trackerBundleParams.getEvents() )
+            .user( currentUserService.getCurrentUser() )
             .build();
 
         TrackerPreheat preheat = trackerPreheatService.preheat( preheatParams );
@@ -153,6 +158,7 @@ public class TrackedEntityAttributeTest
             .trackedEntities( trackerBundleParams.getTrackedEntities() )
             .enrollments( trackerBundleParams.getEnrollments() )
             .events( trackerBundleParams.getEvents() )
+            .userId( currentUserService.getCurrentUser().getUid() )
             .build() );
 
         trackerBundleService.commit( trackerBundle );

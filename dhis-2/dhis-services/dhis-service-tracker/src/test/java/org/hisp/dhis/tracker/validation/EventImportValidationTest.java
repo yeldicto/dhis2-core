@@ -124,7 +124,7 @@ public class EventImportValidationTest
             "tracker/validations/enrollments_te_te-data.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 5, trackerBundle.getTrackedEntities().size() );
@@ -140,7 +140,7 @@ public class EventImportValidationTest
                 new ClassPathResource( "tracker/validations/enrollments_te_enrollments-data.json" ).getInputStream(),
                 TrackerBundleParams.class );
 
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 4, trackerBundle.getEnrollments().size() );
@@ -195,7 +195,7 @@ public class EventImportValidationTest
             "tracker/validations/events-cat-write-access.json" );
 
         User user = userService.getUser( USER_6 );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( trackerBundleParams,
             TrackerImportStrategy.CREATE );
@@ -302,7 +302,7 @@ public class EventImportValidationTest
         TrackerBundleParams trackerBundleParams = createBundleFromJson( "tracker/validations/events-data.json" );
 
         User user = userService.getUser( USER_2 );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( trackerBundleParams,
             TrackerImportStrategy.CREATE );
@@ -322,7 +322,7 @@ public class EventImportValidationTest
         TrackerBundleParams trackerBundleParams = createBundleFromJson( "tracker/validations/events-data.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 1, trackerBundle.getEvents().size() );
@@ -356,7 +356,7 @@ public class EventImportValidationTest
         TrackerBundleParams trackerBundleParams = createBundleFromJson( "tracker/validations/events-data.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         trackerBundleParams.setImportStrategy( TrackerImportStrategy.UPDATE );
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
@@ -419,7 +419,7 @@ public class EventImportValidationTest
             "tracker/validations/events_non-repeatable-programstage_part1.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( trackerBundleParams,
             TrackerImportStrategy.CREATE );
@@ -653,7 +653,7 @@ public class EventImportValidationTest
             "tracker/validations/events_tei-multiple-enrollments-in-non-reg-program.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 1, trackerBundle.getEvents().size() );
@@ -676,7 +676,7 @@ public class EventImportValidationTest
         TrackerBundleParams params = createBundleFromJson( "tracker/validations/events-data.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params,
             CREATE_AND_UPDATE );
@@ -707,7 +707,7 @@ public class EventImportValidationTest
             "tracker/validations/events_error-periodtype.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 1, trackerBundle.getEvents().size() );
@@ -734,7 +734,7 @@ public class EventImportValidationTest
                 TrackerBundleParams.class );
 
         User user = userService.getUser( "M5zQapPyTZI" );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 1, trackerBundle.getEvents().size() );
@@ -777,7 +777,7 @@ public class EventImportValidationTest
                 TrackerBundleParams.class );
 
         User user = userService.getUser( "M5zQapPyTZI" );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 1, trackerBundle.getEvents().size() );

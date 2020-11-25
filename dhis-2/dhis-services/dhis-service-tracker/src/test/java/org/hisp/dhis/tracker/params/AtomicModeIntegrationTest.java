@@ -122,7 +122,7 @@ public class AtomicModeIntegrationTest
         InputStream inputStream = new ClassPathResource( "tracker/one_valid_tei_and_one_invalid.json" ).getInputStream();
 
         TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
-        params.setUser( userA );
+        params.setUserId( userA.getUid() );
         params.setAtomicMode(AtomicMode.OBJECT);
         TrackerImportReport trackerImportTeiReport = trackerImportService.importTracker( build( params ) );
 
@@ -139,7 +139,7 @@ public class AtomicModeIntegrationTest
         InputStream inputStream = new ClassPathResource( "tracker/one_valid_tei_and_one_invalid.json" ).getInputStream();
 
         TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
-        params.setUser( userA );
+        params.setUserId( userA.getUid() );
         params.setAtomicMode(AtomicMode.ALL);
         TrackerImportReport trackerImportTeiReport = trackerImportService.importTracker( build( params ) );
 

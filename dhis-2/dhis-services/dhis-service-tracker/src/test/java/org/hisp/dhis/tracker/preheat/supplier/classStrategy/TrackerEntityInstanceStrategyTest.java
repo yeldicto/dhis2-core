@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.hisp.dhis.random.BeanRandomizer;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentity.TrackedEntityInstanceStore;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.domain.TrackedEntity;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
@@ -45,7 +46,7 @@ public class TrackerEntityInstanceStrategyTest
     {
         // Create preheat params
         final List<TrackedEntity> trackedEntities = rnd.randomObjects( TrackedEntity.class, 2 );
-        final TrackerPreheatParams params = TrackerPreheatParams.builder().trackedEntities( trackedEntities ).build();
+        final TrackerImportParams params = TrackerImportParams.builder().trackedEntities( trackedEntities ).build();
 
         // Preheat
         TrackerPreheat preheat = new TrackerPreheat();
@@ -71,7 +72,7 @@ public class TrackerEntityInstanceStrategyTest
     {
         // Create preheat params
         final List<TrackedEntity> trackedEntities = rnd.randomObjects( TrackedEntity.class, 2 );
-        final TrackerPreheatParams params = TrackerPreheatParams.builder().trackedEntities( trackedEntities ).build();
+        final TrackerImportParams params = TrackerImportParams.builder().trackedEntities( trackedEntities ).build();
 
         // Preheat
         User user = new User();

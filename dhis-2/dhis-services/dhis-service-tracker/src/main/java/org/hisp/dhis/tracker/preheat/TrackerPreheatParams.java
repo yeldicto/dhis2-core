@@ -53,6 +53,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Deprecated
 public class TrackerPreheatParams
 {
     /**

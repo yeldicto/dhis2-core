@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.springframework.stereotype.Component;
@@ -61,7 +62,7 @@ public class OrgUnitValueTypeSupplier extends AbstractPreheatSupplier
     private final IdentifiableObjectManager manager;
 
     @Override
-    public void preheatAdd( TrackerPreheatParams params, TrackerPreheat preheat )
+    public void preheatAdd(TrackerImportParams params, TrackerPreheat preheat )
     {
         List<TrackedEntityAttribute> attributes = preheat.getAll( TrackerIdScheme.UID, TrackedEntityAttribute.class );
 

@@ -31,6 +31,7 @@ package org.hisp.dhis.tracker.preheat.supplier;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.relationship.RelationshipType;
 import org.hisp.dhis.tracker.TrackerIdentifier;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
@@ -51,7 +52,7 @@ public class RelationshipTypeSupplier extends AbstractPreheatSupplier
     private final IdentifiableObjectManager manager;
 
     @Override
-    public void preheatAdd( TrackerPreheatParams params, TrackerPreheat preheat )
+    public void preheatAdd(TrackerImportParams params, TrackerPreheat preheat )
     {
         preheat.put( TrackerIdentifier.UID,
             DetachUtils.detach( RelationshipTypeMapper.INSTANCE, manager.getAll( RelationshipType.class ) ) );

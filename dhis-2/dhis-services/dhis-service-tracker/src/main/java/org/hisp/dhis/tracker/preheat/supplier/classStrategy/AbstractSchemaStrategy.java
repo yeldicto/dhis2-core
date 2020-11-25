@@ -43,8 +43,9 @@ import org.hisp.dhis.schema.Schema;
 import org.hisp.dhis.schema.SchemaService;
 import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.TrackerIdentifier;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
-import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
+import org.hisp.dhis.tracker.preheat.mappers.CopyMapper;
 import org.hisp.dhis.tracker.preheat.mappers.PreheatMapper;
 import org.mapstruct.factory.Mappers;
 
@@ -71,7 +72,7 @@ public abstract class AbstractSchemaStrategy implements ClassBasedSupplierStrate
     }
 
     @Override
-    public void add( TrackerPreheatParams params, List<List<String>> splitList, TrackerPreheat preheat )
+    public void add( TrackerImportParams params, List<List<String>> splitList, TrackerPreheat preheat )
     {
         TrackerIdentifier identifier = params.getIdentifiers().getByClass( getSchemaClass() );
         Schema schema = schemaService.getDynamicSchema( getSchemaClass() );
@@ -112,8 +113,16 @@ public abstract class AbstractSchemaStrategy implements ClassBasedSupplierStrate
                 query.setUser( preheat.getUser() );
                 query.add( generateRestrictionFromIdentifiers( idScheme, ids ) );
                 query.setDefaults( Defaults.INCLUDE );
-                objects = queryService.query( query ).stream().map( o -> Mappers.getMapper( mapper ).map( o ) )
-                    .map( IdentifiableObject.class::cast ).collect( Collectors.toList() );
+                if ( mapper.isAssignableFrom( CopyMapper.class ) )
+                {
+                    objects = queryService.query( query );
+                }
+                else
+                {
+                    objects = queryService.query( query ).stream().map( o -> Mappers.getMapper( mapper ).map( o ) )
+                        .map( IdentifiableObject.class::cast ).collect( Collectors.toList() );
+                }
+
             }
 
             preheat.put( identifier, objects );

@@ -186,7 +186,7 @@ public class EventSecurityImportValidationTest
             "tracker/validations/enrollments_te_te-data.json" );
 
         User user = userService.getUser( "M5zQapPyTZI" );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 5, trackerBundle.getTrackedEntities().size() );
@@ -202,7 +202,7 @@ public class EventSecurityImportValidationTest
                 new ClassPathResource( "tracker/validations/enrollments_te_enrollments-data.json" ).getInputStream(),
                 TrackerBundleParams.class );
 
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 4, trackerBundle.getEnrollments().size() );
@@ -318,7 +318,7 @@ public class EventSecurityImportValidationTest
             "tracker/validations/events_error-no-programStage-access.json" );
 
         User user = userService.getUser( USER_3 );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 1, trackerBundle.getEvents().size() );
@@ -367,7 +367,7 @@ public class EventSecurityImportValidationTest
 
         User user = userService.getUser( USER_4 );
 
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
         trackerBundleParams.setImportStrategy( TrackerImportStrategy.UPDATE );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );

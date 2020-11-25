@@ -34,10 +34,10 @@ import java.util.stream.Collectors;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.program.ProgramStageInstanceStore;
 import org.hisp.dhis.tracker.TrackerIdScheme;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.domain.Event;
 import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
-import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.hisp.dhis.tracker.preheat.mappers.ProgramStageInstanceMapper;
 import org.springframework.stereotype.Component;
 
@@ -56,7 +56,7 @@ public class EventStrategy implements ClassBasedSupplierStrategy
     private final ProgramStageInstanceStore programStageInstanceStore;
 
     @Override
-    public void add( TrackerPreheatParams params, List<List<String>> splitList, TrackerPreheat preheat )
+    public void add( TrackerImportParams params, List<List<String>> splitList, TrackerPreheat preheat )
     {
         for ( List<String> ids : splitList )
         {

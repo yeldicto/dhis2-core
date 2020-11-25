@@ -77,7 +77,7 @@ public class TrackerIdentifierCollector
         return map;
     }
 
-    public static Map<Class<?>, Set<String>> collect( TrackerPreheatParams params )
+    public static Map<Class<?>, Set<String>> collect( TrackerImportParams params )
     {
         Map<Class<?>, Set<String>> map = new HashMap<>();
 

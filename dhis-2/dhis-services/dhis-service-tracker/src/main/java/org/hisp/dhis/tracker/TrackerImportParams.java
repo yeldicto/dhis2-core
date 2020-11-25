@@ -190,7 +190,6 @@ public class TrackerImportParams
     public TrackerBundleParams toTrackerBundleParams()
     {
         return TrackerBundleParams.builder()
-            .user( user )
             .importMode( importMode )
             .importStrategy( importStrategy )
             .skipTextPatternValidation( skipPatternValidation )

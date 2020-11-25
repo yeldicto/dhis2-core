@@ -84,7 +84,7 @@ public abstract class AbstractImportValidationTest
         TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         return params;
     }

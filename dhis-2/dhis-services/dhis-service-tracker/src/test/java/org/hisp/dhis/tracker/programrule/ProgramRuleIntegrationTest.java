@@ -143,13 +143,13 @@ public class ProgramRuleIntegrationTest
         InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
 
         TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
-        params.setUser( userA );
+        params.setUserId( userA.getUid() );
         TrackerImportReport trackerImportTeiReport = trackerImportService.importTracker( build( params ) );
 
         TrackerBundleParams enrollmentParams = renderService
             .fromJson( new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream(),
                 TrackerBundleParams.class );
-        enrollmentParams.setUser( userA );
+        enrollmentParams.setUserId( userA.getUid() );
         TrackerImportReport trackerImportEnrollmentReport = trackerImportService
             .importTracker( build( enrollmentParams ) );
 

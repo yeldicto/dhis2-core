@@ -1,3 +1,5 @@
+package org.hisp.dhis.tracker.utils;
+
 /*
  * Copyright (c) 2004-2020, University of Oslo
  * All rights reserved.
@@ -26,17 +28,33 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.tracker.utils;
-
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.bundle.TrackerBundleParams;
 
-public class ImportUtils {
+public class ImportUtils
+{
+    public static TrackerImportParams build( TrackerBundleParams params, String userUid )
+    {
+        return TrackerImportParams.builder()
+            .userId( userUid )
+            .importMode( params.getImportMode() )
+            .importStrategy( params.getImportStrategy() )
+            .skipPatternValidation( true )
+            .identifiers( params.getIdentifiers() )
+            .atomicMode( params.getAtomicMode() )
+            .flushMode( params.getFlushMode() )
+            .validationMode( params.getValidationMode() )
+            .trackedEntities( params.getTrackedEntities() )
+            .enrollments( params.getEnrollments() )
+            .events( params.getEvents() )
+            .relationships( params.getRelationships() )
+            .build();
+    }
+
+    // FIXME remove this method
     public static TrackerImportParams build( TrackerBundleParams params )
     {
-        // @formatter:off
         return TrackerImportParams.builder()
-                .user( params.getUser() )
                 .importMode( params.getImportMode() )
                 .importStrategy( params.getImportStrategy() )
                 .skipPatternValidation( true )
@@ -49,6 +67,5 @@ public class ImportUtils {
                 .events( params.getEvents() )
                 .relationships( params.getRelationships() )
                 .build();
-        // @formatter:on
     }
 }

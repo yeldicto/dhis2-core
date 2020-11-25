@@ -230,7 +230,7 @@ public class EnrollmentImportValidationTest
             "tracker/validations/enrollments_error-program-missing.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -267,7 +267,7 @@ public class EnrollmentImportValidationTest
             "tracker/validations/enrollments_te_enrollments-data.json" );
 
         User user = userService.getUser( USER_2 );
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -447,7 +447,7 @@ public class EnrollmentImportValidationTest
                 TrackerBundleParams.class );
 
         User user2 = userService.getUser( USER_4 );
-        params.setUser( user2 );
+        params.setUserId( user2.getUid() );
 
         params.setImportStrategy( TrackerImportStrategy.DELETE );
         TrackerBundle trackerBundle = trackerBundleService.create( params );

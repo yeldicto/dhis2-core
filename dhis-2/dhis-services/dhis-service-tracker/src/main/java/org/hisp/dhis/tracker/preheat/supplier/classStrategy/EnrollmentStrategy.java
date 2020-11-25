@@ -34,10 +34,10 @@ import java.util.stream.Collectors;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramInstanceStore;
 import org.hisp.dhis.tracker.TrackerIdScheme;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.domain.Enrollment;
 import org.hisp.dhis.tracker.preheat.DetachUtils;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
-import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.hisp.dhis.tracker.preheat.mappers.ProgramInstanceMapper;
 import org.springframework.stereotype.Component;
 
@@ -56,7 +56,7 @@ public class EnrollmentStrategy implements ClassBasedSupplierStrategy
     private final ProgramInstanceStore programInstanceStore;
 
     @Override
-    public void add( TrackerPreheatParams params, List<List<String>> splitList, TrackerPreheat preheat )
+    public void add( TrackerImportParams params, List<List<String>> splitList, TrackerPreheat preheat )
     {
         for ( List<String> ids : splitList )
         {

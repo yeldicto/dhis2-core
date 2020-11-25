@@ -241,7 +241,7 @@ public class EnrollmentSecurityImportValidationTest
             "tracker/validations/enrollments_te_te-data.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        trackerBundleParams.setUser( user );
+        trackerBundleParams.setUserId( user.getUid() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
         assertEquals( 5, trackerBundle.getTrackedEntities().size() );
@@ -261,7 +261,7 @@ public class EnrollmentSecurityImportValidationTest
             "tracker/validations/enrollments_te_enrollments-data.json" );
 
         User user = userService.getUser( USER_2 );
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -290,7 +290,7 @@ public class EnrollmentSecurityImportValidationTest
         TrackerBundleParams params = createBundleFromJson(
             "tracker/validations/enrollments_orgunit-mismatch.json" );
 
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
         TrackerValidationReport report = createAndUpdate.getValidationReport();
@@ -320,7 +320,7 @@ public class EnrollmentSecurityImportValidationTest
         TrackerBundleParams params = createBundleFromJson(
             "tracker/validations/enrollments_no-access-tei.json" );
 
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -355,7 +355,7 @@ public class EnrollmentSecurityImportValidationTest
         TrackerBundleParams params = createBundleFromJson(
             "tracker/validations/enrollments_no-access-program.json" );
 
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -386,7 +386,7 @@ public class EnrollmentSecurityImportValidationTest
         TrackerBundleParams params = createBundleFromJson(
             "tracker/validations/enrollments_no-access-program.json" );
 
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -414,7 +414,7 @@ public class EnrollmentSecurityImportValidationTest
         TrackerBundleParams params = createBundleFromJson(
             "tracker/validations/enrollments_program-teitype-missmatch.json" );
 
-        params.setUser( user );
+        params.setUserId( user.getUid() );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
         TrackerValidationReport report = createAndUpdate.getValidationReport();
