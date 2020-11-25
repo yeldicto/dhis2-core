@@ -43,6 +43,7 @@ import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValue;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValueService;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,15 +118,11 @@ public class TrackedEntityProgramAttributeEncryptionTest
     public void testTrackedEntityProgramAttributeEncryptedValue()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_encryption_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                    TrackerImportParams.class );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 

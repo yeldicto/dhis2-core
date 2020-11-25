@@ -30,7 +30,6 @@ package org.hisp.dhis.tracker.bundle;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hisp.dhis.tracker.utils.ImportUtils.build;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -55,6 +54,8 @@ import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
+import org.hisp.dhis.tracker.ParamsConverter;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportService;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
 import org.hisp.dhis.user.CurrentUserService;
@@ -94,7 +95,6 @@ public class EventDataValueTest
     @Autowired
     private CurrentUserService currentUserService;
 
-
     @Override
     protected void setUpTest()
         throws IOException
@@ -118,21 +118,22 @@ public class EventDataValueTest
 
         objectBundleService.commit( bundle );
 
-        final User userA = userService.getUser("M5zQapPyTZI");
+        final User userA = userService.getUser( "M5zQapPyTZI" );
 
         InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
 
-        TrackerBundleParams teiParams = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams teiParams = renderService.fromJson( inputStream, TrackerImportParams.class );
+        teiParams.setUserId( userA.getUid() );
         params.setUser( userA );
-        TrackerImportReport teiImportReport = trackerImportService.importTracker( build( teiParams, userA.getUid() ) );
+        TrackerImportReport teiImportReport = trackerImportService.importTracker( teiParams );
 
         assertTrue( teiImportReport.getValidationReport().getErrorReports().isEmpty() );
 
-        TrackerBundleParams enrollmentParams = renderService
+        TrackerImportParams enrollmentParams = renderService
             .fromJson( new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
         enrollmentParams.setUserId( userA.getUid() );
-        TrackerImportReport enrollmentImportReport = trackerImportService.importTracker( build( enrollmentParams, userA.getUid() ) );
+        TrackerImportReport enrollmentImportReport = trackerImportService.importTracker( enrollmentParams );
         assertTrue( enrollmentImportReport.getValidationReport().getErrorReports().isEmpty() );
     }
 
@@ -140,18 +141,12 @@ public class EventDataValueTest
     public void testEventDataValue()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/event_with_data_values.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .userId( currentUserService.getCurrentUser().getUid() )
-            .build() );
-
-        trackerBundleService.commit( trackerBundle );
+        trackerBundleService.commit( trackerBundleService.create( trackerImportParams ) );
 
         List<ProgramStageInstance> events = manager.getAll( ProgramStageInstance.class );
         assertEquals( 1, events.size() );
@@ -167,19 +162,12 @@ public class EventDataValueTest
     public void testTrackedEntityProgramAttributeValueUpdate()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/event_with_data_values.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
+        trackerImportParams.setUserId( currentUserService.getCurrentUser().getUid() );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .userId( currentUserService.getCurrentUser().getUid() )
-            .build() );
-
-
-        trackerBundleService.commit( trackerBundle );
+        trackerBundleService.commit( ParamsConverter.convert( trackerImportParams ) );
 
         List<ProgramStageInstance> events = manager.getAll( ProgramStageInstance.class );
         assertEquals( 1, events.size() );
@@ -192,18 +180,12 @@ public class EventDataValueTest
 
         // update
 
-        trackerBundleParams = renderService
+        trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/event_with_updated_data_values.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                    TrackerImportParams.class );
+        trackerImportParams.setUserId( currentUserService.getCurrentUser().getUid() );
 
-        trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .userId( currentUserService.getCurrentUser().getUid() )
-            .build() );
-
-        trackerBundleService.commit( trackerBundle );
+        trackerBundleService.commit( ParamsConverter.convert( trackerImportParams ) );
 
         List<ProgramStageInstance> updatedEvents = manager.getAll( ProgramStageInstance.class );
         assertEquals( 1, updatedEvents.size() );

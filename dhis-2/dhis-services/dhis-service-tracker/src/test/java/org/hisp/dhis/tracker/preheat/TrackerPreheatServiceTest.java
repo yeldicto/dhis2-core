@@ -28,7 +28,16 @@ package org.hisp.dhis.tracker.preheat;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.google.common.collect.Lists;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.category.CategoryOption;
 import org.hisp.dhis.category.CategoryOptionCombo;
@@ -50,22 +59,14 @@ import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.TrackerIdentifier;
 import org.hisp.dhis.tracker.TrackerIdentifierCollector;
 import org.hisp.dhis.tracker.TrackerIdentifierParams;
-import org.hisp.dhis.tracker.bundle.TrackerBundleParams;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.domain.TrackedEntity;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.google.common.collect.Lists;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -119,7 +120,7 @@ public class TrackerPreheatServiceTest
     @Test
     public void testCollectIdentifiersSimple()
     {
-        TrackerBundleParams params = new TrackerBundleParams();
+        TrackerImportParams params = new TrackerImportParams();
         Map<Class<?>, Set<String>> collectedMap = TrackerIdentifierCollector.collect( params );
         assertTrue( collectedMap.isEmpty() );
     }
@@ -128,9 +129,9 @@ public class TrackerPreheatServiceTest
     public void testCollectIdentifiersEvents()
         throws IOException
     {
-        TrackerBundleParams params = renderService
+        TrackerImportParams params = renderService
             .fromJson( new ClassPathResource( "tracker/event_events.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
         assertTrue( params.getTrackedEntities().isEmpty() );
         assertTrue( params.getEnrollments().isEmpty() );
@@ -177,7 +178,7 @@ public class TrackerPreheatServiceTest
     @Test
     public void testCollectIdentifiersAttributeValues()
     {
-        TrackerBundleParams params = TrackerBundleParams.builder()
+        TrackerImportParams params = TrackerImportParams.builder()
             .identifiers( TrackerIdentifierParams.builder()
                 .idScheme(
                     TrackerIdentifier.builder().idScheme( TrackerIdScheme.ATTRIBUTE ).value( "ATTR1234567" ).build() )
@@ -186,8 +187,7 @@ public class TrackerPreheatServiceTest
                 TrackedEntity.builder()
                     .trackedEntity( "TEI12345678" )
                     .orgUnit( "OU123456789" )
-                    .build()
-            ) )
+                    .build() ) )
             .build();
 
         assertFalse( params.getTrackedEntities().isEmpty() );
@@ -212,16 +212,13 @@ public class TrackerPreheatServiceTest
     public void testPreheatValidation()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams params = renderService
             .fromJson( new ClassPathResource( "tracker/event_events.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
-        assertTrue( trackerBundleParams.getTrackedEntities().isEmpty() );
-        assertTrue( trackerBundleParams.getEnrollments().isEmpty() );
-        assertFalse( trackerBundleParams.getEvents().isEmpty() );
-
-        TrackerPreheatParams params = new TrackerPreheatParams();
-        trackerPreheatService.validate( params );
+        assertTrue( params.getTrackedEntities().isEmpty() );
+        assertTrue( params.getEnrollments().isEmpty() );
+        assertFalse( params.getEvents().isEmpty() );
     }
 
     @Test
@@ -242,23 +239,17 @@ public class TrackerPreheatServiceTest
 
         objectBundleService.commit( objectBundle );
 
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams params = renderService
             .fromJson( new ClassPathResource( "tracker/event_events.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                    TrackerImportParams.class );
 
-        assertTrue( trackerBundleParams.getTrackedEntities().isEmpty() );
-        assertTrue( trackerBundleParams.getEnrollments().isEmpty() );
-        assertFalse( trackerBundleParams.getEvents().isEmpty() );
+        assertTrue( params.getTrackedEntities().isEmpty() );
+        assertTrue( params.getEnrollments().isEmpty() );
+        assertFalse( params.getEvents().isEmpty() );
 
-        TrackerPreheatParams trackerPreheatParams = TrackerPreheatParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .build();
+        trackerPreheatService.validate( params );
 
-        trackerPreheatService.validate( trackerPreheatParams );
-
-        TrackerPreheat preheat = trackerPreheatService.preheat( trackerPreheatParams );
+        TrackerPreheat preheat = trackerPreheatService.preheat( params );
 
         assertNotNull( preheat );
         assertNotNull( preheat.getMap() );

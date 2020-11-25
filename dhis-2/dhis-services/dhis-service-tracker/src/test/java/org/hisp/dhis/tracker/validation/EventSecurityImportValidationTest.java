@@ -60,9 +60,9 @@ import org.hisp.dhis.security.acl.AccessStringHelper;
 import org.hisp.dhis.trackedentity.TrackedEntityInstanceService;
 import org.hisp.dhis.trackedentity.TrackedEntityType;
 import org.hisp.dhis.trackedentity.TrackedEntityTypeService;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportStrategy;
 import org.hisp.dhis.tracker.bundle.TrackerBundle;
-import org.hisp.dhis.tracker.bundle.TrackerBundleParams;
 import org.hisp.dhis.tracker.bundle.TrackerBundleService;
 import org.hisp.dhis.tracker.report.TrackerBundleReport;
 import org.hisp.dhis.tracker.report.TrackerErrorCode;
@@ -182,7 +182,7 @@ public class EventSecurityImportValidationTest
         List<ErrorReport> objectReport = commit.getErrorReports();
         assertTrue( objectReport.isEmpty() );
 
-        TrackerBundleParams trackerBundleParams = createBundleFromJson(
+        TrackerImportParams trackerBundleParams = createBundleFromJson(
             "tracker/validations/enrollments_te_te-data.json" );
 
         User user = userService.getUser( "M5zQapPyTZI" );
@@ -200,7 +200,7 @@ public class EventSecurityImportValidationTest
         trackerBundleParams = renderService
             .fromJson(
                 new ClassPathResource( "tracker/validations/enrollments_te_enrollments-data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                    TrackerImportParams.class );
 
         trackerBundleParams.setUserId( user.getUid() );
 
@@ -314,7 +314,7 @@ public class EventSecurityImportValidationTest
     {
         setupMetadata();
 
-        TrackerBundleParams trackerBundleParams = createBundleFromJson(
+        TrackerImportParams trackerBundleParams = createBundleFromJson(
             "tracker/validations/events_error-no-programStage-access.json" );
 
         User user = userService.getUser( USER_3 );
@@ -356,7 +356,7 @@ public class EventSecurityImportValidationTest
         zwwuwNp6gVd.setStatus( EventStatus.COMPLETED );
         manager.update( zwwuwNp6gVd );
 
-        TrackerBundleParams trackerBundleParams = createBundleFromJson(
+        TrackerImportParams trackerBundleParams = createBundleFromJson(
             "tracker/validations/events_error-no-uncomplete.json" );
 
         programA.setPublicAccess( AccessStringHelper.DATA_READ_WRITE );

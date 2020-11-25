@@ -54,8 +54,8 @@ import org.hisp.dhis.programrule.ProgramRuleVariableSourceType;
 import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.trackedentity.TrackedEntityAttribute;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.bundle.TrackerBundle;
-import org.hisp.dhis.tracker.bundle.TrackerBundleParams;
 import org.hisp.dhis.tracker.bundle.TrackerBundleService;
 import org.hisp.dhis.tracker.domain.Attribute;
 import org.hisp.dhis.tracker.domain.DataValue;
@@ -172,7 +172,7 @@ public class AssignValueImplementerTest
     public void testAssignDataElementValueForEvents()
         throws IOException
     {
-        TrackerBundleParams bundleParams = createBundleFromJson( "tracker/event_events_and_enrollment.json" );
+        TrackerImportParams bundleParams = createBundleFromJson( "tracker/event_events_and_enrollment.json" );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundleParams );
 
@@ -192,7 +192,7 @@ public class AssignValueImplementerTest
     public void testAssignAttributeValueForEnrollment()
         throws IOException
     {
-        TrackerBundleParams bundleParams = createBundleFromJson( "tracker/enrollment.json" );
+        TrackerImportParams bundleParams = createBundleFromJson( "tracker/enrollment.json" );
 
         TrackerBundle trackerBundle = trackerBundleService.create( bundleParams );
 

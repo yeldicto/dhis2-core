@@ -28,6 +28,15 @@ package org.hisp.dhis.tracker.bundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
@@ -43,19 +52,11 @@ import org.hisp.dhis.program.Program;
 import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -120,13 +121,13 @@ public class TrackerBundleServiceTest
     public void testTrackedEntityInstanceImport()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerBundleParams = renderService
             .fromJson( new ClassPathResource( "tracker/trackedentity_basic_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
         assertEquals( 13, trackerBundleParams.getTrackedEntities().size() );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
+        TrackerBundle trackerBundle = trackerBundleService.create( TrackerImportParams.builder()
             .trackedEntities( trackerBundleParams.getTrackedEntities() )
             .build() );
 

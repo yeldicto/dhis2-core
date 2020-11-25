@@ -28,6 +28,13 @@ package org.hisp.dhis.tracker.bundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
@@ -57,17 +64,10 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 /**
  * @author Zubair Asghar
  */
-public class TrackerObjectDeletionServiceTest  extends DhisSpringTest
+public class TrackerObjectDeletionServiceTest extends DhisSpringTest
 {
     @Autowired
     private ObjectBundleService objectBundleService;
@@ -91,7 +91,8 @@ public class TrackerObjectDeletionServiceTest  extends DhisSpringTest
     private IdentifiableObjectManager manager;
 
     @Override
-    protected void setUpTest() throws IOException
+    protected void setUpTest()
+        throws IOException
     {
         preCreateInjectAdminUserWithoutPersistence();
 
@@ -113,39 +114,36 @@ public class TrackerObjectDeletionServiceTest  extends DhisSpringTest
 
         objectBundleService.commit( bundle );
 
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/tracker_basic_data_before_deletion.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
-        assertEquals( 13, trackerBundleParams.getTrackedEntities().size() );
-        assertEquals( 2, trackerBundleParams.getEnrollments().size() );
-        assertEquals( 2, trackerBundleParams.getEvents().size() );
+        assertEquals( 13, trackerImportParams.getTrackedEntities().size() );
+        assertEquals( 2, trackerImportParams.getEnrollments().size() );
+        assertEquals( 2, trackerImportParams.getEvents().size() );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         TrackerBundleReport bundleReport = trackerBundleService.commit( trackerBundle );
 
-        assertEquals( bundleReport.getTypeReportMap().get( TrackerType.EVENT ).getStats().getCreated(), manager.getAll( ProgramStageInstance.class ).size() );
-        assertEquals( bundleReport.getTypeReportMap().get( TrackerType.TRACKED_ENTITY ).getStats().getCreated(), manager.getAll( TrackedEntityInstance.class ).size() );
+        assertEquals( bundleReport.getTypeReportMap().get( TrackerType.EVENT ).getStats().getCreated(),
+            manager.getAll( ProgramStageInstance.class ).size() );
+        assertEquals( bundleReport.getTypeReportMap().get( TrackerType.TRACKED_ENTITY ).getStats().getCreated(),
+            manager.getAll( TrackedEntityInstance.class ).size() );
         assertEquals( 4, manager.getAll( ProgramInstance.class ).size() );
     }
 
     @Test
-    public void testTrackedEntityInstanceDeletion() throws IOException
+    public void testTrackedEntityInstanceDeletion()
+        throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/tracked_entity_basic_data_for_deletion.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
-        assertEquals( 9, trackerBundleParams.getTrackedEntities().size() );
+        assertEquals( 9, trackerImportParams.getTrackedEntities().size() );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         TrackerBundleReport bundleReport = trackerBundleService.delete( trackerBundle );
 
@@ -159,22 +157,21 @@ public class TrackerObjectDeletionServiceTest  extends DhisSpringTest
     }
 
     @Test
-    public void testEnrollmentDeletion() throws IOException
+    public void testEnrollmentDeletion()
+        throws IOException
     {
         assertEquals( 4, manager.getAll( ProgramInstance.class ).size() );
         assertEquals( 2, manager.getAll( ProgramStageInstance.class ).size() );
 
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/enrollment_basic_data_for_deletion.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         TrackerBundleReport bundleReport = trackerBundleService.delete( trackerBundle );
 
-        assertEquals( TrackerStatus.OK , bundleReport.getStatus() );
+        assertEquals( TrackerStatus.OK, bundleReport.getStatus() );
         assertTrue( bundleReport.getTypeReportMap().containsKey( TrackerType.ENROLLMENT ) );
         assertEquals( 1, bundleReport.getTypeReportMap().get( TrackerType.ENROLLMENT ).getStats().getDeleted() );
 
@@ -186,15 +183,14 @@ public class TrackerObjectDeletionServiceTest  extends DhisSpringTest
     }
 
     @Test
-    public void testEventDeletion() throws IOException
+    public void testEventDeletion()
+        throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/event_basic_data_for_deletion.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .events( trackerBundleParams.getEvents() )
-            .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         TrackerBundleReport bundleReport = trackerBundleService.delete( trackerBundle );
 
@@ -207,19 +203,15 @@ public class TrackerObjectDeletionServiceTest  extends DhisSpringTest
     }
 
     @Test
-    public void testNonExistentEnrollment() throws IOException
+    public void testNonExistentEnrollment()
+        throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
-            .fromJson( new ClassPathResource( "tracker/non_existent_enrollment_basic_data_for_deletion.json" ).getInputStream(),
-                TrackerBundleParams.class );
-
-        TrackerImportParams params = TrackerImportParams.builder()
-            .relationships( trackerBundleParams.getRelationships() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .importStrategy( TrackerImportStrategy.DELETE )
-            .build();
+        TrackerImportParams params = renderService
+            .fromJson(
+                new ClassPathResource( "tracker/non_existent_enrollment_basic_data_for_deletion.json" )
+                    .getInputStream(),
+                TrackerImportParams.class );
+        params.setImportStrategy( TrackerImportStrategy.DELETE );
 
         TrackerImportReport importReport = trackerImportService.importTracker( params );
 

@@ -28,6 +28,13 @@ package org.hisp.dhis.tracker.bundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
@@ -43,17 +50,11 @@ import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValue;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValueService;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -110,15 +111,11 @@ public class TrackedEntityProgramAttributeTest
     public void testTrackedEntityProgramAttributeValue()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                    TrackerImportParams.class );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 
@@ -138,15 +135,11 @@ public class TrackedEntityProgramAttributeTest
     public void testTrackedEntityProgramAttributeValueUpdate()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                    TrackerImportParams.class );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 
@@ -163,15 +156,11 @@ public class TrackedEntityProgramAttributeTest
 
         // update
 
-        trackerBundleParams = renderService
+        trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_update_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
-        trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .build() );
+        trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 
@@ -189,15 +178,11 @@ public class TrackedEntityProgramAttributeTest
     public void testTrackedEntityProgramAttributeValueUpdateAndDelete()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 
@@ -214,15 +199,11 @@ public class TrackedEntityProgramAttributeTest
 
         // update
 
-        trackerBundleParams = renderService
+        trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_update_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
-        trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .build() );
+        trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 
@@ -237,15 +218,11 @@ public class TrackedEntityProgramAttributeTest
 
         // delete
 
-        trackerBundleParams = renderService
+        trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_delete_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                TrackerImportParams.class );
 
-        trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .build() );
+        trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 

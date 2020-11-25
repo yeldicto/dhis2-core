@@ -44,9 +44,9 @@ import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.trackedentity.TrackedEntityAttributeService;
 import org.hisp.dhis.trackedentity.TrackedEntityInstanceService;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportStrategy;
 import org.hisp.dhis.tracker.bundle.TrackerBundle;
-import org.hisp.dhis.tracker.bundle.TrackerBundleParams;
 import org.hisp.dhis.tracker.bundle.TrackerBundleService;
 import org.hisp.dhis.tracker.report.TrackerBundleReport;
 import org.hisp.dhis.tracker.report.TrackerErrorCode;
@@ -124,7 +124,7 @@ public class EnrollmentAttrValidationTests
         List<ErrorReport> objectReport = commit.getErrorReports();
         assertTrue( objectReport.isEmpty() );
 
-        TrackerBundleParams trackerBundleParams = createBundleFromJson(
+        TrackerImportParams trackerBundleParams = createBundleFromJson(
             "tracker/validations/enrollments_te_te-data_2.json" );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerBundleParams );
@@ -141,7 +141,7 @@ public class EnrollmentAttrValidationTests
     public void testAttributesMissingUid()
         throws IOException
     {
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_te_attr-missing-uuid.json" );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
@@ -160,7 +160,7 @@ public class EnrollmentAttrValidationTests
     public void testAttributesMissingValues()
         throws IOException
     {
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_te_attr-missing-value.json" );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
@@ -185,7 +185,7 @@ public class EnrollmentAttrValidationTests
         TrackedEntityAttribute sTJvSLN7Kcb = trackedEntityAttributeService.getTrackedEntityAttribute( "sTJvSLN7Kcb" );
         trackedEntityAttributeService.deleteTrackedEntityAttribute( sTJvSLN7Kcb );
 
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_te_attr-data.json" );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
@@ -204,7 +204,7 @@ public class EnrollmentAttrValidationTests
     public void testAttributesMissingMandatory()
         throws IOException
     {
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_te_attr-missing-mandatory.json" );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
@@ -223,7 +223,7 @@ public class EnrollmentAttrValidationTests
     public void testAttributesOnlyProgramAttrAllowed()
         throws IOException
     {
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_te_attr-only-program-attr.json" );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );

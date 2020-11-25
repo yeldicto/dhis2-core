@@ -54,9 +54,10 @@ import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentity.TrackedEntityType;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValue;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValueService;
+import org.hisp.dhis.tracker.ParamsConverter;
 import org.hisp.dhis.tracker.TrackerIdScheme;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
-import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatService;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.UserService;
@@ -125,18 +126,12 @@ public class TrackedEntityAttributeTest
     public void testTrackedAttributePreheater()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_with_tea_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                    TrackerImportParams.class );
+        trackerImportParams.setUserId( currentUserService.getCurrentUser().getUid() );
 
-        TrackerPreheatParams preheatParams = TrackerPreheatParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .user( currentUserService.getCurrentUser() )
-            .build();
-
-        TrackerPreheat preheat = trackerPreheatService.preheat( preheatParams );
+        TrackerPreheat preheat = trackerPreheatService.preheat( trackerImportParams );
 
         assertNotNull( preheat.get( TrackerIdScheme.UID, OrganisationUnit.class, "cNEZTkdAvmg" ) );
         assertNotNull( preheat.get( TrackerIdScheme.UID, TrackedEntityType.class, "KrYIdvLxkMb" ) );
@@ -150,18 +145,12 @@ public class TrackedEntityAttributeTest
     public void testTrackedAttributeValueBundleImporter()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_with_tea_data.json" ).getInputStream(),
-                TrackerBundleParams.class );
+                    TrackerImportParams.class );
+        trackerImportParams.setUserId( currentUserService.getCurrentUser().getUid() );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerBundleParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .enrollments( trackerBundleParams.getEnrollments() )
-            .events( trackerBundleParams.getEvents() )
-            .userId( currentUserService.getCurrentUser().getUid() )
-            .build() );
-
-        trackerBundleService.commit( trackerBundle );
+        trackerBundleService.commit( ParamsConverter.convert( trackerImportParams ) );
 
         List<TrackedEntityInstance> trackedEntityInstances = manager.getAll( TrackedEntityInstance.class );
         assertEquals( 1, trackedEntityInstances.size() );

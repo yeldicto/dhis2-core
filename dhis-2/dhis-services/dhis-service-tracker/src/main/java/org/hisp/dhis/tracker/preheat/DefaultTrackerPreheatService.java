@@ -86,6 +86,7 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
         preheat.setIdentifiers( params.getIdentifiers() );
         preheat.setUser( params.getUser() );
         preheat.setDefaults( manager.getDefaults() );
+        preheat.setUser( params.getUser() );
 
         checkNotNull( preheat.getUser(), "TrackerPreheat is missing the user object." );
 
@@ -127,7 +128,7 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
     }
 
     @Override
-    public void validate( TrackerPreheatParams params )
+    public void validate( TrackerImportParams params )
     {
         // TODO: Implement validation
     }

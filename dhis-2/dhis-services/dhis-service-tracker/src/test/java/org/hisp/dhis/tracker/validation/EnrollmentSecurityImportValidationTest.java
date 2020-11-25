@@ -54,9 +54,9 @@ import org.hisp.dhis.security.acl.AccessStringHelper;
 import org.hisp.dhis.trackedentity.TrackedEntityInstanceService;
 import org.hisp.dhis.trackedentity.TrackedEntityType;
 import org.hisp.dhis.trackedentity.TrackedEntityTypeService;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportStrategy;
 import org.hisp.dhis.tracker.bundle.TrackerBundle;
-import org.hisp.dhis.tracker.bundle.TrackerBundleParams;
 import org.hisp.dhis.tracker.bundle.TrackerBundleService;
 import org.hisp.dhis.tracker.report.TrackerBundleReport;
 import org.hisp.dhis.tracker.report.TrackerErrorCode;
@@ -237,7 +237,7 @@ public class EnrollmentSecurityImportValidationTest
         List<ErrorReport> objectReport = commit.getErrorReports();
         assertTrue( objectReport.isEmpty() );
 
-        TrackerBundleParams trackerBundleParams = createBundleFromJson(
+        TrackerImportParams trackerBundleParams = createBundleFromJson(
             "tracker/validations/enrollments_te_te-data.json" );
 
         User user = userService.getUser( ADMIN_USER_UID );
@@ -257,7 +257,7 @@ public class EnrollmentSecurityImportValidationTest
     public void testNoWriteAccessToOrg()
         throws IOException
     {
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_te_enrollments-data.json" );
 
         User user = userService.getUser( USER_2 );
@@ -287,7 +287,7 @@ public class EnrollmentSecurityImportValidationTest
 
         injectSecurityContext( user );
 
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_orgunit-mismatch.json" );
 
         params.setUserId( user.getUid() );
@@ -317,7 +317,7 @@ public class EnrollmentSecurityImportValidationTest
 
         injectSecurityContext( user );
 
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_no-access-tei.json" );
 
         params.setUserId( user.getUid() );
@@ -352,7 +352,7 @@ public class EnrollmentSecurityImportValidationTest
 
         injectSecurityContext( user );
 
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_no-access-program.json" );
 
         params.setUserId( user.getUid() );
@@ -383,7 +383,7 @@ public class EnrollmentSecurityImportValidationTest
 
         injectSecurityContext( user );
 
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_no-access-program.json" );
 
         params.setUserId( user.getUid() );
@@ -411,7 +411,7 @@ public class EnrollmentSecurityImportValidationTest
 
         injectSecurityContext( user );
 
-        TrackerBundleParams params = createBundleFromJson(
+        TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_program-teitype-missmatch.json" );
 
         params.setUserId( user.getUid() );

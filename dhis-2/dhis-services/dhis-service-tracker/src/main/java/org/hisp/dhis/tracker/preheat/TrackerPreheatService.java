@@ -47,5 +47,5 @@ public interface TrackerPreheatService
      *
      * @param params PreheatParams
      */
-    void validate( TrackerPreheatParams params );
+    void validate( TrackerImportParams params );
 }

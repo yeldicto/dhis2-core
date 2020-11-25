@@ -1,4 +1,4 @@
-package org.hisp.dhis.tracker;
+package org.hisp.dhis.webapi.controller.tracker;
 
 /*
  * Copyright (c) 2004-2020, University of Oslo
@@ -31,15 +31,13 @@ package org.hisp.dhis.tracker;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hisp.dhis.scheduling.JobConfiguration;
-import org.hisp.dhis.tracker.bundle.TrackerBundleMode;
 import org.hisp.dhis.tracker.domain.Enrollment;
 import org.hisp.dhis.tracker.domain.Event;
 import org.hisp.dhis.tracker.domain.Relationship;
 import org.hisp.dhis.tracker.domain.TrackedEntity;
-import org.hisp.dhis.user.User;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,96 +45,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * Maps the Tracker import payload
+ *
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TrackerImportParams
+@JsonDeserialize( converter = TrackerBundleParamsConverter.class )
+public class TrackerBundleParams
 {
-    /**
-     * User uid to use for import job.
-     */
-    @JsonProperty
-    private String userId;
-
-    /**
-     * User to use for import job.
-     */
-    private User user;
-
-    /**
-     * Should import be imported or just validated.
-     */
-    @JsonProperty
-    @Builder.Default
-    private TrackerBundleMode importMode = TrackerBundleMode.COMMIT;
-
-    /**
-     * Identifiers to match metadata
-     */
-    @JsonProperty
-    @Builder.Default
-    private TrackerIdentifierParams identifiers = new TrackerIdentifierParams();
-
-    /**
-     * Sets import strategy (create, update, etc).
-     */
-    @JsonProperty
-    @Builder.Default
-    private TrackerImportStrategy importStrategy = TrackerImportStrategy.CREATE;
-
-    /**
-     * Should import be treated as a atomic import (all or nothing).
-     */
-    @JsonProperty
-    @Builder.Default
-    private AtomicMode atomicMode = AtomicMode.ALL;
-
-    /**
-     * Flush for every object or per type.
-     */
-    @JsonProperty
-    @Builder.Default
-    private FlushMode flushMode = FlushMode.AUTO;
-
-    /**
-     * Validation mode to use, defaults to fully validated objects.
-     */
-    @JsonProperty
-    @Builder.Default
-    private ValidationMode validationMode = ValidationMode.FULL;
-
-    /**
-     * Should text pattern validation be skipped or not, default is not.
-     */
-    @JsonProperty
-    private boolean skipPatternValidation;
-
-    /**
-     * Should side effects be skipped or not, default is not.
-     */
-    @JsonProperty
-    private boolean skipSideEffects;
-
-    /**
-     * Should rule engine call be skipped or not, default is to skip.
-     */
-    @JsonProperty
-    private boolean skipRuleEngine;
-
-    /**
-     * Name of file that was used for import (if available).
-     */
-    @JsonProperty
-    private String filename;
-
-    /**
-     * Job id to use for threaded imports.
-     */
-    private JobConfiguration jobConfiguration;
-
     /**
      * Tracked entities to import.
      */
@@ -164,27 +83,4 @@ public class TrackerImportParams
     @JsonProperty
     @Builder.Default
     private List<Relationship> relationships = new ArrayList<>();
-
-    public TrackerImportParams setUser( User user )
-    {
-        this.user = user;
-
-        if ( user != null )
-        {
-            this.userId = user.getUid();
-        }
-
-        return this;
-    }
-
-    @JsonProperty
-    public String getUsername()
-    {
-        return User.username( user );
-    }
-
-    public boolean hasJobConfiguration()
-    {
-        return jobConfiguration != null;
-    }
 }

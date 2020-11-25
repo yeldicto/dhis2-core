@@ -28,7 +28,6 @@ package org.hisp.dhis.tracker.bundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import static org.hisp.dhis.tracker.utils.ImportUtils.build;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -50,6 +49,7 @@ import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.tracker.AtomicMode;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportService;
 import org.hisp.dhis.tracker.TrackerImportStrategy;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
@@ -117,10 +117,10 @@ public class ReportSummaryIntegrationTest
     {
         InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
 
-        TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
         params.setAtomicMode( AtomicMode.OBJECT );
-        TrackerImportReport trackerImportTeiReport = trackerImportService.importTracker( build( params ) );
+        TrackerImportReport trackerImportTeiReport = trackerImportService.importTracker( params  );
 
         assertNotNull( trackerImportTeiReport );
         assertEquals( TrackerStatus.OK, trackerImportTeiReport.getStatus() );
@@ -137,15 +137,15 @@ public class ReportSummaryIntegrationTest
     {
         InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
 
-        TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/one_update_tei_and_one_new_tei.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
         params.setImportStrategy( TrackerImportStrategy.CREATE_AND_UPDATE );
-        TrackerImportReport trackerImportTeiReport = trackerImportService.importTracker( build( params ) );
+        TrackerImportReport trackerImportTeiReport = trackerImportService.importTracker(  params );
 
         assertNotNull( trackerImportTeiReport );
         assertEquals( TrackerStatus.OK, trackerImportTeiReport.getStatus() );
@@ -162,17 +162,17 @@ public class ReportSummaryIntegrationTest
     {
         InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
 
-        TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/one_update_tei_and_one_new_tei_and_one_invalid_tei.json" )
             .getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
         params.setAtomicMode( AtomicMode.OBJECT );
         params.setImportStrategy( TrackerImportStrategy.CREATE_AND_UPDATE );
-        TrackerImportReport trackerImportTeiReport = trackerImportService.importTracker( build( params ) );
+        TrackerImportReport trackerImportTeiReport = trackerImportService.importTracker( params );
 
         assertNotNull( trackerImportTeiReport );
         assertEquals( TrackerStatus.OK, trackerImportTeiReport.getStatus() );
@@ -189,15 +189,15 @@ public class ReportSummaryIntegrationTest
     {
         InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
 
-        TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
         params.setImportStrategy( TrackerImportStrategy.CREATE_AND_UPDATE );
-        TrackerImportReport trackerImportEnrollmentReport = trackerImportService.importTracker( build( params ) );
+        TrackerImportReport trackerImportEnrollmentReport = trackerImportService.importTracker( params );
 
         assertNotNull( trackerImportEnrollmentReport );
         assertEquals( TrackerStatus.OK, trackerImportEnrollmentReport.getStatus() );
@@ -215,21 +215,21 @@ public class ReportSummaryIntegrationTest
         InputStream inputStream = new ClassPathResource( "tracker/one_update_tei_and_one_new_tei.json" )
             .getInputStream();
 
-        TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/one_update_enrollment_and_one_new_enrollment.json" )
             .getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
         params.setImportStrategy( TrackerImportStrategy.CREATE_AND_UPDATE );
-        TrackerImportReport trackerImportEnrollmentReport = trackerImportService.importTracker( build( params ) );
+        TrackerImportReport trackerImportEnrollmentReport = trackerImportService.importTracker( params );
 
         assertNotNull( trackerImportEnrollmentReport );
         assertEquals( TrackerStatus.OK, trackerImportEnrollmentReport.getStatus() );
@@ -247,22 +247,22 @@ public class ReportSummaryIntegrationTest
         InputStream inputStream = new ClassPathResource( "tracker/one_update_tei_and_one_new_tei.json" )
             .getInputStream();
 
-        TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/one_update_and_one_new_and_one_invalid_enrollment.json" )
             .getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
         params.setAtomicMode( AtomicMode.OBJECT );
         params.setImportStrategy( TrackerImportStrategy.CREATE_AND_UPDATE );
-        TrackerImportReport trackerImportEnrollmentReport = trackerImportService.importTracker( build( params ) );
+        TrackerImportReport trackerImportEnrollmentReport = trackerImportService.importTracker( params );
 
         assertNotNull( trackerImportEnrollmentReport );
         assertEquals( TrackerStatus.OK, trackerImportEnrollmentReport.getStatus() );
@@ -279,19 +279,19 @@ public class ReportSummaryIntegrationTest
     {
         InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
 
-        TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/single_event.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        TrackerImportReport trackerImportEventReport = trackerImportService.importTracker( build( params ) );
+        TrackerImportReport trackerImportEventReport = trackerImportService.importTracker( params );
 
         assertNotNull( trackerImportEventReport );
         assertEquals( TrackerStatus.OK, trackerImportEventReport.getStatus() );
@@ -308,25 +308,25 @@ public class ReportSummaryIntegrationTest
     {
         InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
 
-        TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/single_event.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/one_update_event_and_one_new_event.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
         params.setImportStrategy( TrackerImportStrategy.CREATE_AND_UPDATE );
-        TrackerImportReport trackerImportEventReport = trackerImportService.importTracker( build( params ) );
+        TrackerImportReport trackerImportEventReport = trackerImportService.importTracker( params );
 
         assertNotNull( trackerImportEventReport );
         assertEquals( TrackerStatus.OK, trackerImportEventReport.getStatus() );
@@ -343,27 +343,27 @@ public class ReportSummaryIntegrationTest
     {
         InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
 
-        TrackerBundleParams params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/single_event.json" ).getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
-        trackerImportService.importTracker( build( params ) );
+        trackerImportService.importTracker( params );
 
         inputStream = new ClassPathResource( "tracker/one_update_and_one_new_and_one_invalid_event.json" )
             .getInputStream();
-        params = renderService.fromJson( inputStream, TrackerBundleParams.class );
+        params = renderService.fromJson( inputStream, TrackerImportParams.class );
         params.setUserId( userA.getUid() );
         params.setAtomicMode( AtomicMode.OBJECT );
         params.setImportStrategy( TrackerImportStrategy.CREATE_AND_UPDATE );
-        TrackerImportReport trackerImportEventReport = trackerImportService.importTracker( build( params ) );
+        TrackerImportReport trackerImportEventReport = trackerImportService.importTracker( params );
 
         assertNotNull( trackerImportEventReport );
         assertEquals( TrackerStatus.OK, trackerImportEventReport.getStatus() );

@@ -28,7 +28,13 @@ package org.hisp.dhis.tracker.bundle;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.google.common.collect.Sets;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundle;
@@ -47,17 +53,13 @@ import org.hisp.dhis.programrule.ProgramRuleActionType;
 import org.hisp.dhis.programrule.ProgramRuleService;
 import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
+import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.google.common.collect.Sets;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -125,18 +127,13 @@ public class TrackerProgramRuleBundleServiceTest extends DhisSpringTest
     public void testRunRuleEngineForEventOnBundleCreate()
         throws IOException
     {
-        TrackerBundleParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/event_events_and_enrollment.json" ).getInputStream(),
-                 TrackerBundleParams.class );
+                    TrackerImportParams.class );
 
-         assertEquals( 8, trackerBundleParams.getEvents().size() );
+        assertEquals( 8, trackerImportParams.getEvents().size() );
 
-        TrackerBundle trackerBundle = trackerBundleService.create(
-            TrackerBundleParams.builder()
-                .events( trackerBundleParams.getEvents() )
-                .enrollments( trackerBundleParams.getEnrollments() )
-                .trackedEntities( trackerBundleParams.getTrackedEntities() )
-                .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundle = trackerBundleService.runRuleEngine( trackerBundle );
 

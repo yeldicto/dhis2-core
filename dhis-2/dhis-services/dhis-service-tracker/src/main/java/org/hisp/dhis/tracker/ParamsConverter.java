@@ -7,7 +7,6 @@ import org.hisp.dhis.tracker.bundle.TrackerBundle;
  */
 public class ParamsConverter
 {
-
     public static TrackerBundle convert( TrackerImportParams params )
     {
         return TrackerBundle.builder()
@@ -22,6 +21,7 @@ public class ParamsConverter
             .enrollments( params.getEnrollments() )
             .events( params.getEvents() )
             .relationships( params.getRelationships() )
+            .user( params.getUser() )
             .build();
     }
 
