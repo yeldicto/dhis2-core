@@ -146,16 +146,10 @@ public class DefaultTrackerBundleService
     }
 
     @Override
-    @Transactional
     public TrackerBundle create( TrackerBundleParams params )
     {
         TrackerBundle trackerBundle = params.toTrackerBundle();
         TrackerPreheatParams preheatParams = params.toTrackerPreheatParams();
-        if ( preheatParams.getUser() == null )
-        {
-            preheatParams.setUser( trackerUserService.getUser( preheatParams.getUserId() ) );
-        }
-
         TrackerPreheat preheat = trackerPreheatService.preheat( preheatParams );
         trackerBundle.setPreheat( preheat );
 

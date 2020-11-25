@@ -1,6 +1,7 @@
 package org.hisp.dhis.tracker.preheat.mappers;
 
-import org.hisp.dhis.program.ProgramInstance;
+import java.util.Set;
+
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.user.UserAccess;
 import org.hisp.dhis.user.UserGroupAccess;
@@ -10,13 +11,12 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-import java.util.Set;
-
 @Mapper( uses = DebugMapper.class )
 public interface TrackedEntityInstanceMapper extends PreheatMapper<TrackedEntityInstance>
 {
     TrackedEntityInstanceMapper INSTANCE = Mappers.getMapper( TrackedEntityInstanceMapper.class );
 
+    @BeanMapping( ignoreByDefault = true )
     @Mapping( target = "id" )
     @Mapping( target = "uid" )
     @Mapping( target = "code" )

@@ -58,7 +58,6 @@ import org.hisp.dhis.tracker.report.TrackerTypeReport;
 import org.hisp.dhis.tracker.report.TrackerValidationReport;
 import org.hisp.dhis.tracker.validation.TrackerValidationService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Enums;
 import com.google.common.collect.ImmutableMap;
@@ -91,10 +90,7 @@ public class DefaultTrackerImportService
     //@Transactional // TODO: This annotation must be removed. Performance killer.
     public TrackerImportReport importTracker( TrackerImportParams params )
     {
-        if ( params.getUser() == null )
-        {
-            params.setUser( trackerUserService.getUser( params.getUserId() ) );
-        }
+        params.setUser( trackerUserService.getUser( params.getUserId() ) );
 
         // Init the Notifier
         ImportNotifier notifier = new ImportNotifier( this.notifier, params );

@@ -36,16 +36,13 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.hibernate.Hibernate;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.commons.timer.SystemTimer;
 import org.hisp.dhis.commons.timer.Timer;
-import org.hisp.dhis.hibernate.HibernateUtils;
 import org.hisp.dhis.preheat.PreheatException;
 import org.hisp.dhis.tracker.preheat.supplier.PreheatSupplier;
 import org.hisp.dhis.tracker.validation.TrackerImportPreheatConfig;
 import org.hisp.dhis.user.CurrentUserService;
-import org.hisp.dhis.user.User;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -89,10 +86,6 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
         preheat.setIdentifiers( params.getIdentifiers() );
         preheat.setUser( params.getUser() );
         preheat.setDefaults( manager.getDefaults() );
-        User importingUser = getImportingUser( preheat.getUser() );
-        preheat.setUser( importingUser );
-        Hibernate.initialize( importingUser.getTeiSearchOrganisationUnits());
-        Hibernate.initialize( importingUser.getOrganisationUnits());
 
         checkNotNull( preheat.getUser(), "TrackerPreheat is missing the user object." );
 
@@ -106,12 +99,12 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
             catch ( BeansException beanException )
             {
                 processException( "Unable to find a preheat supplier with name " + beanName
-                        + " in the Spring context. Skipping supplier.", beanException, supplier );
+                    + " in the Spring context. Skipping supplier.", beanException, supplier );
             }
             catch ( Exception e )
             {
                 processException( "An error occurred while executing a preheat supplier with name "
-                        + supplier, e, supplier );
+                    + supplier, e, supplier );
             }
         }
 
@@ -137,18 +130,6 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
     public void validate( TrackerPreheatParams params )
     {
         // TODO: Implement validation
-    }
-
-    private User getImportingUser( User user )
-    {
-        // ıf user already set, reload the user to make sure its loaded in the current
-        // tx
-        if ( user != null )
-        {
-            return manager.get( User.class, user.getUid() );
-        }
-
-        return currentUserService.getCurrentUser();
     }
 
     private ApplicationContext ctx;
