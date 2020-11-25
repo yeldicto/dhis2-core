@@ -56,6 +56,7 @@ import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValue;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValueService;
 import org.hisp.dhis.tracker.TrackerImportParams;
+import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,9 @@ public class TrackedEntityProgramAttributeFileResourceTest
 
     @Autowired
     private FileResourceService fileResourceService;
+
+    @Autowired
+    private CurrentUserService currentUserService;
 
     @Override
     protected void setUpTest()
@@ -131,6 +135,7 @@ public class TrackedEntityProgramAttributeFileResourceTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_fileresource_data.json" ).getInputStream(),
                 TrackerImportParams.class );
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 

@@ -51,6 +51,7 @@ import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValue;
 import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValueService;
 import org.hisp.dhis.tracker.TrackerImportParams;
+import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,9 @@ public class TrackedEntityProgramAttributeTest
     @Autowired
     private IdentifiableObjectManager manager;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     @Override
     protected void setUpTest()
         throws IOException
@@ -114,7 +118,7 @@ public class TrackedEntityProgramAttributeTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_data.json" ).getInputStream(),
                     TrackerImportParams.class );
-
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
@@ -138,7 +142,7 @@ public class TrackedEntityProgramAttributeTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_data.json" ).getInputStream(),
                     TrackerImportParams.class );
-
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
@@ -159,7 +163,7 @@ public class TrackedEntityProgramAttributeTest
         trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_update_data.json" ).getInputStream(),
                 TrackerImportParams.class );
-
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
         trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
@@ -181,7 +185,7 @@ public class TrackedEntityProgramAttributeTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_data.json" ).getInputStream(),
                 TrackerImportParams.class );
-
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
@@ -202,7 +206,7 @@ public class TrackedEntityProgramAttributeTest
         trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_update_data.json" ).getInputStream(),
                 TrackerImportParams.class );
-
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
         trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
@@ -221,7 +225,7 @@ public class TrackedEntityProgramAttributeTest
         trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_program_with_tea_delete_data.json" ).getInputStream(),
                 TrackerImportParams.class );
-
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
         trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );

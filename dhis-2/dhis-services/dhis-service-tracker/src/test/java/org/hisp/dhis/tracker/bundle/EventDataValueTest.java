@@ -165,9 +165,9 @@ public class EventDataValueTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/event_with_data_values.json" ).getInputStream(),
                 TrackerImportParams.class );
-        trackerImportParams.setUserId( currentUserService.getCurrentUser().getUid() );
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
 
-        trackerBundleService.commit( ParamsConverter.convert( trackerImportParams ) );
+        trackerBundleService.commit( trackerBundleService.create( trackerImportParams ) );
 
         List<ProgramStageInstance> events = manager.getAll( ProgramStageInstance.class );
         assertEquals( 1, events.size() );
@@ -183,7 +183,7 @@ public class EventDataValueTest
         trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/event_with_updated_data_values.json" ).getInputStream(),
                     TrackerImportParams.class );
-        trackerImportParams.setUserId( currentUserService.getCurrentUser().getUid() );
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
 
         trackerBundleService.commit( ParamsConverter.convert( trackerImportParams ) );
 

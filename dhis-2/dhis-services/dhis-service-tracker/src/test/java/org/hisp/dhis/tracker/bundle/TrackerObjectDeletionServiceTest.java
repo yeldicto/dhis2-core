@@ -59,6 +59,7 @@ import org.hisp.dhis.tracker.report.TrackerErrorCode;
 import org.hisp.dhis.tracker.report.TrackerErrorReport;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
 import org.hisp.dhis.tracker.report.TrackerStatus;
+import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +91,9 @@ public class TrackerObjectDeletionServiceTest extends DhisSpringTest
     @Autowired
     private IdentifiableObjectManager manager;
 
+    @Autowired
+    private CurrentUserService currentUserService;
+
     @Override
     protected void setUpTest()
         throws IOException
@@ -117,6 +121,7 @@ public class TrackerObjectDeletionServiceTest extends DhisSpringTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/tracker_basic_data_before_deletion.json" ).getInputStream(),
                 TrackerImportParams.class );
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
 
         assertEquals( 13, trackerImportParams.getTrackedEntities().size() );
         assertEquals( 2, trackerImportParams.getEnrollments().size() );
@@ -140,7 +145,7 @@ public class TrackerObjectDeletionServiceTest extends DhisSpringTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/tracked_entity_basic_data_for_deletion.json" ).getInputStream(),
                 TrackerImportParams.class );
-
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
         assertEquals( 9, trackerImportParams.getTrackedEntities().size() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
@@ -166,7 +171,7 @@ public class TrackerObjectDeletionServiceTest extends DhisSpringTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/enrollment_basic_data_for_deletion.json" ).getInputStream(),
                 TrackerImportParams.class );
-
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         TrackerBundleReport bundleReport = trackerBundleService.delete( trackerBundle );
@@ -189,6 +194,7 @@ public class TrackerObjectDeletionServiceTest extends DhisSpringTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/event_basic_data_for_deletion.json" ).getInputStream(),
                 TrackerImportParams.class );
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -212,7 +218,7 @@ public class TrackerObjectDeletionServiceTest extends DhisSpringTest
                     .getInputStream(),
                 TrackerImportParams.class );
         params.setImportStrategy( TrackerImportStrategy.DELETE );
-
+        params.setUser( currentUserService.getCurrentUser() );
         TrackerImportReport importReport = trackerImportService.importTracker( params );
 
         assertEquals( TrackerStatus.ERROR, importReport.getStatus() );

@@ -53,6 +53,7 @@ import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.tracker.TrackerImportParams;
+import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,9 @@ public class TrackerBundleServiceTest
 
     @Autowired
     private IdentifiableObjectManager manager;
+
+    @Autowired
+    private CurrentUserService currentUserService;
 
     @Override
     protected void setUpTest()
@@ -121,15 +125,14 @@ public class TrackerBundleServiceTest
     public void testTrackedEntityInstanceImport()
         throws IOException
     {
-        TrackerImportParams trackerBundleParams = renderService
+        TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/trackedentity_basic_data.json" ).getInputStream(),
                 TrackerImportParams.class );
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
 
-        assertEquals( 13, trackerBundleParams.getTrackedEntities().size() );
+        assertEquals( 13, trackerImportParams.getTrackedEntities().size() );
 
-        TrackerBundle trackerBundle = trackerBundleService.create( TrackerImportParams.builder()
-            .trackedEntities( trackerBundleParams.getTrackedEntities() )
-            .build() );
+        TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 

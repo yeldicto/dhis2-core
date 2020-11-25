@@ -129,7 +129,7 @@ public class TrackedEntityAttributeTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_with_tea_data.json" ).getInputStream(),
                     TrackerImportParams.class );
-        trackerImportParams.setUserId( currentUserService.getCurrentUser().getUid() );
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
 
         TrackerPreheat preheat = trackerPreheatService.preheat( trackerImportParams );
 
@@ -148,7 +148,7 @@ public class TrackedEntityAttributeTest
         TrackerImportParams trackerImportParams = renderService
             .fromJson( new ClassPathResource( "tracker/te_with_tea_data.json" ).getInputStream(),
                     TrackerImportParams.class );
-        trackerImportParams.setUserId( currentUserService.getCurrentUser().getUid() );
+        trackerImportParams.setUser( currentUserService.getCurrentUser() );
 
         trackerBundleService.commit( ParamsConverter.convert( trackerImportParams ) );
 
