@@ -36,9 +36,11 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.hibernate.Hibernate;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.commons.timer.SystemTimer;
 import org.hisp.dhis.commons.timer.Timer;
+import org.hisp.dhis.hibernate.HibernateUtils;
 import org.hisp.dhis.preheat.PreheatException;
 import org.hisp.dhis.tracker.preheat.supplier.PreheatSupplier;
 import org.hisp.dhis.tracker.validation.TrackerImportPreheatConfig;
@@ -89,6 +91,8 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
         preheat.setDefaults( manager.getDefaults() );
         User importingUser = getImportingUser( preheat.getUser() );
         preheat.setUser( importingUser );
+        Hibernate.initialize( importingUser.getTeiSearchOrganisationUnits());
+        Hibernate.initialize( importingUser.getOrganisationUnits());
 
         checkNotNull( preheat.getUser(), "TrackerPreheat is missing the user object." );
 

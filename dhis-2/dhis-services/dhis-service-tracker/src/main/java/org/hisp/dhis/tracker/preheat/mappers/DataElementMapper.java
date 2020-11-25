@@ -4,7 +4,7 @@ import org.hisp.dhis.dataelement.DataElement;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = DebugMapper.class)
+@Mapper( uses = DebugMapper.class )
 public interface DataElementMapper extends PreheatMapper<DataElement>
 {
     DataElementMapper INSTANCE = Mappers.getMapper( DataElementMapper.class );
