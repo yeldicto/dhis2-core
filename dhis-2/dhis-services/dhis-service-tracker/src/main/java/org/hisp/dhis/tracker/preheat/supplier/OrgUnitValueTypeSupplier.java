@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
-import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 

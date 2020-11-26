@@ -29,20 +29,21 @@ package org.hisp.dhis.tracker.validation;
  *
  */
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleService;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleValidationService;
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportStrategy;
+import org.hisp.dhis.tracker.TrackerTest;
 import org.hisp.dhis.tracker.bundle.TrackerBundleService;
 import org.hisp.dhis.tracker.report.TrackerErrorReport;
 import org.hisp.dhis.tracker.report.TrackerValidationReport;
 import org.hisp.dhis.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * @author Morten Svanæs <msvanaes@dhis2.org>
@@ -76,7 +77,7 @@ public abstract class AbstractImportValidationTest
 
     public static final String USER_6 = "VfaA5WwHLdP";
 
-    protected TrackerImportParams createBundleFromJson(String jsonFile )
+    protected TrackerImportParams createBundleFromJson( String jsonFile )
         throws IOException
     {
         InputStream inputStream = new ClassPathResource( jsonFile ).getInputStream();
@@ -84,7 +85,7 @@ public abstract class AbstractImportValidationTest
         TrackerImportParams params = renderService.fromJson( inputStream, TrackerImportParams.class );
 
         User user = userService.getUser( ADMIN_USER_UID );
-        params.setUserId( user.getUid() );
+        params.setUser( user );
 
         return params;
     }

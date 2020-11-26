@@ -62,10 +62,9 @@ import com.google.common.collect.Sets;
 
 import static org.junit.Assert.*;
 
-public class ShowErroWarningImplementerTest
+public class ShowErrorWarningImplementerTest
     extends AbstractImportValidationTest
 {
-
     private final static String CONTENT = "SHOW ERROR DATA";
 
     private final static String DATA = "2 + 2";

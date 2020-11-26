@@ -489,7 +489,7 @@ public class TrackedEntityImportValidationTest
                 TrackerImportParams.class );
 
         User user2 = userService.getUser( USER_4 );
-        params.setUserId( user2.getUid() );
+        params.setUser( user2 );
 
         params.setImportStrategy( TrackerImportStrategy.DELETE );
         TrackerBundle trackerBundle = trackerBundleService.create( params );

@@ -151,7 +151,7 @@ public class AssignedUserValidationHookTest
             .atomicMode( AtomicMode.ALL )
             .events( Lists.newArrayList( event ) )
             .importStrategy( TrackerImportStrategy.CREATE_AND_UPDATE )
-            .user( user )
+            .userId( user.getUid() )
             .build();
 
         TrackerImportReport report = trackerImportService.importTracker( params );
@@ -182,7 +182,7 @@ public class AssignedUserValidationHookTest
             .atomicMode( AtomicMode.ALL )
             .events( Lists.newArrayList( event ) )
             .importStrategy( TrackerImportStrategy.CREATE_AND_UPDATE )
-            .user( user )
+            .userId( user.getUid() )
             .build();
 
         TrackerImportReport report = trackerImportService.importTracker( params );
@@ -210,7 +210,7 @@ public class AssignedUserValidationHookTest
             .atomicMode( AtomicMode.ALL )
             .events( Lists.newArrayList( event ) )
             .importStrategy( TrackerImportStrategy.CREATE_AND_UPDATE )
-            .user( user )
+            .userId( user.getUid() )
             .build();
 
         TrackerImportReport report = trackerImportService.importTracker( params );
@@ -235,7 +235,7 @@ public class AssignedUserValidationHookTest
             .atomicMode( AtomicMode.ALL )
             .events( Lists.newArrayList( event ) )
             .importStrategy( TrackerImportStrategy.CREATE_AND_UPDATE )
-            .user( user )
+            .userId( user.getUid() )
             .build();
 
         TrackerImportReport report = trackerImportService.importTracker( params );

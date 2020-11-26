@@ -12,7 +12,6 @@ import org.hisp.dhis.program.ProgramInstanceStore;
 import org.hisp.dhis.random.BeanRandomizer;
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
-import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;

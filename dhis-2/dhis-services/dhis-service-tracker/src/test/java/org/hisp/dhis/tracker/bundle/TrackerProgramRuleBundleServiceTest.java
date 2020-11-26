@@ -54,6 +54,7 @@ import org.hisp.dhis.programrule.ProgramRuleService;
 import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.tracker.TrackerImportParams;
+import org.hisp.dhis.tracker.TrackerTest;
 import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,19 +65,13 @@ import com.google.common.collect.Sets;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-public class TrackerProgramRuleBundleServiceTest extends DhisSpringTest
+public class TrackerProgramRuleBundleServiceTest extends TrackerTest
 {
     @Autowired
     private ObjectBundleService objectBundleService;
 
     @Autowired
     private ObjectBundleValidationService objectBundleValidationService;
-
-    @Autowired
-    private RenderService _renderService;
-
-    @Autowired
-    private UserService _userService;
 
     @Autowired
     private TrackerBundleService trackerBundleService;
@@ -88,13 +83,9 @@ public class TrackerProgramRuleBundleServiceTest extends DhisSpringTest
     private ProgramRuleActionService programRuleActionService;
 
     @Override
-    protected void setUpTest()
+    protected void initTest()
         throws IOException
     {
-        preCreateInjectAdminUserWithoutPersistence();
-
-        renderService = _renderService;
-        userService = _userService;
 
         Map<Class<? extends IdentifiableObject>, List<IdentifiableObject>> metadata = renderService
             .fromMetadata( new ClassPathResource( "tracker/event_metadata.json" ).getInputStream(), RenderFormat.JSON );
@@ -127,9 +118,7 @@ public class TrackerProgramRuleBundleServiceTest extends DhisSpringTest
     public void testRunRuleEngineForEventOnBundleCreate()
         throws IOException
     {
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/event_events_and_enrollment.json" ).getInputStream(),
-                    TrackerImportParams.class );
+        TrackerImportParams trackerImportParams = fromJson( "tracker/event_events_and_enrollment.json" );
 
         assertEquals( 8, trackerImportParams.getEvents().size() );
 

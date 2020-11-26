@@ -154,7 +154,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -200,7 +200,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -226,7 +226,7 @@ public class TeTaValidationTest
             .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_fileresource_data.json" )
                     .getInputStream(),
                 TrackerImportParams.class );
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         trackerBundle = trackerBundleService.create( trackerImportParams );
         report = trackerValidationService.validate( trackerBundle );
@@ -250,7 +250,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -287,7 +287,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -325,7 +325,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -350,7 +350,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -378,7 +378,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -392,7 +392,7 @@ public class TeTaValidationTest
 
         user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -407,7 +407,7 @@ public class TeTaValidationTest
 
         user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -430,7 +430,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -443,7 +443,7 @@ public class TeTaValidationTest
 
         user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -468,7 +468,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -493,7 +493,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -522,7 +522,7 @@ public class TeTaValidationTest
 
         User user = userService.getUser( ADMIN_USER_UID );
 
-        trackerImportParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 

@@ -31,7 +31,6 @@ package org.hisp.dhis.tracker.preheat.supplier;
 import org.hisp.dhis.period.PeriodStore;
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
-import org.hisp.dhis.tracker.preheat.TrackerPreheatParams;
 import org.springframework.stereotype.Component;
 
 import lombok.NonNull;
