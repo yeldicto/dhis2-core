@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundle;
@@ -53,14 +52,13 @@ import org.hisp.dhis.eventdatavalue.EventDataValue;
 import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.render.RenderFormat;
-import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.tracker.ParamsConverter;
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportService;
+import org.hisp.dhis.tracker.TrackerTest;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
 import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
-import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -69,19 +67,13 @@ import org.springframework.core.io.ClassPathResource;
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 public class EventDataValueTest
-    extends DhisSpringTest
+    extends TrackerTest
 {
     @Autowired
     private ObjectBundleService objectBundleService;
 
     @Autowired
     private ObjectBundleValidationService objectBundleValidationService;
-
-    @Autowired
-    private RenderService _renderService;
-
-    @Autowired
-    private UserService _userService;
 
     @Autowired
     private TrackerBundleService trackerBundleService;
@@ -92,18 +84,10 @@ public class EventDataValueTest
     @Autowired
     private IdentifiableObjectManager manager;
 
-    @Autowired
-    private CurrentUserService currentUserService;
-
     @Override
-    protected void setUpTest()
+    protected void initTest()
         throws IOException
     {
-        preCreateInjectAdminUserWithoutPersistence();
-
-        renderService = _renderService;
-        userService = _userService;
-
         Map<Class<? extends IdentifiableObject>, List<IdentifiableObject>> metadata = renderService.fromMetadata(
             new ClassPathResource( "tracker/simple_metadata.json" ).getInputStream(), RenderFormat.JSON );
 
@@ -134,6 +118,7 @@ public class EventDataValueTest
                 TrackerImportParams.class );
         enrollmentParams.setUserId( userA.getUid() );
         TrackerImportReport enrollmentImportReport = trackerImportService.importTracker( enrollmentParams );
+
         assertTrue( enrollmentImportReport.getValidationReport().getErrorReports().isEmpty() );
     }
 
@@ -141,10 +126,7 @@ public class EventDataValueTest
     public void testEventDataValue()
         throws IOException
     {
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/event_with_data_values.json" ).getInputStream(),
-                TrackerImportParams.class );
-        trackerImportParams.setUser( currentUserService.getCurrentUser() );
+        TrackerImportParams trackerImportParams = fromJson( "tracker/event_with_data_values.json" );
 
         trackerBundleService.commit( trackerBundleService.create( trackerImportParams ) );
 
@@ -162,10 +144,7 @@ public class EventDataValueTest
     public void testTrackedEntityProgramAttributeValueUpdate()
         throws IOException
     {
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/event_with_data_values.json" ).getInputStream(),
-                TrackerImportParams.class );
-        trackerImportParams.setUser( currentUserService.getCurrentUser() );
+        TrackerImportParams trackerImportParams = fromJson( "tracker/event_with_data_values.json" );
 
         trackerBundleService.commit( trackerBundleService.create( trackerImportParams ) );
 
@@ -180,10 +159,7 @@ public class EventDataValueTest
 
         // update
 
-        trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/event_with_updated_data_values.json" ).getInputStream(),
-                    TrackerImportParams.class );
-        trackerImportParams.setUser( currentUserService.getCurrentUser() );
+        trackerImportParams = fromJson( "tracker/event_with_updated_data_values.json" );
 
         trackerBundleService.commit( ParamsConverter.convert( trackerImportParams ) );
 
