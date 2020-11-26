@@ -139,7 +139,7 @@ public class ProgramInstanceByTeiHookTest
                 .getProgramInstances();
         assertThat( programInstancesByProgramAndTei, is( notNullValue() ) );
         assertThat( programInstancesByProgramAndTei.get( e4.getUid() ), hasSize( 1 ) );
-        assertThat( programInstancesByProgramAndTei.get( e4.getUid() ).get( 0 ), is( p4 ) );
+        assertThat( programInstancesByProgramAndTei.get( e4.getUid() ).get( 0 ).getUid(), is( p4.getUid() ) );
     }
 
     @Test
