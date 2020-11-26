@@ -28,7 +28,18 @@ package org.hisp.dhis.tracker.validation;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import com.google.common.collect.Sets;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.common.ValueType;
@@ -68,17 +79,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.google.common.collect.Sets;
 
 /**
  * @author Morten Svanæs <msvanaes@dhis2.org>
@@ -261,7 +262,7 @@ public class EnrollmentSecurityImportValidationTest
             "tracker/validations/enrollments_te_enrollments-data.json" );
 
         User user = userService.getUser( USER_2 );
-        params.setUserId( user.getUid() );
+        params.setUser( user );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -320,7 +321,7 @@ public class EnrollmentSecurityImportValidationTest
         TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_no-access-tei.json" );
 
-        params.setUserId( user.getUid() );
+        params.setUser( user );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -355,7 +356,7 @@ public class EnrollmentSecurityImportValidationTest
         TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_no-access-program.json" );
 
-        params.setUserId( user.getUid() );
+        params.setUser( user );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -378,15 +379,14 @@ public class EnrollmentSecurityImportValidationTest
         programA.setTrackedEntityType( trackedEntityType );
         manager.update( programA );
 
-        User user = createUser( "user1" )
-            .setOrganisationUnits( Sets.newHashSet( organisationUnitA ) );
+        User user = createUser( "user1" ).setOrganisationUnits( Sets.newHashSet( organisationUnitA ) );
 
         injectSecurityContext( user );
 
         TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_no-access-program.json" );
 
-        params.setUserId( user.getUid() );
+        params.setUser( user  );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 
@@ -414,7 +414,7 @@ public class EnrollmentSecurityImportValidationTest
         TrackerImportParams params = createBundleFromJson(
             "tracker/validations/enrollments_program-teitype-missmatch.json" );
 
-        params.setUserId( user.getUid() );
+        params.setUser( user );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
         TrackerValidationReport report = createAndUpdate.getValidationReport();

@@ -222,7 +222,7 @@ public class EnrollmentImportValidationTest
             "tracker/validations/enrollments_te_enrollments-data.json" );
 
         User user = userService.getUser( USER_2 );
-        params.setUserId( user.getUid() );
+        params.setUser( user );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
 

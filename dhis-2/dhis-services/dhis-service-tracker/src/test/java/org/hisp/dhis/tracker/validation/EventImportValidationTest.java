@@ -191,13 +191,13 @@ public class EventImportValidationTest
     public void testCantWriteAccessCatCombo()
         throws IOException
     {
-        TrackerImportParams trackerBundleParams = createBundleFromJson(
+        TrackerImportParams trackerImportParams = createBundleFromJson(
             "tracker/validations/events-cat-write-access.json" );
 
         User user = userService.getUser( USER_6 );
-        trackerBundleParams.setUserId( user.getUid() );
+        trackerImportParams.setUser( user );
 
-        ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( trackerBundleParams,
+        ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( trackerImportParams,
             TrackerImportStrategy.CREATE );
         TrackerValidationReport report = createAndUpdate.getValidationReport();
         printReport( report );
@@ -302,7 +302,7 @@ public class EventImportValidationTest
         TrackerImportParams trackerBundleParams = createBundleFromJson( "tracker/validations/events-data.json" );
 
         User user = userService.getUser( USER_2 );
-        trackerBundleParams.setUserId( user.getUid() );
+        trackerBundleParams.setUser( user );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( trackerBundleParams,
             TrackerImportStrategy.CREATE );
@@ -822,16 +822,18 @@ public class EventImportValidationTest
     }
 
     @Test
-    public void testValidateAndAddNotesToUpdatedEvent() throws IOException {
-
+    public void testValidateAndAddNotesToUpdatedEvent()
+        throws IOException
+    {
         Date now = new Date();
-        
+
         // Given -> Creates an event with 3 notes
-        createEvent("tracker/validations/events-with-notes-data.json");
-        
+        createEvent( "tracker/validations/events-with-notes-data.json" );
+
         // When -> Update the event and adds 3 more notes
-        final ValidateAndCommitTestUnit createAndUpdate = createEvent("tracker/validations/events-with-notes-update-data.json");
-        
+        final ValidateAndCommitTestUnit createAndUpdate = createEvent(
+            "tracker/validations/events-with-notes-update-data.json" );
+
         // Then
         final ProgramStageInstance programStageInstance = getEventFromReport( createAndUpdate );
 
@@ -841,13 +843,12 @@ public class EventImportValidationTest
         Stream.of( "first note", "second note", "third note", "4th note", "5th note", "6th note" ).forEach( t -> {
 
             TrackedEntityComment comment = getByComment( programStageInstance.getComments(), t );
-            assertTrue( CodeGenerator.isValidUid( comment. getUid() ) );
+            assertTrue( CodeGenerator.isValidUid( comment.getUid() ) );
             assertTrue( comment.getCreated().getTime() > now.getTime() );
             assertTrue( comment.getLastUpdated().getTime() > now.getTime() );
             assertNull( comment.getCreator() );
             assertNull( comment.getLastUpdatedBy() );
         } );
-
     }
 
     private ValidateAndCommitTestUnit createEvent( String jsonPayload )
@@ -887,7 +888,6 @@ public class EventImportValidationTest
     {
         final Map<TrackerType, TrackerTypeReport> typeReportMap = createAndUpdate.getCommitReport().getTypeReportMap();
         String newEvent = typeReportMap.get( TrackerType.EVENT ).getObjectReportMap().get( 0 ).getUid();
-        return programStageServiceInstance
-            .getProgramStageInstance( newEvent );
+        return programStageServiceInstance.getProgramStageInstance( newEvent );
     }
 }
