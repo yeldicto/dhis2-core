@@ -31,6 +31,9 @@ public interface ProgramInstanceMapper extends PreheatMapper<ProgramInstance>
     @Mapping( target = "organisationUnit" )
     @Mapping( target = "created" )
     @Mapping( target = "enrollmentDate" )
+    @Mapping( target = "programStageInstances" ) // FIXME this is a killer, because it's going to fetch
+                                                 // all the events for this PI. This is needed in PreCheckOwnershipValidationHook
+                                                 // boolean hasNonDeletedEvents = pi.getProgramStageInstances().stream().anyMatch( psi -> !psi.isDeleted() );
     ProgramInstance map( ProgramInstance programInstance );
 
     @Named( "userGroupAccessesPi" )

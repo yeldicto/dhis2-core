@@ -27,6 +27,9 @@ public interface ProgramMapper extends PreheatMapper<Program>
     @Mapping( target = "organisationUnits" )
     @Mapping( target = "programType" )
     @Mapping( target = "name" )
+    @Mapping( target = "programAttributes" )
+    @Mapping( target = "onlyEnrollOnce" )
+    @Mapping( target = "featureType" )
     Program map( Program program );
 
     Set<UserGroupAccess> userGroupAccessesProgram( Set<UserGroupAccess> userGroupAccesses );

@@ -49,7 +49,7 @@ import org.springframework.core.io.ClassPathResource;
  * @author Morten Svanæs <msvanaes@dhis2.org>
  */
 public abstract class AbstractImportValidationTest
-    extends DhisSpringTest
+    extends TrackerTest
 {
     @Autowired
     protected TrackerBundleService trackerBundleService;
@@ -90,7 +90,12 @@ public abstract class AbstractImportValidationTest
         return params;
     }
 
-    protected void printReport( TrackerValidationReport report )
+    @Override
+    protected void initTest() throws IOException {
+        // FIXME remove
+    }
+
+    protected void printReport(TrackerValidationReport report )
     {
         for ( TrackerErrorReport errorReport : report.getErrorReports() )
         {

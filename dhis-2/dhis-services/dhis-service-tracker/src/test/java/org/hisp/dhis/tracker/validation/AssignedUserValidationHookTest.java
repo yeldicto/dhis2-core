@@ -51,7 +51,6 @@ import org.hisp.dhis.tracker.report.TrackerErrorCode;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserCredentials;
-import org.hisp.dhis.user.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +61,6 @@ import com.google.common.collect.Sets;
 public class AssignedUserValidationHookTest
     extends AbstractImportValidationTest
 {
-    @Autowired
-    private UserService _userService;
-
     @Autowired
     private IdentifiableObjectManager manager;
 

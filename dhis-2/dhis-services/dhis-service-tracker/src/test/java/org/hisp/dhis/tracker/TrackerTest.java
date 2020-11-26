@@ -33,7 +33,7 @@ public abstract class TrackerTest extends DhisSpringTest
     private RenderService _renderService;
 
     @Autowired
-    private UserService _userService;
+    protected UserService _userService;
 
     @Autowired
     protected CurrentUserService currentUserService;
