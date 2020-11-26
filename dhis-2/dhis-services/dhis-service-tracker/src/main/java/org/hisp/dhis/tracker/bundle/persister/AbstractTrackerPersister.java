@@ -128,10 +128,6 @@ public abstract class AbstractTrackerPersister<T extends TrackerDto, V extends B
                 //
                 persistComments( convertedDto );
 
-                //
-                // handle data values or attribute values
-                //
-                updateEntityValues( session, bundle.getPreheat(), trackerDto, convertedDto );
 
                 //
                 // Save or update the entity
@@ -146,6 +142,8 @@ public abstract class AbstractTrackerPersister<T extends TrackerDto, V extends B
                     session.merge( convertedDto );
                     typeReport.getStats().incUpdated();
                 }
+
+                updateEntityValues( session, bundle.getPreheat(), trackerDto, convertedDto );
 
                 //
                 // Add the entity to the Preheat
