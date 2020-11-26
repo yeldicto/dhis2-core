@@ -171,7 +171,7 @@ public class TrackedEntityImportValidationTest
         TrackerImportParams params = createBundleFromJson( "tracker/validations/te-data_ok.json" );
 
         User user = userService.getUser( USER_2 );
-        params.setUserId( user.getUid() );
+        params.setUser( user );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
         TrackerValidationReport report = createAndUpdate.getValidationReport();
@@ -191,7 +191,7 @@ public class TrackedEntityImportValidationTest
         TrackerImportParams params = createBundleFromJson( "tracker/validations/te-data_ok.json" );
 
         User user = userService.getUser( USER_2 );
-        params.setUserId( user.getUid() );
+        params.setUser( user );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
         TrackerValidationReport report = createAndUpdate.getValidationReport();
@@ -211,7 +211,7 @@ public class TrackedEntityImportValidationTest
         TrackerImportParams params = createBundleFromJson( "tracker/validations/te-data_ok.json" );
 
         User user = userService.getUser( USER_1 );
-        params.setUserId( user.getUid() );
+        params.setUser( user );
 
         ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
         TrackerValidationReport report = createAndUpdate.getValidationReport();
@@ -490,8 +490,8 @@ public class TrackedEntityImportValidationTest
 
         User user2 = userService.getUser( USER_4 );
         params.setUser( user2 );
-
         params.setImportStrategy( TrackerImportStrategy.DELETE );
+
         TrackerBundle trackerBundle = trackerBundleService.create( params );
         assertEquals( 5, trackerBundle.getTrackedEntities().size() );
 

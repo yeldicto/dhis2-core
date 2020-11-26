@@ -28,6 +28,7 @@ public interface TrackedEntityInstanceMapper extends PreheatMapper<TrackedEntity
     @Mapping( target = "organisationUnit" )
     @Mapping( target = "trackedEntityType" )
     @Mapping( target = "inactive" )
+    @Mapping( target = "programInstances" )
     TrackedEntityInstance map( TrackedEntityInstance trackedEntityInstance );
 
     @Named( "userGroupAccesses" )

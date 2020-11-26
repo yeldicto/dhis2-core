@@ -86,7 +86,6 @@ public class DefaultTrackerPreheatService implements TrackerPreheatService, Appl
         preheat.setIdentifiers( params.getIdentifiers() );
         preheat.setUser( params.getUser() );
         preheat.setDefaults( manager.getDefaults() );
-        preheat.setUser( params.getUser() );
 
         checkNotNull( preheat.getUser(), "TrackerPreheat is missing the user object." );
 
