@@ -128,7 +128,6 @@ public abstract class AbstractTrackerPersister<T extends TrackerDto, V extends B
                 //
                 persistComments( convertedDto );
 
-
                 //
                 // Save or update the entity
                 //
