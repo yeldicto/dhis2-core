@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.category.CategoryOption;
 import org.hisp.dhis.category.CategoryOptionCombo;
 import org.hisp.dhis.common.IdentifiableObject;
@@ -54,14 +53,13 @@ import org.hisp.dhis.organisationunit.OrganisationUnit;
 import org.hisp.dhis.program.Program;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.render.RenderFormat;
-import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.TrackerIdentifier;
 import org.hisp.dhis.tracker.TrackerIdentifierCollector;
 import org.hisp.dhis.tracker.TrackerIdentifierParams;
 import org.hisp.dhis.tracker.TrackerImportParams;
+import org.hisp.dhis.tracker.TrackerTest;
 import org.hisp.dhis.tracker.domain.TrackedEntity;
-import org.hisp.dhis.user.UserService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -71,8 +69,7 @@ import com.google.common.collect.Lists;
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
-public class TrackerPreheatServiceTest
-    extends DhisSpringTest
+public class TrackerPreheatServiceTest extends TrackerTest
 {
     @Autowired
     private ObjectBundleService objectBundleService;
@@ -81,21 +78,11 @@ public class TrackerPreheatServiceTest
     private ObjectBundleValidationService objectBundleValidationService;
 
     @Autowired
-    private RenderService _renderService;
-
-    @Autowired
-    private UserService _userService;
-
-    @Autowired
     private TrackerPreheatService trackerPreheatService;
 
     @Override
-    protected void setUpTest()
+    protected void initTest()
     {
-        preCreateInjectAdminUserWithoutPersistence();
-
-        renderService = _renderService;
-        userService = _userService;
     }
 
     @Test
@@ -129,9 +116,7 @@ public class TrackerPreheatServiceTest
     public void testCollectIdentifiersEvents()
         throws IOException
     {
-        TrackerImportParams params = renderService
-            .fromJson( new ClassPathResource( "tracker/event_events.json" ).getInputStream(),
-                TrackerImportParams.class );
+        TrackerImportParams params = fromJson( "tracker/event_events.json" );
 
         assertTrue( params.getTrackedEntities().isEmpty() );
         assertTrue( params.getEnrollments().isEmpty() );
@@ -212,9 +197,7 @@ public class TrackerPreheatServiceTest
     public void testPreheatValidation()
         throws IOException
     {
-        TrackerImportParams params = renderService
-            .fromJson( new ClassPathResource( "tracker/event_events.json" ).getInputStream(),
-                TrackerImportParams.class );
+        TrackerImportParams params = fromJson(  "tracker/event_events.json" );
 
         assertTrue( params.getTrackedEntities().isEmpty() );
         assertTrue( params.getEnrollments().isEmpty() );
@@ -239,9 +222,7 @@ public class TrackerPreheatServiceTest
 
         objectBundleService.commit( objectBundle );
 
-        TrackerImportParams params = renderService
-            .fromJson( new ClassPathResource( "tracker/event_events.json" ).getInputStream(),
-                    TrackerImportParams.class );
+        TrackerImportParams params = fromJson(  "tracker/event_events.json" );
 
         assertTrue( params.getTrackedEntities().isEmpty() );
         assertTrue( params.getEnrollments().isEmpty() );
