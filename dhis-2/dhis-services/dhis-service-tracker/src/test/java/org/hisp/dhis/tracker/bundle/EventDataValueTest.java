@@ -52,12 +52,12 @@ import org.hisp.dhis.eventdatavalue.EventDataValue;
 import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.render.RenderFormat;
-import org.hisp.dhis.tracker.ParamsConverter;
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportService;
 import org.hisp.dhis.tracker.TrackerTest;
+import org.hisp.dhis.tracker.preheat.TrackerPreheat;
+import org.hisp.dhis.tracker.preheat.TrackerPreheatService;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
-import org.hisp.dhis.user.CurrentUserService;
 import org.hisp.dhis.user.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +83,10 @@ public class EventDataValueTest
 
     @Autowired
     private IdentifiableObjectManager manager;
+
+    @Autowired
+    private TrackerPreheatService preheatService;
+
 
     @Override
     protected void initTest()
@@ -146,7 +150,10 @@ public class EventDataValueTest
     {
         TrackerImportParams trackerImportParams = fromJson( "tracker/event_with_data_values.json" );
 
-        trackerBundleService.commit( trackerBundleService.create( trackerImportParams ) );
+        TrackerPreheat preheat = preheatService.preheat(trackerImportParams);
+        TrackerBundle bundle = trackerBundleService.create(trackerImportParams);
+        bundle.setPreheat( preheat );
+        trackerBundleService.commit( bundle );
 
         List<ProgramStageInstance> events = manager.getAll( ProgramStageInstance.class );
         assertEquals( 1, events.size() );
@@ -160,8 +167,15 @@ public class EventDataValueTest
         // update
 
         trackerImportParams = fromJson( "tracker/event_with_updated_data_values.json" );
+        // make sure that the uid property is populated as well - otherwise update will
+        // not work
+        trackerImportParams.getEvents().get( 0 ).setUid( trackerImportParams.getEvents().get( 0 ).getEvent() );
 
-        trackerBundleService.commit( ParamsConverter.convert( trackerImportParams ) );
+        preheat = preheatService.preheat( trackerImportParams );
+        bundle = trackerBundleService.create( trackerImportParams );
+        bundle.setPreheat( preheat );
+
+        trackerBundleService.commit( bundle );
 
         List<ProgramStageInstance> updatedEvents = manager.getAll( ProgramStageInstance.class );
         assertEquals( 1, updatedEvents.size() );
