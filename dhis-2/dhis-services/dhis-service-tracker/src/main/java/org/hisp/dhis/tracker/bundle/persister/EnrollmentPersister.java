@@ -29,12 +29,14 @@ package org.hisp.dhis.tracker.bundle.persister;
  */
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import org.hibernate.Session;
 import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.reservedvalue.ReservedValueService;
+import org.hisp.dhis.trackedentity.TrackedEntityInstance;
 import org.hisp.dhis.trackedentitycomment.TrackedEntityComment;
 import org.hisp.dhis.trackedentitycomment.TrackedEntityCommentService;
 import org.hisp.dhis.tracker.TrackerIdScheme;
@@ -121,7 +123,12 @@ public class EnrollmentPersister extends AbstractTrackerPersister<Enrollment, Pr
     @Override
     protected ProgramInstance convert( TrackerBundle bundle, Enrollment enrollment )
     {
-        return enrollmentConverter.from( bundle.getPreheat(), enrollment );
+        Date now = new Date();
+        ProgramInstance programInstance = enrollmentConverter.from( bundle.getPreheat(), enrollment );
+        programInstance.setLastUpdated( now );
+        programInstance.setLastUpdatedAtClient( now );
+        programInstance.setLastUpdatedBy( bundle.getUser() );
+        return programInstance;
     }
 
     @Override

@@ -37,6 +37,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.hibernate.Session;
+import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.ValueType;
 import org.hisp.dhis.fileresource.FileResource;
 import org.hisp.dhis.reservedvalue.ReservedValueService;
@@ -63,7 +64,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author Luciano Fiandesio
  */
 @Slf4j
-public abstract class AbstractTrackerPersister<T extends TrackerDto, V> implements TrackerPersister<T, V>
+public abstract class AbstractTrackerPersister<T extends TrackerDto, V extends BaseIdentifiableObject>
+    implements TrackerPersister<T, V>
 {
     protected List<TrackerBundleHook> bundleHooks;
 
@@ -129,14 +131,14 @@ public abstract class AbstractTrackerPersister<T extends TrackerDto, V> implemen
                 //
                 // Save or update the entity
                 //
-                session.persist( convertedDto );
-
                 if ( isNew( bundle.getPreheat(), trackerDto.getUid() ) )
                 {
+                    session.persist( convertedDto );
                     typeReport.getStats().incCreated();
                 }
                 else
                 {
+                    session.merge( convertedDto );
                     typeReport.getStats().incUpdated();
                 }
 

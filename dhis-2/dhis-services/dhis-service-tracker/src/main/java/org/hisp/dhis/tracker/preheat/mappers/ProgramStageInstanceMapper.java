@@ -27,6 +27,8 @@ public interface ProgramStageInstanceMapper extends PreheatMapper<ProgramStageIn
     @Mapping( target = "programStage" )
     @Mapping( target = "status" )
     @Mapping( target = "organisationUnit" )
+    @Mapping( target = "created" )
+    @Mapping( target = "programInstance" )
     ProgramStageInstance map( ProgramStageInstance programStageInstance );
 
     Set<UserGroupAccess> mapUserGroupAccessPsi( Set<UserGroupAccess> userGroupAccesses );

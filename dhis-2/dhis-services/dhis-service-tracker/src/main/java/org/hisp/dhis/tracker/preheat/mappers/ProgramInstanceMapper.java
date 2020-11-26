@@ -29,6 +29,8 @@ public interface ProgramInstanceMapper extends PreheatMapper<ProgramInstance>
     @Mapping( target = "program" )
     @Mapping( target = "entityInstance" )
     @Mapping( target = "organisationUnit" )
+    @Mapping( target = "created" )
+    @Mapping( target = "enrollmentDate" )
     ProgramInstance map( ProgramInstance programInstance );
 
     @Named( "userGroupAccessesPi" )

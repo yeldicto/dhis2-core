@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import org.hibernate.Session;
 import org.hisp.dhis.dataelement.DataElement;
 import org.hisp.dhis.eventdatavalue.EventDataValue;
+import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.reservedvalue.ReservedValueService;
 import org.hisp.dhis.trackedentitycomment.TrackedEntityComment;
@@ -124,7 +125,12 @@ public class EventPersister extends AbstractTrackerPersister<Event, ProgramStage
     @Override
     protected ProgramStageInstance convert( TrackerBundle bundle, Event event )
     {
-        return eventConverter.from( bundle.getPreheat(), event );
+        Date now = new Date();
+        ProgramStageInstance programStageInstance = eventConverter.from( bundle.getPreheat(), event );
+        programStageInstance.setLastUpdated( now );
+        programStageInstance.setLastUpdatedAtClient( now );
+        programStageInstance.setLastUpdatedBy( bundle.getUser() );
+        return programStageInstance;
     }
 
     @Override
