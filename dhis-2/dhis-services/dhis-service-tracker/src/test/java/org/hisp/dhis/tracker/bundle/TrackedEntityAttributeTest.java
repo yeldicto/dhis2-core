@@ -57,6 +57,7 @@ import org.hisp.dhis.trackedentityattributevalue.TrackedEntityAttributeValueServ
 import org.hisp.dhis.tracker.ParamsConverter;
 import org.hisp.dhis.tracker.TrackerIdScheme;
 import org.hisp.dhis.tracker.TrackerImportParams;
+import org.hisp.dhis.tracker.TrackerTest;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.preheat.TrackerPreheatService;
 import org.hisp.dhis.user.CurrentUserService;
@@ -69,7 +70,7 @@ import org.springframework.core.io.ClassPathResource;
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 public class TrackedEntityAttributeTest
-    extends DhisSpringTest
+    extends TrackerTest
 {
     @Autowired
     private ObjectBundleService objectBundleService;
@@ -99,14 +100,9 @@ public class TrackedEntityAttributeTest
     private CurrentUserService currentUserService;
 
     @Override
-    protected void setUpTest()
+    protected void initTest()
         throws IOException
     {
-        preCreateInjectAdminUserWithoutPersistence();
-
-        renderService = _renderService;
-        userService = _userService;
-
         Map<Class<? extends IdentifiableObject>, List<IdentifiableObject>> metadata = renderService.fromMetadata(
             new ClassPathResource( "tracker/te_with_tea_metadata.json" ).getInputStream(), RenderFormat.JSON );
 
@@ -126,10 +122,7 @@ public class TrackedEntityAttributeTest
     public void testTrackedAttributePreheater()
         throws IOException
     {
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/te_with_tea_data.json" ).getInputStream(),
-                    TrackerImportParams.class );
-        trackerImportParams.setUser( currentUserService.getCurrentUser() );
+        TrackerImportParams trackerImportParams = fromJson(  "tracker/te_with_tea_data.json" );
 
         TrackerPreheat preheat = trackerPreheatService.preheat( trackerImportParams );
 
@@ -145,12 +138,11 @@ public class TrackedEntityAttributeTest
     public void testTrackedAttributeValueBundleImporter()
         throws IOException
     {
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/te_with_tea_data.json" ).getInputStream(),
-                    TrackerImportParams.class );
-        trackerImportParams.setUser( currentUserService.getCurrentUser() );
-
-        trackerBundleService.commit( ParamsConverter.convert( trackerImportParams ) );
+        TrackerImportParams trackerImportParams = fromJson( "tracker/te_with_tea_data.json" );
+        TrackerPreheat preheat = trackerPreheatService.preheat( trackerImportParams );
+        final TrackerBundle bundle = ParamsConverter.convert(trackerImportParams);
+        bundle.setPreheat( preheat );
+        trackerBundleService.commit( bundle );
 
         List<TrackedEntityInstance> trackedEntityInstances = manager.getAll( TrackedEntityInstance.class );
         assertEquals( 1, trackedEntityInstances.size() );
