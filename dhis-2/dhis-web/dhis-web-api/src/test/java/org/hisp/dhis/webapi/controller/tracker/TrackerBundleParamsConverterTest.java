@@ -26,7 +26,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.hisp.dhis.tracker.converter;
+package org.hisp.dhis.webapi.controller.tracker;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -39,8 +39,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.hisp.dhis.random.BeanRandomizer;
-import org.hisp.dhis.tracker.AtomicMode;
-import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.domain.Enrollment;
 import org.hisp.dhis.tracker.domain.Event;
 import org.hisp.dhis.tracker.domain.Relationship;
@@ -89,12 +87,11 @@ public class TrackerBundleParamsConverterTest
 
         trackedEntity.setRelationships( relationships1 );
 
-        TrackerImportParams build = TrackerImportParams.builder()
-            .trackedEntities( Collections.singletonList( trackedEntity ) )
-            .atomicMode( AtomicMode.ALL ).build();
+        TrackerBundleParams build = TrackerBundleParams.builder()
+            .trackedEntities( Collections.singletonList( trackedEntity ) ).build();
 
         String jsonPayload = toJson( build );
-        TrackerImportParams b2 = this.objectMapper.readValue( jsonPayload, TrackerImportParams.class );
+        TrackerBundleParams b2 = this.objectMapper.readValue( jsonPayload, TrackerBundleParams.class );
 
         assertThat( b2.getTrackedEntities(), hasSize( 1 ) );
         assertThat( b2.getEnrollments(), hasSize( 2 ) );
@@ -124,12 +121,12 @@ public class TrackerBundleParamsConverterTest
 
         trackedEntity.setRelationships( relationships1 );
 
-        TrackerImportParams build = TrackerImportParams.builder()
+        TrackerBundleParams build = TrackerBundleParams.builder()
             .trackedEntities( Collections.singletonList( trackedEntity ) )
-            .atomicMode( AtomicMode.ALL ).build();
+            .build();
 
         String jsonPayload = toJson( build );
-        TrackerImportParams b2 = this.objectMapper.readValue( jsonPayload, TrackerImportParams.class );
+        TrackerBundleParams b2 = this.objectMapper.readValue( jsonPayload, TrackerBundleParams.class );
 
         assertThat( b2.getTrackedEntities().get( 0 ).getEnrollments(), hasSize( 0 ) );
         assertThat( b2.getTrackedEntities().get( 0 ).getRelationships(), hasSize( 0 ) );
@@ -160,12 +157,12 @@ public class TrackerBundleParamsConverterTest
 
         trackedEntity.setRelationships( relationships1 );
 
-        TrackerImportParams build = TrackerImportParams.builder()
+        TrackerBundleParams build = TrackerBundleParams.builder()
             .trackedEntities( Collections.singletonList( trackedEntity ) )
-            .atomicMode( AtomicMode.ALL ).build();
+            .build();
 
         String jsonPayload = toJson( build );
-        TrackerImportParams b2 = this.objectMapper.readValue( jsonPayload, TrackerImportParams.class );
+        TrackerBundleParams b2 = this.objectMapper.readValue( jsonPayload, TrackerBundleParams.class );
 
         // TEI has uid
         assertThat( b2.getTrackedEntities().get( 0 ).getTrackedEntity(), is( notNullValue() ) );
@@ -198,7 +195,7 @@ public class TrackerBundleParamsConverterTest
         return trackedEntity;
     }
 
-    private String toJson( TrackerImportParams bundle )
+    private String toJson( TrackerBundleParams bundle )
         throws JsonProcessingException
     {
         return this.objectMapper.writeValueAsString( bundle );
