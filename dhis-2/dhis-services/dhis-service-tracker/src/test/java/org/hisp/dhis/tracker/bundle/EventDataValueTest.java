@@ -31,37 +31,21 @@ package org.hisp.dhis.tracker.bundle;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObjectManager;
-import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundle;
-import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleMode;
-import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleParams;
-import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleService;
-import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleValidationService;
-import org.hisp.dhis.dxf2.metadata.objectbundle.feedback.ObjectBundleValidationReport;
 import org.hisp.dhis.eventdatavalue.EventDataValue;
-import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.program.ProgramStageInstance;
-import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportService;
 import org.hisp.dhis.tracker.TrackerTest;
-import org.hisp.dhis.tracker.preheat.TrackerPreheat;
-import org.hisp.dhis.tracker.preheat.TrackerPreheatService;
-import org.hisp.dhis.tracker.report.TrackerImportReport;
 import org.hisp.dhis.user.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -69,12 +53,6 @@ import org.springframework.core.io.ClassPathResource;
 public class EventDataValueTest
     extends TrackerTest
 {
-    @Autowired
-    private ObjectBundleService objectBundleService;
-
-    @Autowired
-    private ObjectBundleValidationService objectBundleValidationService;
-
     @Autowired
     private TrackerBundleService trackerBundleService;
 
@@ -84,46 +62,19 @@ public class EventDataValueTest
     @Autowired
     private IdentifiableObjectManager manager;
 
-    @Autowired
-    private TrackerPreheatService preheatService;
-
-
     @Override
     protected void initTest()
         throws IOException
     {
-        Map<Class<? extends IdentifiableObject>, List<IdentifiableObject>> metadata = renderService.fromMetadata(
-            new ClassPathResource( "tracker/simple_metadata.json" ).getInputStream(), RenderFormat.JSON );
-
-        ObjectBundleParams params = new ObjectBundleParams();
-        params.setObjectBundleMode( ObjectBundleMode.COMMIT );
-        params.setImportStrategy( ImportStrategy.CREATE );
-        params.setObjects( metadata );
-
-        ObjectBundle bundle = objectBundleService.create( params );
-        ObjectBundleValidationReport validationReport = objectBundleValidationService.validate( bundle );
-        assertTrue( validationReport.getErrorReports().isEmpty() );
-
-        objectBundleService.commit( bundle );
+        setUpMetadata( "tracker/simple_metadata.json" );
 
         final User userA = userService.getUser( "M5zQapPyTZI" );
 
-        InputStream inputStream = new ClassPathResource( "tracker/single_tei.json" ).getInputStream();
+        TrackerImportParams teiParams = fromJson( "tracker/single_tei.json", userA.getUid() );
+        assertNoImportErrors( trackerImportService.importTracker( teiParams ) );
 
-        TrackerImportParams teiParams = renderService.fromJson( inputStream, TrackerImportParams.class );
-        teiParams.setUserId( userA.getUid() );
-        params.setUser( userA );
-        TrackerImportReport teiImportReport = trackerImportService.importTracker( teiParams );
-
-        assertTrue( teiImportReport.getValidationReport().getErrorReports().isEmpty() );
-
-        TrackerImportParams enrollmentParams = renderService
-            .fromJson( new ClassPathResource( "tracker/single_enrollment.json" ).getInputStream(),
-                TrackerImportParams.class );
-        enrollmentParams.setUserId( userA.getUid() );
-        TrackerImportReport enrollmentImportReport = trackerImportService.importTracker( enrollmentParams );
-
-        assertTrue( enrollmentImportReport.getValidationReport().getErrorReports().isEmpty() );
+        TrackerImportParams enrollmentParams = fromJson( "tracker/single_enrollment.json", userA.getUid() );
+        assertNoImportErrors( trackerImportService.importTracker( enrollmentParams ) );
     }
 
     @Test
@@ -150,9 +101,8 @@ public class EventDataValueTest
     {
         TrackerImportParams trackerImportParams = fromJson( "tracker/event_with_data_values.json" );
 
-        TrackerPreheat preheat = preheatService.preheat(trackerImportParams);
-        TrackerBundle bundle = trackerBundleService.create(trackerImportParams);
-        bundle.setPreheat( preheat );
+        TrackerBundle bundle = trackerBundleService.create( trackerImportParams );
+
         trackerBundleService.commit( bundle );
 
         List<ProgramStageInstance> events = manager.getAll( ProgramStageInstance.class );
@@ -171,9 +121,7 @@ public class EventDataValueTest
         // not work
         trackerImportParams.getEvents().get( 0 ).setUid( trackerImportParams.getEvents().get( 0 ).getEvent() );
 
-        preheat = preheatService.preheat( trackerImportParams );
         bundle = trackerBundleService.create( trackerImportParams );
-        bundle.setPreheat( preheat );
 
         trackerBundleService.commit( bundle );
 

@@ -73,18 +73,6 @@ public class TrackedEntityAttributeTest
     extends TrackerTest
 {
     @Autowired
-    private ObjectBundleService objectBundleService;
-
-    @Autowired
-    private ObjectBundleValidationService objectBundleValidationService;
-
-    @Autowired
-    private RenderService _renderService;
-
-    @Autowired
-    private UserService _userService;
-
-    @Autowired
     private TrackerPreheatService trackerPreheatService;
 
     @Autowired
@@ -96,26 +84,11 @@ public class TrackedEntityAttributeTest
     @Autowired
     private IdentifiableObjectManager manager;
 
-    @Autowired
-    private CurrentUserService currentUserService;
-
     @Override
     protected void initTest()
         throws IOException
     {
-        Map<Class<? extends IdentifiableObject>, List<IdentifiableObject>> metadata = renderService.fromMetadata(
-            new ClassPathResource( "tracker/te_with_tea_metadata.json" ).getInputStream(), RenderFormat.JSON );
-
-        ObjectBundleParams params = new ObjectBundleParams();
-        params.setObjectBundleMode( ObjectBundleMode.COMMIT );
-        params.setImportStrategy( ImportStrategy.CREATE );
-        params.setObjects( metadata );
-
-        ObjectBundle bundle = objectBundleService.create( params );
-        ObjectBundleValidationReport validationReport = objectBundleValidationService.validate( bundle );
-        assertTrue( validationReport.getErrorReports().isEmpty() );
-
-        objectBundleService.commit( bundle );
+        setUpMetadata( "tracker/te_with_tea_metadata.json" );
     }
 
     @Test
@@ -139,9 +112,7 @@ public class TrackedEntityAttributeTest
         throws IOException
     {
         TrackerImportParams trackerImportParams = fromJson( "tracker/te_with_tea_data.json" );
-        TrackerPreheat preheat = trackerPreheatService.preheat( trackerImportParams );
-        final TrackerBundle bundle = ParamsConverter.convert(trackerImportParams);
-        bundle.setPreheat( preheat );
+        TrackerBundle bundle = trackerBundleService.create( trackerImportParams );
         trackerBundleService.commit( bundle );
 
         List<TrackedEntityInstance> trackedEntityInstances = manager.getAll( TrackedEntityInstance.class );

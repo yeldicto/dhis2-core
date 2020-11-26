@@ -49,6 +49,7 @@ import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportStrategy;
 import org.hisp.dhis.tracker.TrackerTest;
+import org.hisp.dhis.tracker.preheat.TrackerPreheatService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -71,7 +72,7 @@ public class TrackerEventBundleServiceTest extends TrackerTest
     private ProgramStageInstanceStore programStageInstanceStore;
 
     @Override
-    protected void  initTest()
+    protected void initTest()
         throws IOException
     {
 
@@ -90,12 +91,11 @@ public class TrackerEventBundleServiceTest extends TrackerTest
         objectBundleService.commit( bundle );
     }
 
-
     @Test
     public void testCreateSingleEventData()
         throws IOException
     {
-        TrackerImportParams trackerImportParams = fromJson(  "tracker/event_events_and_enrollment.json" );
+        TrackerImportParams trackerImportParams = fromJson( "tracker/event_events_and_enrollment.json" );
 
         assertEquals( 8, trackerImportParams.getEvents().size() );
 
@@ -119,12 +119,12 @@ public class TrackerEventBundleServiceTest extends TrackerTest
         trackerBundleService.commit( trackerBundle );
         assertEquals( 8, programStageInstanceStore.getAll().size() );
 
-        trackerBundle = trackerBundleService.create( TrackerImportParams.builder()
+        trackerBundle = prepareForUpdate( trackerBundleService.create( TrackerImportParams.builder()
             .events( trackerBundle.getEvents() )
             .enrollments( trackerBundle.getEnrollments() )
             .trackedEntities( trackerBundle.getTrackedEntities() )
             .user( currentUserService.getCurrentUser() )
-            .build() );
+            .build() ) );
 
         trackerBundleService.commit( trackerBundle );
         assertEquals( 8, programStageInstanceStore.getAll().size() );
