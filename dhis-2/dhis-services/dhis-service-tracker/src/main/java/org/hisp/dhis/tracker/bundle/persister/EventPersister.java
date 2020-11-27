@@ -154,7 +154,14 @@ public class EventPersister extends AbstractTrackerPersister<Event, ProgramStage
     }
 
     @Override
-    protected void updateEntityValues( Session session, TrackerPreheat preheat,
+    protected void updateAttributes( Session session, TrackerPreheat preheat,
+        Event event, ProgramStageInstance programStageInstance )
+    {
+        // DO NOTHING - TEI HAVE NO ATTRIBUTES
+    }
+
+    @Override
+    protected void updateDataValues( Session session, TrackerPreheat preheat,
         Event event, ProgramStageInstance programStageInstance )
     {
         handleDataValues( session, preheat, event.getDataValues(), programStageInstance );

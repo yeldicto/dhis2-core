@@ -28,6 +28,7 @@ public interface ProgramStageMapper extends PreheatMapper<ProgramStage>
     @Mapping( target = "program" )
     @Mapping( target = "name" )
     @Mapping( target = "repeatable" )
+    @Mapping( target = "programStageDataElements" )
     ProgramStage map( ProgramStage programStage );
 
     @Named( "userGroupAccesses" )

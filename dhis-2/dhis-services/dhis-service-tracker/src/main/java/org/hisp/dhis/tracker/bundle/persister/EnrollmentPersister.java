@@ -75,11 +75,18 @@ public class EnrollmentPersister extends AbstractTrackerPersister<Enrollment, Pr
     }
 
     @Override
-    protected void updateEntityValues( Session session, TrackerPreheat preheat,
+    protected void updateAttributes( Session session, TrackerPreheat preheat,
         Enrollment enrollment, ProgramInstance programInstance )
     {
         handleTrackedEntityAttributeValues( session, preheat, enrollment.getAttributes(),
             programInstance.getEntityInstance() );
+    }
+
+    @Override
+    protected void updateDataValues( Session session, TrackerPreheat preheat,
+        Enrollment enrollment, ProgramInstance programInstance )
+    {
+        // DO NOTHING - TEI HAVE NO DATA VALUES
     }
 
     @Override

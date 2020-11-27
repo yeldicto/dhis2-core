@@ -40,9 +40,13 @@ import java.util.stream.Collectors;
 import org.hisp.dhis.common.IdentifiableObjectManager;
 import org.hisp.dhis.eventdatavalue.EventDataValue;
 import org.hisp.dhis.program.ProgramStageInstance;
+import org.hisp.dhis.program.ProgramStageInstanceService;
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportService;
+import org.hisp.dhis.tracker.TrackerImportStrategy;
 import org.hisp.dhis.tracker.TrackerTest;
+import org.hisp.dhis.tracker.report.TrackerImportReport;
+import org.hisp.dhis.tracker.report.TrackerStatus;
 import org.hisp.dhis.user.User;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,13 +58,13 @@ public class EventDataValueTest
     extends TrackerTest
 {
     @Autowired
-    private TrackerBundleService trackerBundleService;
-
-    @Autowired
     private TrackerImportService trackerImportService;
 
     @Autowired
     private IdentifiableObjectManager manager;
+
+    @Autowired
+    private ProgramStageInstanceService programStageInstanceService;
 
     @Override
     protected void initTest()
@@ -83,7 +87,8 @@ public class EventDataValueTest
     {
         TrackerImportParams trackerImportParams = fromJson( "tracker/event_with_data_values.json" );
 
-        trackerBundleService.commit( trackerBundleService.create( trackerImportParams ) );
+        TrackerImportReport trackerImportReport = trackerImportService.importTracker( trackerImportParams );
+        assertEquals( TrackerStatus.OK, trackerImportReport.getStatus() );
 
         List<ProgramStageInstance> events = manager.getAll( ProgramStageInstance.class );
         assertEquals( 1, events.size() );
@@ -101,9 +106,8 @@ public class EventDataValueTest
     {
         TrackerImportParams trackerImportParams = fromJson( "tracker/event_with_data_values.json" );
 
-        TrackerBundle bundle = trackerBundleService.create( trackerImportParams );
-
-        trackerBundleService.commit( bundle );
+        TrackerImportReport trackerImportReport = trackerImportService.importTracker( trackerImportParams );
+        assertEquals( TrackerStatus.OK, trackerImportReport.getStatus() );
 
         List<ProgramStageInstance> events = manager.getAll( ProgramStageInstance.class );
         assertEquals( 1, events.size() );
@@ -120,15 +124,16 @@ public class EventDataValueTest
         // make sure that the uid property is populated as well - otherwise update will
         // not work
         trackerImportParams.getEvents().get( 0 ).setUid( trackerImportParams.getEvents().get( 0 ).getEvent() );
+        trackerImportParams.setImportStrategy( TrackerImportStrategy.CREATE_AND_UPDATE );
 
-        bundle = trackerBundleService.create( trackerImportParams );
-
-        trackerBundleService.commit( bundle );
+        trackerImportReport = trackerImportService.importTracker( trackerImportParams );
+        assertEquals( TrackerStatus.OK, trackerImportReport.getStatus() );
 
         List<ProgramStageInstance> updatedEvents = manager.getAll( ProgramStageInstance.class );
         assertEquals( 1, updatedEvents.size() );
 
-        ProgramStageInstance updatedPsi = events.get( 0 );
+        ProgramStageInstance updatedPsi = programStageInstanceService
+            .getProgramStageInstance( updatedEvents.get( 0 ).getUid() );
 
         assertEquals( 3, updatedPsi.getEventDataValues().size() );
         List<String> values = updatedPsi.getEventDataValues()
