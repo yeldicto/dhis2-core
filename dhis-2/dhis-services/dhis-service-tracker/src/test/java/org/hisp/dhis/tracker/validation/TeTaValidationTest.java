@@ -30,13 +30,9 @@ package org.hisp.dhis.tracker.validation;
  */
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Every.everyItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -147,14 +143,8 @@ public class TeTaValidationTest
         fileResourceService.saveFileResource( fileResource, file );
         assertFalse( fileResource.isAssigned() );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_fileresource_data.json" )
-                .getInputStream(),
-                TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        TrackerImportParams trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_fileresource_data.json", userService.getUser( ADMIN_USER_UID ) );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -193,21 +183,15 @@ public class TeTaValidationTest
         fileResourceService.saveFileResource( fileResource, file );
         assertFalse( fileResource.isAssigned() );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_fileresource_data.json" )
-                .getInputStream(),
-                TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        TrackerImportParams trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_fileresource_data.json", userService.getUser( ADMIN_USER_UID ) );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         TrackerValidationReport report = trackerValidationService.validate( trackerBundle );
         assertEquals( 0, report.getErrorReports().size() );
 
-        trackerBundleService.commit( trackerBundle );
+        trackerBundleService.commit(  trackerBundle );
 
         List<TrackedEntityInstance> trackedEntityInstances = manager.getAll( TrackedEntityInstance.class );
         assertEquals( 1, trackedEntityInstances.size() );
@@ -222,11 +206,8 @@ public class TeTaValidationTest
         fileResource = fileResourceService.getFileResource( fileResource.getUid() );
         assertTrue( fileResource.isAssigned() );
 
-        trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_fileresource_data.json" )
-                    .getInputStream(),
-                TrackerImportParams.class );
-        trackerImportParams.setUser( user );
+        trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_fileresource_data.json", userService.getUser( ADMIN_USER_UID ) );
 
         trackerBundle = trackerBundleService.create( trackerImportParams );
         report = trackerValidationService.validate( trackerBundle );
@@ -243,14 +224,8 @@ public class TeTaValidationTest
         String metaDataFile = "tracker/validations/te-program_with_tea_fileresource_metadata.json";
         setupMetadata( metaDataFile );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_fileresource_data.json" )
-                .getInputStream(),
-                TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        TrackerImportParams trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_fileresource_data.json", userService.getUser( ADMIN_USER_UID ) );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -280,14 +255,8 @@ public class TeTaValidationTest
         String metaDataFile = "tracker/validations/te-program_with_tea_fileresource_metadata.json";
         setupMetadata( metaDataFile );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_generated_data.json" )
-                    .getInputStream(),
-                    TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        TrackerImportParams trackerImportParams = fromJson(
+                "tracker/validations/te-program_with_tea_generated_data.json", userService.getUser( ADMIN_USER_UID ) );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -318,14 +287,8 @@ public class TeTaValidationTest
         String metaDataFile = "tracker/validations/te-program_with_tea_fileresource_metadata.json";
         setupMetadata( metaDataFile );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_too_long_text_value.json" )
-                .getInputStream(),
-                TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        TrackerImportParams trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_too_long_text_value.json", userService.getUser( ADMIN_USER_UID ) );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -343,14 +306,8 @@ public class TeTaValidationTest
         String metaDataFile = "tracker/validations/te-program_with_tea_encryption_metadata.json";
         setupMetadata( metaDataFile );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_encryption_data.json" )
-                .getInputStream(),
-                TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        TrackerImportParams trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_encryption_data.json", userService.getUser( ADMIN_USER_UID ) );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -371,28 +328,18 @@ public class TeTaValidationTest
         String metaDataFile = "tracker/validations/te-program_with_tea_encryption_metadata.json";
         setupMetadata( metaDataFile );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_unique_data_in_country.json" )
-                .getInputStream(),
-                TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        TrackerImportParams trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_unique_data_in_country.json",
+            userService.getUser( ADMIN_USER_UID ) );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 
-        trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_unique_data_in_country.json" )
-                .getInputStream(),
-                TrackerImportParams.class );
+        trackerImportParams = fromJson(
+                "tracker/validations/te-program_with_tea_unique_data_in_country.json",
+                userService.getUser( ADMIN_USER_UID ) );
         trackerImportParams.setImportStrategy( TrackerImportStrategy.CREATE_AND_UPDATE );
-
-        user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
 
         trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -400,14 +347,9 @@ public class TeTaValidationTest
         assertEquals( 0, report.getErrorReports().size() );
         printReport( report );
 
-        trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_unique_data_in_region.json" )
-                .getInputStream(),
-                TrackerImportParams.class );
-
-        user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        trackerImportParams = fromJson(
+                "tracker/validations/te-program_with_tea_unique_data_in_region.json",
+                userService.getUser( ADMIN_USER_UID ) );
 
         trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -423,27 +365,16 @@ public class TeTaValidationTest
         String metaDataFile = "tracker/validations/te-program_with_tea_encryption_metadata.json";
         setupMetadata( metaDataFile );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_unique_data.json" )
-                    .getInputStream(),
-                    TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
-
+        TrackerImportParams trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_unique_data.json",
+            userService.getUser( ADMIN_USER_UID ) );
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 
-        trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_unique_data.json" )
-                    .getInputStream(),
-                TrackerImportParams.class );
-
-        user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        trackerImportParams = fromJson(
+                "tracker/validations/te-program_with_tea_unique_data.json",
+                userService.getUser( ADMIN_USER_UID ) );
 
         trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -461,14 +392,9 @@ public class TeTaValidationTest
         String metaDataFile = "tracker/validations/te-program_with_tea_fileresource_metadata.json";
         setupMetadata( metaDataFile );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_invalid_format_value.json" )
-                    .getInputStream(),
-                    TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        TrackerImportParams trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_invalid_format_value.json",
+            userService.getUser( ADMIN_USER_UID ) );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 
@@ -486,11 +412,9 @@ public class TeTaValidationTest
         String metaDataFile = "tracker/validations/te-program_with_tea_fileresource_metadata.json";
         setupMetadata( metaDataFile );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_invalid_image_value.json" )
-                    .getInputStream(),
-                    TrackerImportParams.class );
-
+        TrackerImportParams trackerImportParams = fromJson(
+            "tracker/validations/te-program_with_tea_invalid_image_value.json",
+            userService.getUser( ADMIN_USER_UID ) );
         User user = userService.getUser( ADMIN_USER_UID );
 
         trackerImportParams.setUser( user );
@@ -515,14 +439,9 @@ public class TeTaValidationTest
         String metaDataFile = "tracker/validations/te-program_with_tea_fileresource_metadata.json";
         setupMetadata( metaDataFile );
 
-        TrackerImportParams trackerImportParams = renderService
-            .fromJson( new ClassPathResource( "tracker/validations/te-program_with_tea_invalid_value_isnull.json" )
-                .getInputStream(),
-                TrackerImportParams.class );
-
-        User user = userService.getUser( ADMIN_USER_UID );
-
-        trackerImportParams.setUser( user );
+        TrackerImportParams trackerImportParams = fromJson(
+                "tracker/validations/te-program_with_tea_invalid_value_isnull.json",
+                userService.getUser( ADMIN_USER_UID ) );
 
         TrackerBundle trackerBundle = trackerBundleService.create( trackerImportParams );
 

@@ -2,11 +2,15 @@ package org.hisp.dhis.tracker;
 
 import static org.junit.Assert.assertTrue;
 
+import java.beans.Introspector;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.hisp.dhis.DhisSpringTest;
+import org.hisp.dhis.common.CodeGenerator;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundle;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleMode;
@@ -18,8 +22,10 @@ import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
 import org.hisp.dhis.tracker.bundle.TrackerBundle;
+import org.hisp.dhis.tracker.domain.TrackerDto;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
 import org.hisp.dhis.user.CurrentUserService;
+import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -84,21 +90,33 @@ public abstract class TrackerTest extends DhisSpringTest
     protected TrackerImportParams fromJson( String path )
         throws IOException
     {
-        TrackerImportParams trackerImportParams = renderService.fromJson(
-            new ClassPathResource( path ).getInputStream(),
-            TrackerImportParams.class );
+        TrackerImportParams trackerImportParams = _fromJson( path );
         trackerImportParams.setUser( currentUserService.getCurrentUser() );
         return trackerImportParams;
     }
 
     protected TrackerImportParams fromJson( String path, String userUid )
-            throws IOException
+        throws IOException
     {
-        TrackerImportParams trackerImportParams = renderService.fromJson(
-                new ClassPathResource( path ).getInputStream(),
-                TrackerImportParams.class );
+        TrackerImportParams trackerImportParams = _fromJson( path );
         trackerImportParams.setUserId( userUid );
         return trackerImportParams;
+    }
+
+    protected TrackerImportParams fromJson( String path, User user )
+        throws IOException
+    {
+        TrackerImportParams trackerImportParams = _fromJson( path );
+        trackerImportParams.setUser( user );
+        return trackerImportParams;
+    }
+
+    protected TrackerImportParams _fromJson( String path )
+        throws IOException
+    {
+        return syncIdentifiers( renderService.fromJson(
+            new ClassPathResource( path ).getInputStream(),
+            TrackerImportParams.class ) );
     }
 
     /**
@@ -107,11 +125,51 @@ public abstract class TrackerTest extends DhisSpringTest
      */
     protected TrackerBundle prepareForUpdate( TrackerBundle trackerBundle )
     {
-        trackerBundle.getTrackedEntities().forEach( t -> t.setUid( t.getTrackedEntity() ) );
-        trackerBundle.getEnrollments().forEach( t -> t.setUid( t.getEnrollment() ) );
-        trackerBundle.getEvents().forEach( t -> t.setUid( t.getEvent() ) );
+        trackerBundle.getTrackedEntities().forEach( this::syncUid );
+        trackerBundle.getEnrollments().forEach( this::syncUid );
+        trackerBundle.getEvents().forEach( this::syncUid );
 
         return trackerBundle;
+    }
+
+    protected TrackerImportParams syncIdentifiers( TrackerImportParams trackerImportParams )
+    {
+        trackerImportParams.getTrackedEntities().forEach( this::syncUid );
+        trackerImportParams.getEnrollments().forEach( this::syncUid );
+        trackerImportParams.getEvents().forEach( this::syncUid );
+
+        return trackerImportParams;
+    }
+
+    private void syncUid( TrackerDto trackerDto )
+    {
+        try
+        {
+            String field = Introspector.decapitalize( trackerDto.getClass().getSimpleName() );
+            Object val = FieldUtils.readDeclaredField( trackerDto, field, true );
+            String identifier = val != null ? val.toString() : null;
+            if ( StringUtils.isEmpty( trackerDto.getUid() )
+                && StringUtils.isEmpty( identifier ) )
+            {
+                String uid = CodeGenerator.generateUid();
+                FieldUtils.writeDeclaredField( trackerDto, "uid", uid, true );
+                FieldUtils.writeDeclaredField( trackerDto, field, uid, true );
+            }
+            if ( StringUtils.isEmpty( trackerDto.getUid() )
+                && StringUtils.isNotEmpty( identifier ) )
+            {
+                FieldUtils.writeDeclaredField( trackerDto, "uid", identifier, true );
+            }
+            if ( StringUtils.isNotEmpty( trackerDto.getUid() )
+                && StringUtils.isEmpty( identifier ) )
+            {
+                FieldUtils.writeDeclaredField( trackerDto, field, trackerDto.getUid(), true );
+            }
+        }
+        catch ( IllegalAccessException e )
+        {
+            e.printStackTrace();
+        }
     }
 
     protected void assertNoImportErrors( TrackerImportReport report )
