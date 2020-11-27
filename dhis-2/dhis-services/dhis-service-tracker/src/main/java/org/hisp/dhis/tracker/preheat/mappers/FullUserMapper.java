@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
 
-@Mapper( uses = { DebugMapper.class, UserCredentialsMapper.class } )
+@Mapper( uses = { DebugMapper.class, UserCredentialsMapper.class, OrganisationUnitMapper.class } )
 public interface FullUserMapper extends PreheatMapper<User>
 {
     FullUserMapper INSTANCE = Mappers.getMapper( FullUserMapper.class );
