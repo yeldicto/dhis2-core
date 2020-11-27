@@ -21,7 +21,6 @@ import org.hisp.dhis.dxf2.metadata.objectbundle.feedback.ObjectBundleValidationR
 import org.hisp.dhis.importexport.ImportStrategy;
 import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.render.RenderService;
-import org.hisp.dhis.tracker.bundle.TrackerBundle;
 import org.hisp.dhis.tracker.domain.TrackerDto;
 import org.hisp.dhis.tracker.report.TrackerImportReport;
 import org.hisp.dhis.user.CurrentUserService;
@@ -120,18 +119,9 @@ public abstract class TrackerTest extends DhisSpringTest
     }
 
     /**
-     * Makes sure that the Tracker entities in the provided TrackerBundle have the 'uid' attribute
-     * identical to the json identifier.
+     * Makes sure that the Tracker entities in the provided TrackerBundle have the
+     * 'uid' attribute identical to the json identifier.
      */
-    protected TrackerBundle prepareForUpdate( TrackerBundle trackerBundle )
-    {
-        trackerBundle.getTrackedEntities().forEach( this::syncUid );
-        trackerBundle.getEnrollments().forEach( this::syncUid );
-        trackerBundle.getEvents().forEach( this::syncUid );
-
-        return trackerBundle;
-    }
-
     protected TrackerImportParams syncIdentifiers( TrackerImportParams trackerImportParams )
     {
         trackerImportParams.getTrackedEntities().forEach( this::syncUid );
@@ -176,5 +166,4 @@ public abstract class TrackerTest extends DhisSpringTest
     {
         assertTrue( report.getValidationReport().getErrorReports().isEmpty() );
     }
-
 }

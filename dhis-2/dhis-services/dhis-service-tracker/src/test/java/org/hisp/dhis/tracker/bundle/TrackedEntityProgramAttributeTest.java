@@ -115,7 +115,7 @@ public class TrackedEntityProgramAttributeTest
         // update
 
         trackerImportParams = fromJson( "tracker/te_program_with_tea_update_data.json" );
-        trackerBundle = prepareForUpdate( trackerBundleService.create( trackerImportParams ) );
+        trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 
@@ -152,7 +152,7 @@ public class TrackedEntityProgramAttributeTest
         // update
 
         trackerImportParams = fromJson( "tracker/te_program_with_tea_update_data.json" );
-        trackerBundle = prepareForUpdate( trackerBundleService.create( trackerImportParams ) );
+        trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 
@@ -169,7 +169,7 @@ public class TrackedEntityProgramAttributeTest
 
         trackerImportParams = fromJson(  "tracker/te_program_with_tea_delete_data.json" );
 
-        trackerBundle = prepareForUpdate(trackerBundleService.create( trackerImportParams ));
+        trackerBundle = trackerBundleService.create( trackerImportParams );
 
         trackerBundleService.commit( trackerBundle );
 

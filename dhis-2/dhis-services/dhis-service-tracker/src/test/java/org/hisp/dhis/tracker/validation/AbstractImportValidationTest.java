@@ -32,7 +32,6 @@ package org.hisp.dhis.tracker.validation;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.hisp.dhis.DhisSpringTest;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleService;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundleValidationService;
 import org.hisp.dhis.tracker.TrackerImportParams;
@@ -92,10 +91,9 @@ public abstract class AbstractImportValidationTest
 
     @Override
     protected void initTest() throws IOException {
-        // FIXME remove
     }
 
-    protected void printReport(TrackerValidationReport report )
+    protected void printReport( TrackerValidationReport report )
     {
         for ( TrackerErrorReport errorReport : report.getErrorReports() )
         {
@@ -124,10 +122,5 @@ public abstract class AbstractImportValidationTest
             .trackerImportStrategy( strategy )
             .build()
             .invoke();
-    }
-
-    protected ValidateAndCommitTestUnit validateAndCommit( TrackerImportParams params )
-    {
-        return validateAndCommit( params, TrackerImportStrategy.CREATE_AND_UPDATE );
     }
 }

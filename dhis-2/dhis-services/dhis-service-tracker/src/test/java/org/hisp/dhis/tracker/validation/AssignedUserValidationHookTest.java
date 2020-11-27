@@ -128,7 +128,6 @@ public class AssignedUserValidationHookTest
     @Test
     public void testAssignedUserInvalidUid()
     {
-
         Event event = new Event();
 
         String testUserUid = "123";

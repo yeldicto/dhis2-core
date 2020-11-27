@@ -49,7 +49,6 @@ import org.hisp.dhis.render.RenderFormat;
 import org.hisp.dhis.tracker.TrackerImportParams;
 import org.hisp.dhis.tracker.TrackerImportStrategy;
 import org.hisp.dhis.tracker.TrackerTest;
-import org.hisp.dhis.tracker.preheat.TrackerPreheatService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -119,12 +118,12 @@ public class TrackerEventBundleServiceTest extends TrackerTest
         trackerBundleService.commit( trackerBundle );
         assertEquals( 8, programStageInstanceStore.getAll().size() );
 
-        trackerBundle = prepareForUpdate( trackerBundleService.create( TrackerImportParams.builder()
+        trackerBundle = trackerBundleService.create( TrackerImportParams.builder()
             .events( trackerBundle.getEvents() )
             .enrollments( trackerBundle.getEnrollments() )
             .trackedEntities( trackerBundle.getTrackedEntities() )
             .user( currentUserService.getCurrentUser() )
-            .build() ) );
+            .build() );
 
         trackerBundleService.commit( trackerBundle );
         assertEquals( 8, programStageInstanceStore.getAll().size() );

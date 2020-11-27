@@ -122,20 +122,6 @@ public class TrackedEntityImportValidationTest
     }
 
     @Test
-    public void testTeValidationOkGenerateId()
-        throws IOException
-    {
-        TrackerImportParams params = createBundleFromJson(
-            "tracker/validations/te-data_ok_no_uuids.json" );
-
-        ValidateAndCommitTestUnit createAndUpdate = validateAndCommit( params, TrackerImportStrategy.CREATE );
-        TrackerValidationReport report = createAndUpdate.getValidationReport();
-        printReport( report );
-        assertEquals( 0, report.getErrorReports().size() );
-        assertEquals( TrackerStatus.OK, createAndUpdate.getCommitReport().getStatus() );
-    }
-
-    @Test
     public void testValidateInvalidUid()
         throws IOException
     {
